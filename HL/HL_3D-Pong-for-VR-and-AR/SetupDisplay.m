@@ -20,6 +20,9 @@ if ds.oculusConnected==1
     ds.hmd = PsychVRHMD('AutoSetupHMD', 'Tracked3DVR', 'LowPersistence TimeWarp FastResponse', 0);
     PsychVRHMD('SetHSWDisplayDismiss', ds.hmd, -1);
     
+    load('DefaultHMDParameters.mat');
+    oc.defaultState = defaultState;
+    
     % as of the PTB release for the CV1, there is built-in gamma correction
     % in Psychtoolbox for the devices
     
@@ -35,7 +38,7 @@ else % oculus not connected
     ds.gammaVals = [GammaValue GammaValue GammaValue];
     load('DefaultHMDParameters.mat');
     oc.defaultState = defaultState; % TODO: Replace this with initialstate and drop references to defaultstate altogether
-    
+
     % Initial view is rotated and shifted, setting below do not fix it
     ipd = .064; % default ipd (in m)
     oc.defaultState.modelViewDataLeft = eye(4);
@@ -93,10 +96,11 @@ end
 [ds.xc, ds.yc] = RectCenter(ds.windowRect);
 
 if ~isempty(ds.hmd) % CSB: if using hmd
-    ds.Height = 1.7614; % virtual height of the surround texture in meters, based on viewing distance - we want this to relate to the shorter dimension of the display
+    ds.Height = .7614; % virtual height of the surround texture in meters, based on viewing distance - we want this to relate to the shorter dimension of the display
     ds.halfHeight = ds.Height/2;
-    ds.Width = 1.7614; % virtual width of the surround texture in meters, based on viewing distance - we want this to relate to the longer dimension of the display
+    ds.Width = .7614; % virtual width of the surround texture in meters, based on viewing distance - we want this to relate to the longer dimension of the display
     ds.halfWidth = ds.Width/2;
+    ds.floorWidth = 4;
     ds.xc = RectHeight(ds.windowRect)/2; % the horizontal center of the display in pixels
     ds.yc = RectWidth(ds.windowRect)/2; % the vertical center of the display in pixels
     ds.textCoords = [ds.yc ds.xc];
@@ -105,7 +109,7 @@ if ~isempty(ds.hmd) % CSB: if using hmd
     end
     
     if strcmp(ds.hmdinfo.modelName, 'Oculus Rift CV1')
-        ds.viewingDistance = 1;%0; % in m - Oculus units are coded in meters
+        ds.viewingDistance = 1.5;%0; % in m - Oculus units are coded in meters
         ds.hFOV = 80; % in deg - this is what is spit back from the Oculus readings at the start - horizontal field of view
         ds.vFOV = 90;  % in deg - vertical field of view
         ds.dFOV = sqrt(ds.hFOV^2 + ds.vFOV^2);
@@ -117,7 +121,7 @@ if ~isempty(ds.hmd) % CSB: if using hmd
         ds.pixelsPerM = sqrt(RectHeight(ds.windowRect)^2 + RectWidth(ds.windowRect)^2) / ds.viewportWidthM;
         ds.frameRate = 90;
     elseif strcmp(ds.hmdinfo.modelName, 'Oculus Rift DK2')
-        ds.viewingDistance = 1.2;%0; % in m - Oculus units are coded in meters - from the documentation, By default, the tracking origin is located one meter away from the tracker in the direction of the optical axis but with the same height as the tracker. The default origin orientation is level with the ground with the negative axis pointing towards the tracker. In other words, a headset yaw angle of zero corresponds to the user looking towards the tracker.
+        ds.viewingDistance = 1.2;%0; % in m - Oculus units are coded in meters - from the documentation, By default, the tracking origin is located one meter away from the tracker in the direction of the optical axis but with the same  as the tracker. The default origin orientation is level with the ground with the negative axis pointing towards the tracker. In other words, a headset yaw angle of zero corresponds to the user looking towards the tracker.
         ds.hFOV = 74;  % in deg - this is what is spit back from the Oculus readings at the start - horizontal field of view - but the display seems to flip them so h = v and vice versa
         ds.vFOV = 54;  % in deg - vertical field of view
         ds.dFOV = sqrt(ds.hFOV^2 + ds.vFOV^2);
@@ -237,6 +241,7 @@ oc.modelViewDataRight = []; % may as well save the model view matrix data as wel
 % looking direction of the virtual camera:
 glMatrixMode(GL.MODELVIEW);
 glLoadIdentity;
+
 
 % Set background clear color
 glClearColor(0.5,0.5,0.5,1); % mid-gray

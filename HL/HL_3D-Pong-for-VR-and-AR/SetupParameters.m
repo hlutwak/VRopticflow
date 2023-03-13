@@ -48,7 +48,7 @@ pa.fixationLineLength = 0.0079; % m
     
 pa.apertureRadius = 7.5;  % deg
    
-pa.floorHeight = -1.5; % m
+pa.floorHeight = -1; % m
 pa.ceilingHeight = 1.5; % m 
     
 %% parameters for the adjustable paddle
@@ -66,10 +66,11 @@ pa.paddleOrbitShift = 0.1185;% m
 
 %% parameters for the target - will establish the speed distributions below
 
-pa.targetMotionDuration = 1; % s
+pa.targetMotionDuration = 1; % 1 s
 pa.targetContrast = [1 0.15 0.075]; % fully-visible target, 15% and 7.5% contrast
-pa.targetRadius = 0.25; % deg 
-pa.targetSize = 0.004;% m
+pa.targetRadius = 1; % deg  0.25;
+pa.targetSize = 0.1;% m
+pa.nball = 50; %number of randomly placed objects
   
 
 %% experimental structure/design
@@ -81,6 +82,8 @@ pa.nRepeats = 75; % each target contrast condition gets pa.nRepeats trials - 75*
 pa.fullFactorial = fullfact(length(pa.targetContrast)); 
 pa.fullFactorial = repmat(pa.fullFactorial,pa.nRepeats,1); % repeat the full factorial design nRepeats times
 pa.nTrials = size(pa.fullFactorial,1);
+pa.LR = randi([0,1],1,pa.nTrials)*2-1;
+pa.LRresponse = zeros(1,pa.nTrials);
 
 % *Gaussian* vx and vz sampling each from a distribution with mean=0 and
 % stdev=0.02m - the 0.061 m/s and -0.061 m/s would then be 3 stdevs from the mean,

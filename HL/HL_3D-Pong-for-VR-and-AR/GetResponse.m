@@ -49,8 +49,10 @@ if kb.keyIsDown
         
     elseif kb.keyCode(kb.paddleClockWiseKey)  %% left arrow
         pa.paddleAngle(pa.trialNumber) = mod(pa.paddleAngle(pa.trialNumber) - pa.rotationSpeed,360);
+        pa.LRresponse(pa.trialNumber) = -1;
     elseif kb.keyCode(kb.paddleCounterClockWiseKey)  %% right arrow
         pa.paddleAngle(pa.trialNumber) = mod(pa.paddleAngle(pa.trialNumber) + pa.rotationSpeed,360);
+        pa.LRresponse(pa.trialNumber) = 1;
     elseif kb.keyCode(kb.translateViewLeftKey) % CSB. these control modelView, camera position, need to add orientation too... June 7th 2018
         pa.modelView(1,4) = pa.modelView(1,4) + shiftAmt; % translation x
     elseif kb.keyCode(kb.translateViewRightKey)
