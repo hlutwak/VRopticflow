@@ -11,9 +11,9 @@ KbName('UnifyKeyNames');
 % CSB: I will attempt to use aswz keys to control the camera matrices when
 % there is no hmd attached (using monitor). June 5, 2018
 kb.translateViewLeftKey = KbName('a'); % translates the cameras left
-kb.translateViewRightKey = KbName('s'); % translates the cameras right
+kb.translateViewRightKey = KbName('d'); % translates the cameras right
 kb.translateViewForwardKey = KbName('w'); % translates the cameras toward the stimulus
-kb.translateViewBackKey = KbName('z'); % translates the cameras back away from the stimulus
+kb.translateViewBackKey = KbName('s'); % translates the cameras back away from the stimulus
 kb.translateViewUpKey = KbName('e'); % translates the cameras up 
 kb.translateViewDownKey = KbName('x'); % translates the cameras down
 

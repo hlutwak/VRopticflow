@@ -9,7 +9,7 @@ function [ds,pa] = SetupParameters(ds)
 %% Basic experimental specs 
 
 pa.subjectName = 'test';
-pa.feedbackFlag = 2;  % 0 --> no feedback;  1 --> only sound-based feedback;  2 --> visual + sound-based feedback
+pa.feedbackFlag = 1;  % 0 --> no feedback;  1 --> only sound-based feedback;  2 --> visual + sound-based feedback
 
 pa.criterion = 8*(pi/180);  % this is the criterion for the distance between the mid-point of the paddle and the midpoint of the ball; distances smaller than this are hits - any overlap counts
 
@@ -66,10 +66,11 @@ pa.paddleOrbitShift = 0.1185;% m
 
 %% parameters for the target - will establish the speed distributions below
 
-pa.targetMotionDuration = 1; % 1 s
+pa.targetMotionDuration = 10; % 1 s
 pa.targetContrast = [1 0.15 0.075]; % fully-visible target, 15% and 7.5% contrast
-pa.targetRadius = 1; % deg  0.25;
-pa.targetSize = 0.1;% m
+pa.targetRadius = .25; % deg  0.25;
+pa.targetSize = 0.05;% m
+pa.fixationSize = pa.targetSize/2;
 pa.nball = 50; %number of randomly placed objects
   
 

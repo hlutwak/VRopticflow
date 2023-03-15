@@ -8,13 +8,13 @@
 % 19-Aug-2016 jf Added a few modifications: randomized paddle start angle
 % on each trial, feedback options, random/variable lag for lagged condition
 % Dec-Jan-2019 - JF updated code to  work with CV1; minor changes to call of
-% projection matrices, added in CV1-specific FOV and other parameters
+% projection matrices, added in  CV1-specific FOV and other parameters
 
 %% Important note about coding of angles in Oculus space:
 
 % In the Oculus, angles are coded ccw - so, straight right = 0 deg,
 % directly in front of fix ation = 90 deg, straight left = 180 deg, directly
-% behind fixation = 270 d eg 
+% behind fixation = 270 deg 
 
 
 %% Basic per subject inputs:  
@@ -35,7 +35,7 @@ close all;
 global DEBUG_FLAG KEYBOARD_FLAG
 DEBUG_FLAG = 1; %1
 KEYBOARD_FLAG = 0; %1 % there is a call to 'keyboard' in SetupDisplay that was breaking the code when using the hmd so I created a flag to turn it on/off - not certain what it is for (JF)
-
+ 
 if DEBUG_FLAG
     Screen('Preference', 'SkipSyncTests', 1); % For debugging
 end
@@ -128,8 +128,8 @@ pa.experimentOnset = ds.vbl;
 pa.block = 0;
 breakTime = 0;  % participants are running in the task
 kb.nextTrialKey = 0;
-track = [];
-current_trial = 0;
+track = []; 
+track_trial = 0;
 
 while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until all of the trials have been completed or the escape key is pressed to quit out
     
@@ -143,9 +143,16 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
         % by the PsychGetPositionYawMatrix() helper function:
         state = PsychVRHMD('PrepareRender', ds.hmd, ds.globalHeadPose);  % Mark the start of the rendering cycle for a new 3D rendered stereoframe. Return a struct 'state' which contains various useful bits of information for 3D stereoscopic rendering of a scene, based on head tracking data
     end
-    if current_trial<pa.trialNumber
+
+    if pa.trialNumber>track_trial %dont' update head position during a trial
        positions = -ds.floorWidth/2+2*ds.floorWidth/2*rand(2,pa.nball); %uniform random positions across floor
-       current_trial = current_trial+1;
+       if pa.trialNumber>1
+           eye = originaleye;
+       else
+           eye = PsychVRHMD('GetEyePose', ds.hmd, ds.renderPass, ds.globalHeadPose);
+           originaleye = eye;
+       end
+       track_trial = track_trial+1;
     end
     
     % Render the scene separately for each eye:
@@ -176,8 +183,8 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
             % camera rendering that eyes view. The returned pose vector actually
             % describes tracked head pose, ie. HMD position and orientation in space.
             
-            eye = PsychVRHMD('GetEyePose', ds.hmd, ds.renderPass, ds.globalHeadPose);
 
+            [pa, kb, eye] = GetKeyboardHeadmotion(pa,ds,kb,eye);
             % this is for saving purposes to recreate participants' head motion
             if ds.renderPass % drawing right eye
                 oc.modelViewDataRight = [oc.modelViewDataRight; eye.modelView];
@@ -188,9 +195,9 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
             % the 'active' condition just takes whatever the current state of the oculus is
                 if ~ds.trackingFlag % 'fixed' condition loop - don't update the scene with tracked head motion, just use the default state
                     if ds.renderPass
-                        eye.modelView = oc.modelViewDataRight(1:4,:); % comes back from the initial call...will not update the scene based on head tracking
+%                         eye.modelView = oc.modelViewDataRight(1:4,:); % comes back from the initial call...will not update the scene based on head tracking
                     else 
-                        eye.modelView = oc.modelViewDataLeft(1:4,:);
+%                         eye.modelView = oc.modelViewDataLeft(1:4,:);
                     end
                     state.tracked = 2;
                     eye.eyeIndex = ds.renderPass;
@@ -209,7 +216,6 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
         end
         
         Screen('SelectStereoDrawbuffer', ds.w, eye.eyeIndex); % Select 'eyeIndex' to render (left- or right-eye):
-        [pa, kb, eye] = GetKeyboardHeadmotion(pa,ds,kb,eye);
         modelView = eye.modelView; % Extract modelView matrix for this eye:
 
         
@@ -220,7 +226,6 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
         glLoadMatrixd(ds.projMatrix{renderPass + 1});
 
         glMatrixMode(GL.MODELVIEW);
-%         gluLookAt(Xview,0,Zview, 0,0 ,-1, 0,1,0);
         glLoadMatrixd(modelView);  
         
 
@@ -258,13 +263,20 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
 %                 glCallList(ds.lowcontrastTarget); 
 %             end
 %              
+            
             % stationary ball
             glPushMatrix;
             glTranslatef(.5*(-pa.LR(pa.trialNumber)),pa.floorHeight+pa.targetSize,0); % shift the target to its position along its trajectory for this frame
             glCallList(ds.highcontrastTarget);
             glPopMatrix;
             
-            % place random balls
+            % fixation ball
+            glPushMatrix;
+            glTranslatef(0,pa.floorHeight+pa.fixationSize,0); % shift the target to its position along its trajectory for this frame
+            glCallList(ds.fixation);
+            glPopMatrix;
+            
+            % place random stationary balls
             for b = 1:pa.nball
             	glPushMatrix;
                 glTranslatef(positions(1,b)/2,pa.floorHeight+pa.targetSize,positions(2,b)/2); % shift the target to its position along its trajectory for this frame
@@ -273,8 +285,8 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
             end
                 
                 
-            glBindTexture(GL.TEXTURE_2D,ds.floor_texid);
-            glCallList(ds.floorTexture);
+%             glBindTexture(GL.TEXTURE_2D,ds.floor_texid);
+%             glCallList(ds.floorTexture);
 
 %             eye.modelView(1,4) = eye.modelView(1,4) + pa.xSpeed*100.*(ds.vbl-pa.trialOnset);
 
@@ -289,12 +301,12 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
         elseif ~kb.responseGiven % show paddle and allow observers to adjust its position - no time constraints - they press the space bar to lock in their response and start a new trial
             %2, % debugging flag
             
-            glPushMatrix;
-            % here's where we draw the paddle
-            glRotatef(pa.paddleAngle(pa.thisTrial),0,-1,0); % position the paddle along the orbit according to the angle specified by the input (observer adjustment)
-            glTranslatef(pa.paddleOrbitShift-pa.paddleHalfWidth*2,pa.floorHeight+pa.paddleHalfHeight,0); % shift the paddle physically out to the orbit
-            glCallList(ds.paddleList); % call the pre-compiled list that binds the textures to the paddle faces
-            glPopMatrix;
+%             glPushMatrix;
+%             % here's where we draw the paddle
+%             glRotatef(pa.paddleAngle(pa.thisTrial),0,-1,0); % position the paddle along the orbit according to the angle specified by the input (observer adjustment)
+%             glTranslatef(pa.paddleOrbitShift-pa.paddleHalfWidth*2,pa.floorHeight+pa.paddleHalfHeight,0); % shift the paddle physically out to the orbit
+%             glCallList(ds.paddleList); % call the pre-compiled list that binds the textures to the paddle faces
+%             glPopMatrix;
             
             pa.modelView = eye.modelView; % CSB: init camera position based on default or previous camera position. June 7th 2018
             [pa, kb] = GetResponse(pa, ds, kb);  % query the keyboard to allow the observer to rotate the paddle and eventually lock in his/her response to initiate a new trial
@@ -311,6 +323,7 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
             pa.feedbackOnset = ds.vbl;
             
         elseif kb.responseGiven && pa.feedbackFlag==2 && pa.feedbackGiven==0 && ds.vbl < (pa.feedbackOnset + pa.timeToPaddle - pa.targetMotionDuration) % visual feedback
+            
             %3, % debugging flag
             
             % show the feedback (rest of the trajectory)
@@ -346,6 +359,7 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
             
             glDepthMask(GL.TRUE); % resume the ability to make changes to the depth buffer for proper rendering of remaining components
             glBlendFunc(GL.SRC_ALPHA, GL.ONE_MINUS_SRC_ALPHA); % restore the proper blending function
+  
             
              
         elseif (kb.responseGiven && pa.feedbackFlag==1 && pa.feedbackGiven==0) || (kb.responseGiven && pa.feedbackFlag==2 && pa.feedbackGiven==0) % sound feedback only
@@ -353,14 +367,17 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
             
             reportedAngle = angle(exp(1i*deg2rad(pa.paddleAngle(pa.thisTrial))));  % converts the paddle angle from 0-360 to -pi - + pi
             
-            % play appropriate sound
+            % display appropriate object
             if ~pa.feedbackGiven
-                if abs(circ_dist(reportedAngle, atan2(pa.zSpeed, pa.xSpeed))) <= pa.criterion    % this computes the distance between the paddle and the dot; if less than criterion, it's a hit.
-                    
-                    % PsychPortAudio('Start', pahandle [, repetitions=1] [, when=0] [, waitForStart=0] [, stopTime=inf] [, resume=0])
-                    PsychPortAudio('Start', pa.handleHit);
+                if pa.LRresponse(pa.trialNumber) == pa.LR(pa.trialNumber)  %does the response match the target side
+                        glPushMatrix;
+                        glTranslatef(0,pa.floorHeight+pa.fixationSize,0); % display green sphere
+                        glCallList(ds.correct);
+                        glPopMatrix;
                 else
-                    PsychPortAudio('Start', pa.handleMiss);
+                        glPushMatrix;
+                        glTranslatef(0,pa.floorHeight+pa.fixationSize,0); % display red sphere
+                        glPopMatrix;
                 end
                 pa.feedbackGiven = 1;
                 pa.waitTime = ds.vbl;
@@ -376,10 +393,11 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
                 
             end
             
+        %{    
         elseif (kb.responseGiven && pa.feedbackFlag==1 && pa.feedbackGiven==1 && ds.vbl <= pa.waitTime+.75) || (kb.responseGiven && pa.feedbackFlag==2 && pa.feedbackGiven==1 && ds.vbl <= pa.waitTime+.75)
             
             % Draw Paddle
-            glPushMatrix;
+            glPushMatrix; 
             glRotatef(pa.paddleAngle(pa.thisTrial),0,-1,0); % position the paddle along the orbit according to the angle specified by the input (observer adjustment)
             glTranslatef(pa.paddleOrbitShift-pa.paddleHalfWidth*2,0,0); % shift the paddle physically out to the orbit
             %                 if renderPass == pa.randeye(pa.trialNumber)
@@ -406,12 +424,13 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
             end
             glDepthMask(GL.TRUE); % resume the ability to make changes to the depth buffer for proper rendering of remaining components
             glBlendFunc(GL.SRC_ALPHA, GL.ONE_MINUS_SRC_ALPHA); % re-store the proper blending function
-            
+            %}
         elseif (kb.responseGiven && pa.feedbackFlag==0) || (kb.responseGiven && pa.feedbackFlag==1 && pa.feedbackGiven==1) || (kb.responseGiven && pa.feedbackFlag==2 && pa.feedbackGiven==1) % done, set up for the next trial (i.e., determine the new random trajectory)
             %                 5, % debugging flag
             
             [ds, pa, kb, oc] = SetupNewTrial(ds, pa, kb, oc);
-            current_trial = current_trial +1;
+            track_trial = pa.trialNumber-1;
+            
         end
         %% End of experiment logic
         
@@ -433,6 +452,8 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
         
 %         glBindTexture(GL.TEXTURE_2D,ds.floor_texid);
 %         glCallList(ds.floorTexture);
+            glBindTexture(GL.TEXTURE_2D,ds.floor_texid);
+            glCallList(ds.floorTexture);
         
 %         glBindTexture(GL.TEXTURE_2D,ds.wall_texid); 
 %         glCallList(ds.surroundTexture); % 1/f noise texture surround -  comes from CreateTexturesforSDK2.m
