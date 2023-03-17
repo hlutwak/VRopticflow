@@ -48,7 +48,7 @@ pa.fixationLineLength = 0.0079; % m
     
 pa.apertureRadius = 7.5;  % deg
    
-pa.floorHeight = -1; % m
+pa.floorHeight = -.5; % m
 pa.ceilingHeight = 1.5; % m 
     
 %% parameters for the adjustable paddle
@@ -66,10 +66,10 @@ pa.paddleOrbitShift = 0.1185;% m
 
 %% parameters for the target - will establish the speed distributions below
 
-pa.targetMotionDuration = 10; % 1 s
+pa.targetMotionDuration = 5; % 1 s
 pa.targetContrast = [1 0.15 0.075]; % fully-visible target, 15% and 7.5% contrast
 pa.targetRadius = .25; % deg  0.25;
-pa.targetSize = 0.05;% m
+pa.targetSize = 0.025;% m
 pa.fixationSize = pa.targetSize/2;
 pa.nball = 50; %number of randomly placed objects
   

@@ -109,7 +109,7 @@ if ~isempty(ds.hmd) % CSB: if using hmd
     end
     
     if strcmp(ds.hmdinfo.modelName, 'Oculus Rift CV1')
-        ds.viewingDistance = 2;%0; % in m - Oculus units are coded in meters
+        ds.viewingDistance = 1;%0; % in m - Oculus units are coded in meters
         ds.hFOV = 80; % in deg - this is what is spit back from the Oculus readings at the start - horizontal field of view
         ds.vFOV = 90;  % in deg - vertical field of view
         ds.dFOV = sqrt(ds.hFOV^2 + ds.vFOV^2);

@@ -25,7 +25,7 @@ ds.fixation = glGenLists(1);
 ds.correct = glGenLists(1);
 ds.incorrect = glGenLists(1);
 
-%% create sphere with checkerboard
+%% create sphere with noise pattern
 fixation_texid = glGenTextures(1);
 
     % Apply regular checkerboard pattern as texture:
@@ -46,14 +46,15 @@ nSlices = 64;
 nStacks = 32;
 %     glEnable(gltextarget);
 %     glBindTexture(gltextarget, gltex);
-    glBindTexture(GL_TEXTURE_2D, fixation_texid);
+    
     glTexEnvfv(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_MODULATE);
+    glBindTexture(GL_TEXTURE_2D, fixation_texid);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, floorSize, floorSize, 0, GL_RGBA, GL_UNSIGNED_BYTE, noys);
+%     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, floorSize, floorSize, 0, GL_RGBA, GL_UNSIGNED_BYTE, noys);
 
-    %     glGenerateMipmapEXT(GL.TEXTURE_2D);
+    glGenerateMipmapEXT(GL.TEXTURE_2D);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glNewList(ds.fixation, GL.COMPILE);
     mysphere = gluNewQuadric;
@@ -98,7 +99,7 @@ glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, mag_filter);
 glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, min_filter);
 % glTexParameterfv(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
-glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, halfTextureSize*2, halfTextureSize*2, 0, GL_RGBA, GL_UNSIGNED_BYTE, noys);
+% glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, halfTextureSize*2, halfTextureSize*2, 0, GL_RGBA, GL_UNSIGNED_BYTE, noys);
 glTexEnvfv(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 
 corners = [0 0;
@@ -325,16 +326,16 @@ glNewList(ds.floorTexture, GL.COMPILE);
 
 glBegin(GL_QUADS);
 glTexCoord2f(0, 0);
-glVertex3f(-ds.floorWidth/2,pa.floorHeight,ds.floorWidth/2);
+glVertex3f(-ds.floorWidth/2,pa.floorHeight,0);
 
 glTexCoord2f(0 ,1);
-glVertex3f(-ds.floorWidth/2,pa.floorHeight,-ds.floorWidth/2);
+glVertex3f(-ds.floorWidth/2,pa.floorHeight,-ds.floorWidth);
 
 glTexCoord2f(1,1);
-glVertex3f(ds.floorWidth/2,pa.floorHeight,-ds.floorWidth/2);
+glVertex3f(ds.floorWidth/2,pa.floorHeight,-ds.floorWidth);
 
 glTexCoord2f(1,0);
-glVertex3f(ds.floorWidth/2,pa.floorHeight,ds.floorWidth/2);
+glVertex3f(ds.floorWidth/2,pa.floorHeight,0);
 glEnd;
 
 glEndList(); % done with the floor
@@ -556,13 +557,13 @@ gluSphere(quadratic,pa.targetSize,nSlices,nStacks);
 glEndList();
 
 
-ds.correct = glGenLists(1);
-glNewList(ds.correct, GL.COMPILE);
+ds.incorrect = glGenLists(1);
+glNewList(ds.incorrect, GL.COMPILE);
 glColor4f(1,0,0,pa.targetContrast(1));
 gluSphere(quadratic,pa.fixationSize,nSlices,nStacks);
 glEndList();
 
-ds.incorrect = glGenLists(1);
+ds.correct = glGenLists(1);
 glNewList(ds.correct, GL.COMPILE);
 glColor4f(0,1,0,pa.targetContrast(1));
 gluSphere(quadratic,pa.fixationSize,nSlices,nStacks);

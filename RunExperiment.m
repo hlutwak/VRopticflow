@@ -53,7 +53,7 @@ addpath(genpath([pwd filesep() 'Tools'])); % contains 'isodd.m' and 'oneoverf.m'
 [ds,pa] = SetupParameters(ds); % set up the experimental parameters for this session
 [ds,pa] = CreateTextures(ds, pa); % create the surround & paddle face textures as well as the ceiling, floor, and walls of the virtual room - just needs to be done once
 kb = SetupKeyboard(); % get the keyboard info for the participant's responses
-
+ListenChar(2);
 if ~DEBUG_FLAG
     HideCursor(ds.screenId); 
     ListenChar(2); % Stop making keypresses show up in the matlab scripts and
@@ -68,7 +68,7 @@ while ~readyToBegin % confirm everything's ready to go
     % Camera position when using head tracking + HMD: (according to SuperShapeDemo.m)
     globalPos = [0, 0, ds.viewingDistance]; % x,y,z  % in meters - just put something in here for now, will likely be much larger later for viewing the tv/'real' world - the demos use large values too
 
-    heading = -60; % yaw
+    heading = 0; % yaw
     ds.globalHeadPose = PsychGetPositionYawMatrix(globalPos, heading); % initialize observer's start position to the default camera position specified above
     
     if isempty(ds.hmd) % Oculus not connected
@@ -131,6 +131,7 @@ kb.nextTrialKey = 0;
 track = []; 
 track_trial = 0;
 
+
 while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until all of the trials have been completed or the escape key is pressed to quit out
     
     % Get HMD state
@@ -148,8 +149,10 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
        positions = -ds.floorWidth/2+2*ds.floorWidth/2*rand(2,pa.nball); %uniform random positions across floor
        if pa.trialNumber>1
            eye = originaleye;
+           
        else
            eye = PsychVRHMD('GetEyePose', ds.hmd, ds.renderPass, ds.globalHeadPose);
+           eye.modelView = [1 0 0 0; 0 1 0 0; 0 0 1 -ds.viewingDistance; 0 0 0 1];
            originaleye = eye;
        end
        track_trial = track_trial+1;
@@ -252,7 +255,7 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
             zPosition = pa.zSpeed.*t;
             
             glPushMatrix;
-            glTranslatef(xPosition+.5*(pa.LR(pa.trialNumber)),pa.floorHeight+pa.targetSize,zPosition); % shift the target to its position along its trajectory for this frame
+            glTranslatef(xPosition+.5*(pa.LR(pa.trialNumber)),pa.floorHeight+pa.targetSize,zPosition-ds.floorWidth/2); % shift the target to its position along its trajectory for this frame
             
 %             if pa.targetContrast==1
                 glCallList(ds.highcontrastTarget);
@@ -266,20 +269,20 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
             
             % stationary ball
             glPushMatrix;
-            glTranslatef(.5*(-pa.LR(pa.trialNumber)),pa.floorHeight+pa.targetSize,0); % shift the target to its position along its trajectory for this frame
+            glTranslatef(.5*(-pa.LR(pa.trialNumber)),pa.floorHeight+pa.targetSize,-ds.floorWidth/2); 
             glCallList(ds.highcontrastTarget);
             glPopMatrix;
             
             % fixation ball
             glPushMatrix;
-            glTranslatef(0,pa.floorHeight+pa.fixationSize,0); % shift the target to its position along its trajectory for this frame
+            glTranslatef(0,pa.floorHeight+pa.fixationSize,-ds.floorWidth/2); 
             glCallList(ds.fixation);
             glPopMatrix;
             
             % place random stationary balls
             for b = 1:pa.nball
             	glPushMatrix;
-                glTranslatef(positions(1,b)/2,pa.floorHeight+pa.targetSize,positions(2,b)/2); % shift the target to its position along its trajectory for this frame
+                glTranslatef(positions(1,b)/2,pa.floorHeight+pa.targetSize,positions(2,b)/2-ds.floorWidth/2); 
                 glCallList(ds.highcontrastTarget);
                 glPopMatrix;
             end
@@ -288,13 +291,8 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
 %             glBindTexture(GL.TEXTURE_2D,ds.floor_texid);
 %             glCallList(ds.floorTexture);
 
-%             eye.modelView(1,4) = eye.modelView(1,4) + pa.xSpeed*100.*(ds.vbl-pa.trialOnset);
+            eye.modelView(3,4) = eye.modelView(3,4) + 0.001.*(ds.vbl-pa.trialOnset);
 
-            
-            track = [track eye.modelView(:,4)];
-            
-
-            
             pa.responseOnset = ds.vbl; % start the timer on the response time
             
 
@@ -371,12 +369,13 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
             if ~pa.feedbackGiven
                 if pa.LRresponse(pa.trialNumber) == pa.LR(pa.trialNumber)  %does the response match the target side
                         glPushMatrix;
-                        glTranslatef(0,pa.floorHeight+pa.fixationSize,0); % display green sphere
+                        glTranslatef(0,pa.floorHeight+pa.fixationSize,-(ds.floorWidth/2+1)); % display green sphere
                         glCallList(ds.correct);
                         glPopMatrix;
                 else
                         glPushMatrix;
-                        glTranslatef(0,pa.floorHeight+pa.fixationSize,0); % display red sphere
+                        glTranslatef(0,pa.floorHeight+pa.fixationSize,-(ds.floorWidth/2+1)); % display red sphere
+                        glCallList(ds.incorrect);
                         glPopMatrix;
                 end
                 pa.feedbackGiven = 1;
@@ -393,38 +392,51 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
                 
             end
             
-        %{    
-        elseif (kb.responseGiven && pa.feedbackFlag==1 && pa.feedbackGiven==1 && ds.vbl <= pa.waitTime+.75) || (kb.responseGiven && pa.feedbackFlag==2 && pa.feedbackGiven==1 && ds.vbl <= pa.waitTime+.75)
             
-            % Draw Paddle
-            glPushMatrix; 
-            glRotatef(pa.paddleAngle(pa.thisTrial),0,-1,0); % position the paddle along the orbit according to the angle specified by the input (observer adjustment)
-            glTranslatef(pa.paddleOrbitShift-pa.paddleHalfWidth*2,0,0); % shift the paddle physically out to the orbit
-            %                 if renderPass == pa.randeye(pa.trialNumber)
-            glCallList(ds.paddleList); % call the pre-compiled list that binds the textures to the paddle faces
-            %                 end
-            glPopMatrix;
+        elseif (kb.responseGiven && pa.feedbackFlag==1 && pa.feedbackGiven==1 && ds.vbl <= pa.waitTime+1) || (kb.responseGiven && pa.feedbackFlag==2 && pa.feedbackGiven==1 && ds.vbl <= pa.waitTime+.75)
             
-            % In this section, we are display both an opaque paddle + a
-            % translucent target (sphere) so we need to do a bit of
-            % openGL work to make the translucent sphere display
-            % properly
-            glDepthMask(GL.FALSE); % disable changes to the depth buffer
-            glBlendFunc(GL.SRC_ALPHA, GL.ONE); % set the alpha to that of the target contrast without influence of the paddle or other scene elements
-            glTranslatef(xPosition,0,zPosition); % shift the target to its position along its trajectory for this frame
-            %                 if renderPass == pa.randeye(pa.trialNumber)
-            if pa.feedbackFlag==2
-                if pa.targetContrast==1
-                    glCallList(ds.highcontrastTarget);
-                elseif pa.targetContrast==0.15
-                    glCallList(ds.midcontrastTarget);
-                elseif pa.targetContrast==0.075
-                    glCallList(ds.lowcontrastTarget);
+%             % Draw Paddle
+%             glPushMatrix; 
+%             glRotatef(pa.paddleAngle(pa.thisTrial),0,-1,0); % position the paddle along the orbit according to the angle specified by the input (observer adjustment)
+%             glTranslatef(pa.paddleOrbitShift-pa.paddleHalfWidth*2,0,0); % shift the paddle physically out to the orbit
+%             %                 if renderPass == pa.randeye(pa.trialNumber)
+%             glCallList(ds.paddleList); % call the pre-compiled list that binds the textures to the paddle faces
+%             %                 end
+%             glPopMatrix;
+%             
+%             % In this section, we are display both an opaque paddle + a
+%             % translucent target (sphere) so we need to do a bit of
+%             % openGL work to make the translucent sphere display
+%             % properly
+%             glDepthMask(GL.FALSE); % disable changes to the depth buffer
+%             glBlendFunc(GL.SRC_ALPHA, GL.ONE); % set the alpha to that of the target contrast without influence of the paddle or other scene elements
+%             glTranslatef(xPosition,0,zPosition); % shift the target to its position along its trajectory for this frame
+%             %                 if renderPass == pa.randeye(pa.trialNumber)
+%             if pa.feedbackFlag==2
+%                 if pa.targetContrast==1
+%                     glCallList(ds.highcontrastTarget);
+%                 elseif pa.targetContrast==0.15
+%                     glCallList(ds.midcontrastTarget);
+%                 elseif pa.targetContrast==0.075
+%                     glCallList(ds.lowcontrastTarget);
+%                 end
+%             end
+%             glDepthMask(GL.TRUE); % resume the ability to make changes to the depth buffer for proper rendering of remaining components
+%             glBlendFunc(GL.SRC_ALPHA, GL.ONE_MINUS_SRC_ALPHA); % re-store the proper blending function
+%             
+
+                if pa.LRresponse(pa.trialNumber) == pa.LR(pa.trialNumber)  %does the response match the target side
+                        glPushMatrix;
+                        glTranslatef(0,pa.floorHeight+pa.fixationSize,-(ds.floorWidth/2+1)); % display green sphere
+                        glCallList(ds.correct);
+                        glPopMatrix;
+                else
+                        glPushMatrix;
+                        glTranslatef(0,pa.floorHeight+pa.fixationSize,-(ds.floorWidth/2+1)); % display red sphere
+                        glCallList(ds.incorrect);
+                        glPopMatrix;
                 end
-            end
-            glDepthMask(GL.TRUE); % resume the ability to make changes to the depth buffer for proper rendering of remaining components
-            glBlendFunc(GL.SRC_ALPHA, GL.ONE_MINUS_SRC_ALPHA); % re-store the proper blending function
-            %}
+                
         elseif (kb.responseGiven && pa.feedbackFlag==0) || (kb.responseGiven && pa.feedbackFlag==1 && pa.feedbackGiven==1) || (kb.responseGiven && pa.feedbackFlag==2 && pa.feedbackGiven==1) % done, set up for the next trial (i.e., determine the new random trajectory)
             %                 5, % debugging flag
             
@@ -446,7 +458,6 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
         
 %         glBindTexture(GL.TEXTURE_2D,ds.roomwall_texid); % was suggested to bind textures before/outside of call lists rather than in - doesn't buy us anything from what I can tell though
 %         glCallList(ds.wallTexture);
-         
 %         glBindTexture(GL.TEXTURE_2D,ds.ceiling_texid);
 %         glCallList(ds.ceilingTexture);
         
