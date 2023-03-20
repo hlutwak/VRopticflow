@@ -147,6 +147,13 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
 
     if pa.trialNumber>track_trial %dont' update head position during a trial
        positions = -ds.floorWidth/2+2*ds.floorWidth/2*rand(2,pa.nball); %uniform random positions across floor
+       positions(2,:) = positions(2,:)-ds.floorWidth/2;
+       exclude = [0;-ds.floorWidth/2]; %x,z coordinate where fixation target is
+       while sum(vecnorm(positions-exclude)<pa.fixationSize+pa.paddleHalfWidth)>0 %at least one position overlaps with fixation
+           idx = find(vecnorm(positions-exclude)<pa.fixationSize+pa.paddleHalfWidth);
+           positions(:,idx) = -ds.floorWidth/2+2*ds.floorWidth/2*rand(2,length(idx));
+       end
+       
        if pa.trialNumber>1
            eye = originaleye;
            
@@ -245,20 +252,20 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
 
             % Target position 
             % make the onset delayed
-            delay = 0;
+            delay = 0.5;
             if ds.vbl <  pa.trialOnset + delay
                 t = 0;
             else
                 t = ds.vbl-pa.trialOnset-delay;
             end
-            xPosition = pa.xSpeed.*t;
-            zPosition = pa.zSpeed.*t;
+            xPosition =pa.xSpeed.*t;  %pa.xSpeed.*t;
+            zPosition = 0;  %pa.zSpeed.*t
             
             glPushMatrix;
             glTranslatef(xPosition+.5*(pa.LR(pa.trialNumber)),pa.floorHeight+pa.targetSize,zPosition-ds.floorWidth/2); % shift the target to its position along its trajectory for this frame
             
 %             if pa.targetContrast==1
-                glCallList(ds.highcontrastTarget);
+                glCallList(ds.paddleList);
                 glPopMatrix;
 %             elseif pa.targetContrast==0.15
 %                 glCallList(ds.midcontrastTarget);
@@ -270,22 +277,23 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
             % stationary ball
             glPushMatrix;
             glTranslatef(.5*(-pa.LR(pa.trialNumber)),pa.floorHeight+pa.targetSize,-ds.floorWidth/2); 
-            glCallList(ds.highcontrastTarget);
+            glCallList(ds.paddleList);
             glPopMatrix;
             
-            % fixation ball
-            glPushMatrix;
-            glTranslatef(0,pa.floorHeight+pa.fixationSize,-ds.floorWidth/2); 
-            glCallList(ds.fixation);
-            glPopMatrix;
             
             % place random stationary balls
             for b = 1:pa.nball
             	glPushMatrix;
-                glTranslatef(positions(1,b)/2,pa.floorHeight+pa.targetSize,positions(2,b)/2-ds.floorWidth/2); 
-                glCallList(ds.highcontrastTarget);
+                glTranslatef(positions(1,b),pa.floorHeight+pa.targetSize,positions(2,b)); 
+                glCallList(ds.paddleList);
                 glPopMatrix;
             end
+            
+                        % fixation target
+            glPushMatrix;
+            glTranslatef(0,pa.floorHeight+pa.fixationSize,-ds.floorWidth/2); 
+            glCallList(ds.highcontrastTarget);
+            glPopMatrix;
                 
                 
 %             glBindTexture(GL.TEXTURE_2D,ds.floor_texid);

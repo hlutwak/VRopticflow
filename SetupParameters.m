@@ -48,14 +48,14 @@ pa.fixationLineLength = 0.0079; % m
     
 pa.apertureRadius = 7.5;  % deg
    
-pa.floorHeight = -.5; % m
+pa.floorHeight = -0.5; % m
 pa.ceilingHeight = 1.5; % m 
     
 %% parameters for the adjustable paddle
 
-pa.paddleHalfWidth = 0.005;% m
-pa.paddleHalfHeight = 0.005;% m
-pa.paddleHalfDepth = 0.01;% m
+pa.paddleHalfWidth = 0.05;% m
+pa.paddleHalfHeight = 0.05;% m
+pa.paddleHalfDepth = 0.05;% m
 pa.paddleHeightFactor = 0.0057;% m 
 pa.paddleAngle = 0; % deg - start at the rightward position
 pa.shiftPaddle = 0.25;
@@ -66,7 +66,7 @@ pa.paddleOrbitShift = 0.1185;% m
 
 %% parameters for the target - will establish the speed distributions below
 
-pa.targetMotionDuration = 5; % 1 s
+pa.targetMotionDuration = 2; % 1 s
 pa.targetContrast = [1 0.15 0.075]; % fully-visible target, 15% and 7.5% contrast
 pa.targetRadius = .25; % deg  0.25;
 pa.targetSize = 0.025;% m
@@ -94,14 +94,14 @@ for rtr=1:pa.nTrials
         inRange = 0;
         while inRange==0
             pa.xSpeedValues(rtr) = 0.02.*randn(1,1); % mean=0, stdev=0.02
-            if pa.xSpeedValues(rtr)<0.061 && pa.xSpeedValues(rtr)>-0.061 % as long as the speed falls between -0.061 m/s and 0.061 m/s, it's acceptable
+            if pa.xSpeedValues(rtr)<0.061 && pa.xSpeedValues(rtr)>-0.061 && norm(pa.xSpeedValues(rtr))>.02 % as long as the speed falls between -0.061 m/s and 0.061 m/s, it's acceptable
                 inRange = 1;
             end
         end
         inRange = 0;
         while inRange==0;
             pa.zSpeedValues(rtr) = 0.02.*randn(1,1); % mean=0, stdev=0.02
-            if pa.zSpeedValues(rtr)<0.061 && pa.zSpeedValues(rtr)>-0.061
+            if pa.zSpeedValues(rtr)<0.061 && pa.zSpeedValues(rtr)>-0.061 && norm(pa.xSpeedValues(rtr))>.02
                 inRange = 1;
             end
         end

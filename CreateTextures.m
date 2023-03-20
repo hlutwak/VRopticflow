@@ -1,32 +1,21 @@
 function [ds,pa] = CreateTextures(ds,pa)
 
 InitializeMatlabOpenGL(1);
-%     bv = zeros(32);
-%     wv = ones(32);
-%     myimg = double(repmat([bv wv; wv bv],32,32) > 0.5);
-%     mytex = Screen('MakeTexture', ds.w, myimg, [], 1);
-%     [gltex, gltextarget] = Screen('GetOpenGLTexture', ds.w, mytex);
+    bv = zeros(32);
+    wv = ones(32);
+    myimg = double(repmat([bv wv; wv bv],32,32) > 0.5);
+    mytex = Screen('MakeTexture', ds.w, myimg, [], 1);
+    [gltex, gltextarget] = Screen('GetOpenGLTexture', ds.w, mytex);
 
-    
 Screen('BeginOpenGL', ds.w); % Setup the OpenGL rendering context
-glEnable(GL_TEXTURE_2D); % Enable 2D texture mapping
+glEnable(gltextarget); % Enable 2D texture mapping
 
 mag_filter = GL_LINEAR; %GL_NEAREST; %_LINEAR;
 min_filter = GL_LINEAR; %GL_NEAREST; %GL_LINEAR_MIPMAP_NEAREST; %_LINEAR
 
-% Initialize textures
-ds.wall_texid = glGenTextures(1); % this will be the surround texture with the fixation disk and fixation lines embedded
-largepaddle_texid = glGenTextures(1); % this will be the texture for the large paddle faces
-smallpaddle_texid = glGenTextures(1); % this will be the texture for the small paddle faces
-ds.floor_texid = glGenTextures(1); % this will be the floor texture
-ds.ceiling_texid = glGenTextures(1); % this will be the ceiling texture
-ds.roomwall_texid = glGenTextures(1); % this will be the wall texture
-ds.fixation = glGenLists(1);
-ds.correct = glGenLists(1);
-ds.incorrect = glGenLists(1);
 
 %% create sphere with noise pattern
-fixation_texid = glGenTextures(1);
+target_texid = glGenTextures(1);
 
     % Apply regular checkerboard pattern as texture:
 % % 1/f floor
@@ -41,26 +30,48 @@ noys = 255.*oneoverf(noysSlope, size(x,1), size(x,2)); % oneoverf -> [0:1]
 noys=repmat(noys,[ 1 1 3 ]);
 noys=permute(uint8(noys),[ 3 2 1 ]);
 
-
 nSlices = 64;
 nStacks = 32;
-%     glEnable(gltextarget);
-%     glBindTexture(gltextarget, gltex);
-    
-    glTexEnvfv(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_MODULATE);
-    glBindTexture(GL_TEXTURE_2D, fixation_texid);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+
+    glBindTexture(gltextarget, gltex);
+    glTexEnvfv(GL.TEXTURE_ENV,GL.TEXTURE_ENV_MODE,GL.MODULATE);
+%     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+%     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+%   glTexParameteri(gltextarget, GL.TEXTURE_WRAP_S, GL.REPEAT);
+    glTexParameteri(gltextarget, GL.TEXTURE_WRAP_S, GL.REPEAT);
+    glTexParameteri(gltextarget, GL.TEXTURE_WRAP_T, GL.REPEAT);
+    glTexParameteri(gltextarget, GL.TEXTURE_MIN_FILTER, GL.LINEAR_MIPMAP_LINEAR);
+
+%     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 %     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, floorSize, floorSize, 0, GL_RGBA, GL_UNSIGNED_BYTE, noys);
 
-    glGenerateMipmapEXT(GL.TEXTURE_2D);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        % Need mipmapping for trilinear filtering --> Create mipmaps:
+    if ~isempty(findstr(glGetString(GL.EXTENSIONS), 'GL_EXT_framebuffer_object'))
+        % Ask the hardware to generate all depth levels automatically:
+        glGenerateMipmapEXT(GL.TEXTURE_2D);
+    else
+        % No hardware support for auto-mipmap-generation. Do it "manually":
+
+        % Use GLU to compute the image resolution mipmap pyramid and create
+        % OpenGL textures ouf of it: This is slow, compared to glGenerateMipmapEXT:
+        r = gluBuild2DMipmaps(gltextarget, GL.LUMINANCE, size(myimg,1), size(myimg,2), GL.LUMINANCE, GL.UNSIGNED_BYTE, uint8(myimg));
+        if r>0
+            error('gluBuild2DMipmaps failed for some reason.');
+        end
+    end
+    glTexParameteri(gltextarget, GL.TEXTURE_MAG_FILTER, GL.LINEAR);
+    
+
+    quadratic=gluNewQuadric();
+    gluQuadricDrawStyle(quadratic, GLU_FILL);
+    gluQuadricNormals(quadratic, GLU_SMOOTH);
+    gluQuadricTexture(quadratic, GL_TRUE);
+    
+    ds.fixation = glGenLists(1);
     glNewList(ds.fixation, GL.COMPILE);
-    mysphere = gluNewQuadric;
-    gluQuadricTexture(mysphere, GL.TRUE); 
-    gluSphere(mysphere, pa.fixationSize,nSlices,nStacks);
+    gluSphere(quadratic, pa.fixationSize,nSlices,nStacks);
     glEndList();
+    
 
 
 % ds.fixation = glGenLists(1);
@@ -69,6 +80,17 @@ nStacks = 32;
 % gluSphere(quadratic,pa.fixationSize,nSlices,nStacks);  
 % glEndList();
 
+
+%% rest of the textures
+glEnable(GL_TEXTURE_2D); % Enable 2D texture mapping
+ds.wall_texid = glGenTextures(1); % this will be the surround texture with the fixation disk and fixation lines embedded
+largepaddle_texid = glGenTextures(1); % this will be the texture for the large paddle faces
+smallpaddle_texid = glGenTextures(1); % this will be the texture for the small paddle faces
+ds.floor_texid = glGenTextures(1); % this will be the floor texture
+ds.ceiling_texid = glGenTextures(1); % this will be the ceiling texture
+ds.roomwall_texid = glGenTextures(1); % this will be the wall texture
+ds.correct = glGenLists(1);
+ds.incorrect = glGenLists(1);
 %% Suround Texture - the fixation plane surround with fixation disk and fixation lines embedded
 
 halfTextureSize = 1024;%ds.xc;  % needs to be in pixels for meshgrid
@@ -533,15 +555,15 @@ lowcontrast_texid = glGenTextures(1); % this will be the low contrast target
 nSlices = 64;
 nStacks = 32;
 
-quadratic=gluNewQuadric();
-gluQuadricDrawStyle(quadratic, GLU_FILL);
-gluQuadricNormals(quadratic, GLU_SMOOTH);
-gluQuadricTexture(quadratic, GL_FALSE);
+% quadratic=gluNewQuadric();
+% gluQuadricDrawStyle(quadratic, GLU_FILL);
+% gluQuadricNormals(quadratic, GLU_SMOOTH);
+% gluQuadricTexture(quadratic, GL_FALSE);
 
 ds.highcontrastTarget = glGenLists(1);
 glNewList(ds.highcontrastTarget, GL.COMPILE);
-glColor4f(1,1,1,pa.targetContrast(1));
-gluSphere(quadratic,pa.targetSize,nSlices,nStacks);  
+glColor4f(0,0,1,pa.targetContrast(1));
+gluSphere(quadratic,pa.fixationSize,nSlices,nStacks);  
 glEndList();
 
 ds.midcontrastTarget = glGenLists(1);
@@ -560,14 +582,15 @@ glEndList();
 ds.incorrect = glGenLists(1);
 glNewList(ds.incorrect, GL.COMPILE);
 glColor4f(1,0,0,pa.targetContrast(1));
-gluSphere(quadratic,pa.fixationSize,nSlices,nStacks);
+gluSphere(quadratic,pa.targetSize,nSlices,nStacks);
 glEndList();
 
 ds.correct = glGenLists(1);
 glNewList(ds.correct, GL.COMPILE);
 glColor4f(0,1,0,pa.targetContrast(1));
-gluSphere(quadratic,pa.fixationSize,nSlices,nStacks);
+gluSphere(quadratic,pa.targetSize,nSlices,nStacks);
 glEndList();
+
 
 % Close the OpenGL rendering context
 Screen('EndOpenGL', ds.w);
