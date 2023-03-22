@@ -128,7 +128,6 @@ pa.experimentOnset = ds.vbl;
 pa.block = 0;
 breakTime = 0;  % participants are running in the task
 kb.nextTrialKey = 0;
-track = []; 
 track_trial = 0;
 
 
@@ -143,6 +142,7 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
         % to returned camera matrices. In this case a translation + rotation, as defined
         % by the PsychGetPositionYawMatrix() helper function:
         state = PsychVRHMD('PrepareRender', ds.hmd, ds.globalHeadPose);  % Mark the start of the rendering cycle for a new 3D rendered stereoframe. Return a struct 'state' which contains various useful bits of information for 3D stereoscopic rendering of a scene, based on head tracking data
+        oc.HMD = [oc.HMD; state.modelView{1}];
     end
 
     if pa.trialNumber>track_trial %dont' update head position during a trial
@@ -159,7 +159,9 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
            
        else
            eye = PsychVRHMD('GetEyePose', ds.hmd, ds.renderPass, ds.globalHeadPose);
+           R = [1 0 0; 0 cos(pa.gazeangle) -sin(pa.gazeangle); 0 sin(pa.gazeangle) cos(pa.gazeangle)];
            eye.modelView = [1 0 0 0; 0 1 0 0; 0 0 1 -ds.viewingDistance; 0 0 0 1];
+           eye.modelView(1:3,1:3) = eye.modelView(1:3,1:3)*R; 
            originaleye = eye;
        end
        track_trial = track_trial+1;
@@ -196,6 +198,7 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
 
             [pa, kb, eye] = GetKeyboardHeadmotion(pa,ds,kb,eye);
             % this is for saving purposes to recreate participants' head motion
+
             if ds.renderPass % drawing right eye
                 oc.modelViewDataRight = [oc.modelViewDataRight; eye.modelView];
             else % drawing left eye
@@ -221,14 +224,11 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
                         end
                     end
                 end
-%         eye.modelView(3,4) = -3 + (0.1)*(ds.vbl-pa.trialOnset);
-        
         end
         
         Screen('SelectStereoDrawbuffer', ds.w, eye.eyeIndex); % Select 'eyeIndex' to render (left- or right-eye):
         modelView = eye.modelView; % Extract modelView matrix for this eye:
 
-        
         Screen('BeginOpenGL', ds.w); % Manually reenable 3D mode in preparation of eye draw cycle
                     
 %         % Setup camera position and orientation for this eyes view:
@@ -262,7 +262,7 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
             zPosition = 0;  %pa.zSpeed.*t
             
             glPushMatrix;
-            glTranslatef(xPosition+.5*(pa.LR(pa.trialNumber)),pa.floorHeight+pa.targetSize,zPosition-ds.floorWidth/2); % shift the target to its position along its trajectory for this frame
+            glTranslatef(xPosition+.5*(pa.LR(pa.trialNumber)),pa.floorHeight+pa.paddleHalfHeight,zPosition-ds.floorWidth/2); % shift the target to its position along its trajectory for this frame
             
 %             if pa.targetContrast==1
                 glCallList(ds.paddleList);
@@ -274,22 +274,22 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
 %             end
 %              
             
-            % stationary ball
+            % stationary object
             glPushMatrix;
-            glTranslatef(.5*(-pa.LR(pa.trialNumber)),pa.floorHeight+pa.targetSize,-ds.floorWidth/2); 
+            glTranslatef(.5*(-pa.LR(pa.trialNumber)),pa.floorHeight+pa.paddleHalfHeight,-ds.floorWidth/2); 
             glCallList(ds.paddleList);
             glPopMatrix;
             
             
-            % place random stationary balls
+            % place random stationary objects
             for b = 1:pa.nball
             	glPushMatrix;
-                glTranslatef(positions(1,b),pa.floorHeight+pa.targetSize,positions(2,b)); 
+                glTranslatef(positions(1,b),pa.floorHeight+pa.paddleHalfHeight,positions(2,b)); 
                 glCallList(ds.paddleList);
                 glPopMatrix;
             end
             
-                        % fixation target
+            % fixation target
             glPushMatrix;
             glTranslatef(0,pa.floorHeight+pa.fixationSize,-ds.floorWidth/2); 
             glCallList(ds.highcontrastTarget);
@@ -300,6 +300,7 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
 %             glCallList(ds.floorTexture);
 
             eye.modelView(3,4) = eye.modelView(3,4) + 0.001.*(ds.vbl-pa.trialOnset);
+            eye.modelView(2,4) = eye.modelView(2,4) - 0.001.*(ds.vbl-pa.trialOnset)*sin(pa.gazeangle); %adjust so translation is strictly foward
 
             pa.responseOnset = ds.vbl; % start the timer on the response time
             

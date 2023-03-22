@@ -40,6 +40,7 @@ pa.baseDir = pwd;
 
 
 %% parameters for the texture surround and virtual 'room'
+pa.gazeangle = deg2rad(10); %angle camera is looking at the ground
 
 pa.fixationDiskRadius = 2.5; % deg
 pa.fixationHalfSquareSize = 1;  % deg - just the 'box' in which the fixation lines will be drawn
@@ -48,13 +49,13 @@ pa.fixationLineLength = 0.0079; % m
     
 pa.apertureRadius = 7.5;  % deg
    
-pa.floorHeight = -0.5; % m
+pa.floorHeight = -1; % m
 pa.ceilingHeight = 1.5; % m 
     
 %% parameters for the adjustable paddle
 
 pa.paddleHalfWidth = 0.05;% m
-pa.paddleHalfHeight = 0.05;% m
+pa.paddleHalfHeight = 0.5;% m
 pa.paddleHalfDepth = 0.05;% m
 pa.paddleHeightFactor = 0.0057;% m 
 pa.paddleAngle = 0; % deg - start at the rightward position

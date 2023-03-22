@@ -234,7 +234,7 @@ end
 % Initialize oculus modelview for head motion tracking
 oc.modelViewDataLeft = []; % may as well save the model view matrix data as well - the hope is that this covers all of the critical information to later go back and analyze/reconstruct the head motion
 oc.modelViewDataRight = []; % may as well save the model view matrix data as well - the hope is that this covers all of the critical information to later go back and analyze/reconstruct the head motion
-
+oc.HMD = [];
 % glLoadMatrixd(projMatrix);
 
 % Setup modelview matrix: This defines the position, orientation and

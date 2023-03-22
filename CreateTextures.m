@@ -17,7 +17,7 @@ min_filter = GL_LINEAR; %GL_NEAREST; %GL_LINEAR_MIPMAP_NEAREST; %_LINEAR
 %% create sphere with noise pattern
 target_texid = glGenTextures(1);
 
-    % Apply regular checkerboard pattern as texture:
+% Apply regular checkerboard pattern as texture:
 % % 1/f floor
 floorSize = 1024; % power of 2
 
