@@ -67,7 +67,6 @@ while ~readyToBegin % confirm everything's ready to go
     
     % Camera position when using head tracking + HMD: (according to SuperShapeDemo.m)
     globalPos = [0, 0, ds.viewingDistance]; % x,y,z  % in meters - just put something in here for now, will likely be much larger later for viewing the tv/'real' world - the demos use large values too
-
     heading = 0; % yaw
     ds.globalHeadPose = PsychGetPositionYawMatrix(globalPos, heading); % initialize observer's start position to the default camera position specified above
     
@@ -90,7 +89,6 @@ while ~readyToBegin % confirm everything's ready to go
     for renderPass = 0:1 % loop over eyes
         ds.renderPass = renderPass;
         Screen('SelectStereoDrawBuffer',ds.w,ds.renderPass);
-        
         Screen('BeginOpenGL',ds.w);
                             
         % Setup camera position and orientation for this eyes view:
@@ -101,7 +99,6 @@ while ~readyToBegin % confirm everything's ready to go
         glLoadMatrixd(modelView); 
         
         Screen('EndOpenGL', ds.w);
-
         Screen('DrawText',ds.w,'Ready to start the experiment? Press SPACE to confirm.',(ds.textCoords(1)-200*ds.renderPass)-100,ds.textCoords(2),[1 1 1]);
 
     end
@@ -129,7 +126,7 @@ pa.block = 0;
 breakTime = 0;  % participants are running in the task
 kb.nextTrialKey = 0;
 track_trial = 0;
-
+track = [];
 
 while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until all of the trials have been completed or the escape key is pressed to quit out
     
@@ -164,6 +161,7 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
            eye.modelView(1:3,1:3) = eye.modelView(1:3,1:3)*R; 
            originaleye = eye;
        end
+
        track_trial = track_trial+1;
     end
     
@@ -244,7 +242,14 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
         glColor3f(1,1,1);
         
         glPushMatrix;
-          
+        
+        % fixation target
+        glPushMatrix;
+        glTranslatef(0,pa.floorHeight+pa.fixationSize,-ds.floorWidth/2);
+        glCallList(ds.highcontrastTarget);
+        glPopMatrix;
+        
+       
           
             
          %% Experiment Logic  
@@ -259,11 +264,12 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
                 t = ds.vbl-pa.trialOnset-delay;
             end
             xPosition =pa.xSpeed.*t;  %pa.xSpeed.*t;
-            zPosition = 0;  %pa.zSpeed.*t
+            zPosition = pa.zSpeed.*t;  %pa.zSpeed.*t
             
             glPushMatrix;
             glTranslatef(xPosition+.5*(pa.LR(pa.trialNumber)),pa.floorHeight+pa.paddleHalfHeight,zPosition-ds.floorWidth/2); % shift the target to its position along its trajectory for this frame
-            
+%             pa.xPosition = [pa.xPosition, xPosition+.5*(pa.LR(pa.trialNumber))];
+%             pa.zPosition = [pa.zPosition, zPosition-ds.floorWidth/2];
 %             if pa.targetContrast==1
                 glCallList(ds.paddleList);
                 glPopMatrix;
@@ -289,18 +295,13 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
                 glPopMatrix;
             end
             
-            % fixation target
-            glPushMatrix;
-            glTranslatef(0,pa.floorHeight+pa.fixationSize,-ds.floorWidth/2); 
-            glCallList(ds.highcontrastTarget);
-            glPopMatrix;
-                
                 
 %             glBindTexture(GL.TEXTURE_2D,ds.floor_texid);
 %             glCallList(ds.floorTexture);
 
-            eye.modelView(3,4) = eye.modelView(3,4) + 0.001.*(ds.vbl-pa.trialOnset);
-            eye.modelView(2,4) = eye.modelView(2,4) - 0.001.*(ds.vbl-pa.trialOnset)*sin(pa.gazeangle); %adjust so translation is strictly foward
+            eye.modelView(3,4) =  pa.translation.*(ds.vbl-pa.trialOnset); %eye.modelView(3,4) + %eye.modelView(2,4) -
+            track = [track (ds.vbl-pa.trialOnset)];
+            eye.modelView(2,4) = - pa.translation.*(ds.vbl-pa.trialOnset)*sin(pa.gazeangle); %adjust so translation is strictly foward
 
             pa.responseOnset = ds.vbl; % start the timer on the response time
             
@@ -376,17 +377,17 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
             
             % display appropriate object
             if ~pa.feedbackGiven
-                if pa.LRresponse(pa.trialNumber) == pa.LR(pa.trialNumber)  %does the response match the target side
-                        glPushMatrix;
-                        glTranslatef(0,pa.floorHeight+pa.fixationSize,-(ds.floorWidth/2+1)); % display green sphere
-                        glCallList(ds.correct);
-                        glPopMatrix;
-                else
-                        glPushMatrix;
-                        glTranslatef(0,pa.floorHeight+pa.fixationSize,-(ds.floorWidth/2+1)); % display red sphere
-                        glCallList(ds.incorrect);
-                        glPopMatrix;
-                end
+%                 if pa.LRresponse(pa.trialNumber) == pa.LR(pa.trialNumber)  %does the response match the target side
+%                         glPushMatrix;  
+%                         glTranslatef(0,pa.floorHeight+pa.targetSize,-ds.floorWidth/2-0.5); % display green sphere
+%                         glCallList(ds.correct);
+%                         glPopMatrix;
+%                 else
+%                         glPushMatrix;
+%                         glTranslatef(0,pa.floorHeight+pa.targetSize,-ds.floorWidth/2-0.5); % display red sphere
+%                         glCallList(ds.incorrect);
+%                         glPopMatrix;
+%                 end
                 pa.feedbackGiven = 1;
                 pa.waitTime = ds.vbl;
                 
@@ -436,12 +437,12 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
 
                 if pa.LRresponse(pa.trialNumber) == pa.LR(pa.trialNumber)  %does the response match the target side
                         glPushMatrix;
-                        glTranslatef(0,pa.floorHeight+pa.fixationSize,-(ds.floorWidth/2+1)); % display green sphere
+                        glTranslatef(0,pa.floorHeight+pa.fixationSize,-(ds.floorWidth/2)); % display green sphere
                         glCallList(ds.correct);
                         glPopMatrix;
                 else
                         glPushMatrix;
-                        glTranslatef(0,pa.floorHeight+pa.fixationSize,-(ds.floorWidth/2+1)); % display red sphere
+                        glTranslatef(0,pa.floorHeight+pa.fixationSize,-(ds.floorWidth/2)); % display red sphere
                         glCallList(ds.incorrect);
                         glPopMatrix;
                 end

@@ -40,7 +40,8 @@ pa.baseDir = pwd;
 
 
 %% parameters for the texture surround and virtual 'room'
-pa.gazeangle = deg2rad(10); %angle camera is looking at the ground
+pa.gazeangle = deg2rad(15); %angle camera is looking at the ground
+pa.translation = .5; %m/s forward
 
 pa.fixationDiskRadius = 2.5; % deg
 pa.fixationHalfSquareSize = 1;  % deg - just the 'box' in which the fixation lines will be drawn
@@ -55,7 +56,7 @@ pa.ceilingHeight = 1.5; % m
 %% parameters for the adjustable paddle
 
 pa.paddleHalfWidth = 0.05;% m
-pa.paddleHalfHeight = 0.5;% m
+pa.paddleHalfHeight = 0.25;% m
 pa.paddleHalfDepth = 0.05;% m
 pa.paddleHeightFactor = 0.0057;% m 
 pa.paddleAngle = 0; % deg - start at the rightward position
@@ -85,7 +86,7 @@ pa.fullFactorial = fullfact(length(pa.targetContrast));
 pa.fullFactorial = repmat(pa.fullFactorial,pa.nRepeats,1); % repeat the full factorial design nRepeats times
 pa.nTrials = size(pa.fullFactorial,1);
 pa.LR = randi([0,1],1,pa.nTrials)*2-1;
-pa.LRresponse = zeros(1,pa.nTrials);
+pa.LRresponse = NaN(1,pa.nTrials);
 
 % *Gaussian* vx and vz sampling each from a distribution with mean=0 and
 % stdev=0.02m - the 0.061 m/s and -0.061 m/s would then be 3 stdevs from the mean,
@@ -94,15 +95,9 @@ for rtr=1:pa.nTrials
     % sample the vx and vz independently
         inRange = 0;
         while inRange==0
-            pa.xSpeedValues(rtr) = 0.02.*randn(1,1); % mean=0, stdev=0.02
-            if pa.xSpeedValues(rtr)<0.061 && pa.xSpeedValues(rtr)>-0.061 && norm(pa.xSpeedValues(rtr))>.02 % as long as the speed falls between -0.061 m/s and 0.061 m/s, it's acceptable
-                inRange = 1;
-            end
-        end
-        inRange = 0;
-        while inRange==0;
-            pa.zSpeedValues(rtr) = 0.02.*randn(1,1); % mean=0, stdev=0.02
-            if pa.zSpeedValues(rtr)<0.061 && pa.zSpeedValues(rtr)>-0.061 && norm(pa.xSpeedValues(rtr))>.02
+            pa.xSpeedValues(rtr) = 0.05; %.*randn(1,1); % mean=0, stdev=0.02 
+            pa.zSpeedValues(rtr) = 0.05; %.*randn(1,1); % mean=0, stdev=0.02
+            if vecnorm([pa.xSpeedValues(rtr) pa.zSpeedValues(rtr)])>.01
                 inRange = 1;
             end
         end

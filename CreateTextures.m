@@ -25,7 +25,7 @@ floorSize = 1024; % power of 2
 % temp = zeros(floorSize*floorSize*3, 1);
 col = 0;
 
-noysSlope = 1.0; %1.5;
+noysSlope = 1; %1.5;
 noys = 255.*oneoverf(noysSlope, size(x,1), size(x,2)); % oneoverf -> [0:1]
 noys=repmat(noys,[ 1 1 3 ]);
 noys=permute(uint8(noys),[ 3 2 1 ]);
@@ -348,7 +348,7 @@ glNewList(ds.floorTexture, GL.COMPILE);
 
 glBegin(GL_QUADS);
 glTexCoord2f(0, 0);
-glVertex3f(-ds.floorWidth/2,pa.floorHeight,0);
+glVertex3f(-ds.floorWidth/2,pa.floorHeight,ds.viewingDistance);
 
 glTexCoord2f(0 ,1);
 glVertex3f(-ds.floorWidth/2,pa.floorHeight,-ds.floorWidth);
@@ -357,7 +357,7 @@ glTexCoord2f(1,1);
 glVertex3f(ds.floorWidth/2,pa.floorHeight,-ds.floorWidth);
 
 glTexCoord2f(1,0);
-glVertex3f(ds.floorWidth/2,pa.floorHeight,0);
+glVertex3f(ds.floorWidth/2,pa.floorHeight,ds.viewingDistance);
 glEnd;
 
 glEndList(); % done with the floor
@@ -562,7 +562,7 @@ nStacks = 32;
 
 ds.highcontrastTarget = glGenLists(1);
 glNewList(ds.highcontrastTarget, GL.COMPILE);
-glColor4f(0,0,1,pa.targetContrast(1));
+glColor4f(1,1,1,pa.targetContrast(1));
 gluSphere(quadratic,pa.fixationSize,nSlices,nStacks);  
 glEndList();
 

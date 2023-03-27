@@ -17,7 +17,7 @@ PsychImaging('PrepareConfiguration');
 % movement to save it out later - we just don't update the display in
 % response to the movement
 if ds.oculusConnected==1
-    ds.hmd = PsychVRHMD('AutoSetupHMD', 'Tracked3DVR', 'LowPersistence TimeWarp FastResponse', 0);
+    ds.hmd = PsychVRHMD('AutoSetupHMD', 'Tracked3DVR', 'LowPersistence TimeWarp FastResponse', 0); %DebugDisplay shows hmd display on monitor
     PsychVRHMD('SetHSWDisplayDismiss', ds.hmd, -1);
     
     load('DefaultHMDParameters.mat');
@@ -100,7 +100,7 @@ if ~isempty(ds.hmd) % CSB: if using hmd
     ds.halfHeight = ds.Height/2;
     ds.Width = .7614; % virtual width of the surround texture in meters, based on viewing distance - we want this to relate to the longer dimension of the display
     ds.halfWidth = ds.Width/2;
-    ds.floorWidth = 4;
+    ds.floorWidth = 6;
     ds.xc = RectHeight(ds.windowRect)/2; % the horizontal center of the display in pixels
     ds.yc = RectWidth(ds.windowRect)/2; % the vertical center of the display in pixels
     ds.textCoords = [ds.yc ds.xc];
@@ -109,7 +109,7 @@ if ~isempty(ds.hmd) % CSB: if using hmd
     end
     
     if strcmp(ds.hmdinfo.modelName, 'Oculus Rift CV1')
-        ds.viewingDistance = .5;%0; % in m - Oculus units are coded in meters
+        ds.viewingDistance = 0;%0; % in m - Oculus units are coded in meters
         ds.hFOV = 80; % in deg - this is what is spit back from the Oculus readings at the start - horizontal field of view
         ds.vFOV = 90;  % in deg - vertical field of view
         ds.dFOV = sqrt(ds.hFOV^2 + ds.vFOV^2);
