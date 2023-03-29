@@ -17,7 +17,7 @@ PsychImaging('PrepareConfiguration');
 % movement to save it out later - we just don't update the display in
 % response to the movement
 if ds.oculusConnected==1
-    ds.hmd = PsychVRHMD('AutoSetupHMD', 'Tracked3DVR', 'LowPersistence TimeWarp FastResponse', 0); %DebugDisplay shows hmd display on monitor
+    ds.hmd = PsychVRHMD('AutoSetupHMD', 'Tracked3DVR', 'LowPersistence TimeWarp DebugDisplay FastResponse', 0); %DebugDisplay shows hmd display on monitor
     PsychVRHMD('SetHSWDisplayDismiss', ds.hmd, -1);
     
     load('DefaultHMDParameters.mat');

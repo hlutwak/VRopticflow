@@ -56,9 +56,9 @@ pa.ceilingHeight = 1.5; % m
 %% parameters for the adjustable paddle
 
 pa.paddleHalfWidth = 0.05;% m
-pa.paddleHalfHeight = 0.25;% m
+pa.paddleHalfHeight = 0.05;% m
 pa.paddleHalfDepth = 0.05;% m
-pa.paddleHeightFactor = 0.0057;% m 
+% pa.paddleHeightFactor = 1;% 0.0057 m 
 pa.paddleAngle = 0; % deg - start at the rightward position
 pa.shiftPaddle = 0.25;
 pa.rotationSpeed = pa.shiftPaddle; % this will update according to the observer's response
@@ -70,6 +70,8 @@ pa.paddleOrbitShift = 0.1185;% m
 
 pa.targetMotionDuration = 2; % 1 s
 pa.targetContrast = [1 0.15 0.075]; % fully-visible target, 15% and 7.5% contrast
+pa.speeds = 0.005:0.005:0.05; %speeds m/s
+pa.directions = pi/4:pi/4:2*pi;
 pa.targetRadius = .25; % deg  0.25;
 pa.targetSize = 0.025;% m
 pa.fixationSize = pa.targetSize/2;
@@ -95,9 +97,9 @@ for rtr=1:pa.nTrials
     % sample the vx and vz independently
         inRange = 0;
         while inRange==0
-            pa.xSpeedValues(rtr) = 0.05; %.*randn(1,1); % mean=0, stdev=0.02 
-            pa.zSpeedValues(rtr) = 0.05; %.*randn(1,1); % mean=0, stdev=0.02
-            if vecnorm([pa.xSpeedValues(rtr) pa.zSpeedValues(rtr)])>.01
+            pa.xSpeedValues(rtr) = 0.005; %.*randn(1,1); % mean=0, stdev=0.02 
+            pa.zSpeedValues(rtr) = 0.005; %.*randn(1,1); % mean=0, stdev=0.02
+            if vecnorm([pa.xSpeedValues(rtr) pa.zSpeedValues(rtr)])<.0075
                 inRange = 1;
             end
         end

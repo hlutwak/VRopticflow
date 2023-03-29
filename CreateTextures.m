@@ -175,8 +175,10 @@ glEndList(); % 1/f noise texture is complete
 %% Paddle textures
 
 % Large Paddle Faces
-pmsize = 42.7350; 
-pmsize2 = 21.3675; 
+% pmsize = 42.7350; 
+% pmsize2 = 21.3675; 
+pmsize = 512;
+pmsize2 = 512;
 
 [x,y] = meshgrid(-pmsize:pmsize,-pmsize2:pmsize2);
 
@@ -196,8 +198,8 @@ glTexEnvfv(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 
 % Small Paddle Faces
 
-pmsize = 21.3675; 
-pmsize2 = 21.3675; 
+pmsize = 512;
+pmsize2 = 512;
 
 [x,y] = meshgrid(-pmsize:pmsize,-pmsize2:pmsize2);
 
@@ -312,13 +314,16 @@ noysSlope = 1.0; %1.5;
 noys = 255.*oneoverf(noysSlope, size(x,1), size(x,2)); % oneoverf -> [0:1]
 noys=repmat(noys,[ 1 1 3 ]);
 noys=permute(uint8(noys),[ 3 2 1 ]);
+noys(4,:,:) = 255; 
+
+
 
 glBindTexture(GL_TEXTURE_2D, ds.floor_texid);
 glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, mag_filter);
 glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, min_filter);
-% glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
+glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
 glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, floorSize, floorSize, 0, GL_RGBA, GL_UNSIGNED_BYTE, noys);
 % glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1024, 1024, 0, GL_RGB, GL_UNSIGNED_BYTE, floor_tex_data);
 glTexEnvfv(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);

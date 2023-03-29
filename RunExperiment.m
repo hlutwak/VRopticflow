@@ -66,7 +66,7 @@ readyToBegin = 0;
 while ~readyToBegin % confirm everything's ready to go
     
     % Camera position when using head tracking + HMD: (according to SuperShapeDemo.m)
-    globalPos = [0, 0, ds.viewingDistance]; % x,y,z  % in meters - just put something in here for now, will likely be much larger later for viewing the tv/'real' world - the demos use large values too
+    globalPos = [0, 0, 0]; % x,y,z  % in meters - just put something in here for now, will likely be much larger later for viewing the tv/'real' world - the demos use large values too
     heading = 0; % yaw
     ds.globalHeadPose = PsychGetPositionYawMatrix(globalPos, heading); % initialize observer's start position to the default camera position specified above
     
@@ -299,7 +299,7 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
 %             glBindTexture(GL.TEXTURE_2D,ds.floor_texid);
 %             glCallList(ds.floorTexture);
 
-            eye.modelView(3,4) =  pa.translation.*(ds.vbl-pa.trialOnset); %eye.modelView(3,4) + %eye.modelView(2,4) -
+            eye.modelView(3,4) =  pa.translation.*(ds.vbl-pa.trialOnset); %eye.modelView(3,4) + %eye.modelView(2,4) - %(ds.vbl-pa.trialOnset)
             track = [track (ds.vbl-pa.trialOnset)];
             eye.modelView(2,4) = - pa.translation.*(ds.vbl-pa.trialOnset)*sin(pa.gazeangle); %adjust so translation is strictly foward
 
@@ -471,15 +471,13 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
 %         glBindTexture(GL.TEXTURE_2D,ds.ceiling_texid);
 %         glCallList(ds.ceilingTexture);
         
-%         glBindTexture(GL.TEXTURE_2D,ds.floor_texid);
-%         glCallList(ds.floorTexture);
             glBindTexture(GL.TEXTURE_2D,ds.floor_texid);
             glCallList(ds.floorTexture);
         
 %         glBindTexture(GL.TEXTURE_2D,ds.wall_texid); 
 %         glCallList(ds.surroundTexture); % 1/f noise texture surround -  comes from CreateTexturesforSDK2.m
 %           
-        glBindTexture(GL_TEXTURE_2D, 0);
+        glBindTexture(GL.TEXTURE_2D, 0);
         
         % Manually disable 3D mode before switching to other eye or to flip:
         Screen('EndOpenGL', ds.w);
