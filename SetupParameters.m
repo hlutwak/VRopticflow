@@ -8,7 +8,7 @@ function [ds,pa] = SetupParameters(ds)
 
 %% Basic experimental specs 
 
-pa.subjectName = 'test';
+pa.subjectName = 'HL_pilot';
 pa.feedbackFlag = 1;  % 0 --> no feedback;  1 --> only sound-based feedback;  2 --> visual + sound-based feedback
 
 pa.criterion = 8*(pi/180);  % this is the criterion for the distance between the mid-point of the paddle and the midpoint of the ball; distances smaller than this are hits - any overlap counts
@@ -55,9 +55,9 @@ pa.ceilingHeight = 1.5; % m
     
 %% parameters for the adjustable paddle
 
-pa.paddleHalfWidth = 0.05;% m
-pa.paddleHalfHeight = 0.05;% m
-pa.paddleHalfDepth = 0.05;% m
+pa.paddleHalfWidth = 0.075;% m
+pa.paddleHalfHeight = 0.075;% m
+pa.paddleHalfDepth = 0.075;% m
 % pa.paddleHeightFactor = 1;% 0.0057 m 
 pa.paddleAngle = 0; % deg - start at the rightward position
 pa.shiftPaddle = 0.25;
@@ -82,14 +82,11 @@ pa.trialNumber = 0; % gotta start somewhere
 
 % Set up a full factorial design 
 pa.nRepeats = 10; % each target contrast condition gets pa.nRepeats trials - 75*3 = 225 per block 
-pa.speed = 0.005:0.01:0.05; %speeds m/s
-pa.direction = pi/4:pi/4:2*pi;
+pa.speed = 0.01:0.01:0.05; %speeds m/s
+pa.direction = pi/3:pi/3:2*pi;
 factorial = fullfact([length(pa.speed), length(pa.direction)]); 
 factorial = repmat(factorial,pa.nRepeats,1); % repeat the full factorial design nRepeats times
 pa.fullFactorial = NaN(size(factorial));
-pa.nTrials = size(pa.fullFactorial,1);
-pa.LR = randi([0,1],1,pa.nTrials)*2-1;
-pa.LRresponse = NaN(1,pa.nTrials);
 
 
 % *Gaussian* vx and vz sampling each from a distribution with mean=0 and
@@ -113,6 +110,8 @@ pa.fullFactorial(:,2) = (pa.speed(factorial(:,1)).*sin(pa.direction(factorial(:,
 pa.fullFactorial = pa.fullFactorial(randperm(pa.nTrials),:); % Randomly permute order of trial presentation
 pa.fullFactorial(end+1,:) = pa.fullFactorial(1,:); % repeat the first trial because it is effectively a "junk" trial
 pa.nTrials = size(pa.fullFactorial,1);
+pa.LR = randi([0,1],1,pa.nTrials)*2-1;
+pa.LRresponse = NaN(1,pa.nTrials);
 
 pa.response = []; % Eventual response matrix
 pa.quitFlag = 0; % don't give up

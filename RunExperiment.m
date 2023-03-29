@@ -117,7 +117,7 @@ end
 ds.tElapsed = 0;
 ds.fCount = 0;
 
-[ds, pa, kb] = SetupNewTrial(ds, pa, kb);
+[ds, pa, kb, oc] = SetupNewTrial(ds, pa, kb, oc);
 ds.vbl = pa.trialOnset;
 tStart = ds.vbl;
 pa.experimentOnset = ds.vbl;
@@ -143,17 +143,9 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
     end
 
     if pa.trialNumber>track_trial %dont' update head position during a trial
-       positions = -ds.floorWidth/2+2*ds.floorWidth/2*rand(2,pa.nball); %uniform random positions across floor
-       positions(2,:) = positions(2,:)-ds.floorWidth/2;
-       exclude = [0;-ds.floorWidth/2]; %x,z coordinate where fixation target is
-       while sum(vecnorm(positions-exclude)<pa.fixationSize+pa.paddleHalfWidth)>0 %at least one position overlaps with fixation
-           idx = find(vecnorm(positions-exclude)<pa.fixationSize+pa.paddleHalfWidth);
-           positions(:,idx) = -ds.floorWidth/2+2*ds.floorWidth/2*rand(2,length(idx));
-       end
        
        if pa.trialNumber>1
            eye = originaleye;
-           
        else
            eye = PsychVRHMD('GetEyePose', ds.hmd, ds.renderPass, ds.globalHeadPose);
            R = [1 0 0; 0 cos(pa.gazeangle) -sin(pa.gazeangle); 0 sin(pa.gazeangle) cos(pa.gazeangle)];
@@ -161,8 +153,8 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
            eye.modelView(1:3,1:3) = eye.modelView(1:3,1:3)*R; 
            originaleye = eye;
        end
-
        track_trial = track_trial+1;
+       
     end
     
     % Render the scene separately for each eye:
@@ -290,7 +282,7 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
             % place random stationary objects
             for b = 1:pa.nball
             	glPushMatrix;
-                glTranslatef(positions(1,b),pa.floorHeight+pa.paddleHalfHeight,positions(2,b)); 
+                glTranslatef(pa.positions(1,b),pa.floorHeight+pa.paddleHalfHeight,pa.positions(2,b)); 
                 glCallList(ds.paddleList);
                 glPopMatrix;
             end
@@ -457,9 +449,9 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
         %% End of experiment logic
         
         % Update view with keyboard responses
-        glMatrixMode(GL.MODELVIEW); 
-        glLoadMatrixd(modelView);
-        
+%         glMatrixMode(GL.MODELVIEW); 
+%         glLoadMatrixd(modelView);
+%         
         glPopMatrix; % reset back to the origin
         moglDrawDots3D(ds.w, [inf inf inf], 10, [1 1 1 1], [], 2); % 'hack' to fix transparency issue - same one we've used in all 3D pong experiments - definitely works!
         
