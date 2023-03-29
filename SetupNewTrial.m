@@ -18,8 +18,8 @@ if pa.trialNumber>0 % if it's past the first trial, wait for the Up Arrow key to
             
             if pa.trialNumber <= pa.nTrials
                 
-                pa.xSpeed = pa.fullFactorial(pa.thisTrial,2);
-                pa.zSpeed = pa.fullFactorial(pa.thisTrial,3);
+                pa.xSpeed = pa.fullFactorial(pa.thisTrial,1);
+                pa.zSpeed = pa.fullFactorial(pa.thisTrial,2);
                 
                 pa.timeToPaddle = (pa.paddleOrbitShift-pa.paddleHalfWidth*3.8) ./ sqrt(pa.xSpeed.^2 + pa.zSpeed.^2);
                 
@@ -60,8 +60,8 @@ else % if it is just the first trial, start right up after the subject presses '
     
     if pa.trialNumber <= pa.nTrials
         
-        pa.xSpeed = pa.fullFactorial(pa.thisTrial,2);
-        pa.zSpeed = pa.fullFactorial(pa.thisTrial,3);
+        pa.xSpeed = pa.fullFactorial(pa.thisTrial,1);
+        pa.zSpeed = pa.fullFactorial(pa.thisTrial,2);
         
         pa.timeToPaddle = (pa.paddleOrbitShift-pa.paddleHalfWidth*3.8) ./ sqrt(pa.xSpeed.^2 + pa.zSpeed.^2);
 
