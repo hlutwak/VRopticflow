@@ -128,6 +128,8 @@ kb.nextTrialKey = 0;
 track_trial = 0;
 track = [];
 
+screenCap = zeros(1024,1280,2);  
+
 while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until all of the trials have been completed or the escape key is pressed to quit out
     
     % Get HMD state
@@ -157,6 +159,9 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
        
     end
     
+%     imageArray=Screen('GetImage', ds.w);
+%     screenCap(:,:,end+1) = imageArray(:,:,1);
+%     
     % Render the scene separately for each eye:
     for renderPass = 0:1 %0 left, 1 right eye
         ds.renderPass = renderPass;
@@ -249,7 +254,7 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
 
             % Target position 
             % make the onset delayed
-            delay = 0.5;
+            delay = 0.25;
             if ds.vbl <  pa.trialOnset + delay
                 t = 0;
             else
