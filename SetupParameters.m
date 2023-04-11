@@ -107,9 +107,10 @@ pa.fullFactorial = NaN(size(factorial));
 % pa.fullFactorial(:,1) = pa.targetContrast(pa.fullFactorial(:,1)); % instead of having this be indices of the contrast values it instead will have the actual contrast values - much nicer for data analysis
 pa.fullFactorial(:,1) = (pa.speed(factorial(:,1)).*cos(pa.direction(factorial(:,2))))';
 pa.fullFactorial(:,2) = (pa.speed(factorial(:,1)).*sin(pa.direction(factorial(:,2))))';
+pa.nTrials = size(pa.fullFactorial,1);
 pa.fullFactorial = pa.fullFactorial(randperm(pa.nTrials),:); % Randomly permute order of trial presentation
 pa.fullFactorial(end+1,:) = pa.fullFactorial(1,:); % repeat the first trial because it is effectively a "junk" trial
-pa.nTrials = size(pa.fullFactorial,1);
+
 pa.LR = randi([0,1],1,pa.nTrials)*2-1;
 pa.LRresponse = NaN(1,pa.nTrials);
 
