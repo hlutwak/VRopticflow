@@ -40,7 +40,7 @@ else % oculus not connected
     oc.defaultState = defaultState; % TODO: Replace this with initialstate and drop references to defaultstate altogether
 
     % Initial view is rotated and shifted, setting below do not fix it
-    ipd = 0; %.064; % default ipd (in m)
+    ipd = 0.064; %.064; % default ipd (in m)
     oc.defaultState.modelViewDataLeft = eye(4);
     oc.defaultState.modelViewDataLeft(4) = -ipd/2;
     oc.defaultState.modelViewDataRight = eye(4);
@@ -73,7 +73,7 @@ end
 
 
 ds.experimentType = 'fixed'; % 'lagged'; % 'fixed'; % 'active' % tracking without lag = 'active'; tracking with lag = 'lagged'; no tracking = 'fixed'
-ds.binocular = 0;
+ds.monocular = 1;
 switch ds.experimentType
     case {'active'}
         ds.trackingFlag = 1; % screen will update with head movements
@@ -205,10 +205,10 @@ glMatrixMode(GL.PROJECTION);
 % Retrieve and set camera projection matrix for optimal rendering on the HMD:
 if ~isempty(ds.hmd)
     [ds.projMatrix{1}, ds.projMatrix{2}] = PsychVRHMD('GetStaticRenderParameters', ds.hmd);%, 0.01, 5);  % add here the clipping plane distances; they are [clipNear=0.01],[clipFar=10000] by default
-    if ~ds.binocular
+    if ds.monocular
         ipd = ds.projMatrix{2}(1,3)-ds.projMatrix{1}(1,3);
         ds.projMatrix{1}(1,3) = ds.projMatrix{1}(1,3)+ipd/2;
-        ds.projMatrix{2}(1,3) = ds.projMatrix{1}(1,3)-ipd/2;
+        ds.projMatrix{2}(1,3) = ds.projMatrix{2}(1,3)-ipd/2;
     end
 else
     
