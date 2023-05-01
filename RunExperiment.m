@@ -203,9 +203,9 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
             % the 'active' condition just takes whatever the current state of the oculus is
                 if ~ds.trackingFlag % 'fixed' condition loop - don't update the scene with tracked head motion, just use the default state
                     if ds.renderPass
-%                         eye.modelView = oc.modelViewDataRight(1:4,:); % comes back from the initial call...will not update the scene based on head tracking
+                        eye.modelView = oc.modelViewDataRight(end-3:end,:); % comes back from the initial call...will not update the scene based on head tracking
                     else 
-%                         eye.modelView = oc.modelViewDataLeft(1:4,:);
+                        eye.modelView = oc.modelViewDataLeft(end-3:end,:);
                     end
                     state.tracked = 2;
                     eye.eyeIndex = ds.renderPass;
@@ -264,7 +264,8 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
             zPosition = pa.zSpeed.*t;  %pa.zSpeed.*t
             
             glPushMatrix;
-            glTranslatef(xPosition+.5*(pa.LR(pa.trialNumber)),pa.floorHeight+pa.paddleHalfHeight,zPosition-ds.floorWidth/2); % shift the target to its position along its trajectory for this frame
+            aboveground = .15;
+            glTranslatef(xPosition+.5*(pa.LR(pa.trialNumber)),pa.floorHeight+pa.paddleHalfHeight+pa.aboveground,zPosition-ds.floorWidth/3); % shift the target to its position along its trajectory for this frame
 %             pa.xPosition = [pa.xPosition, xPosition+.5*(pa.LR(pa.trialNumber))];
 %             pa.zPosition = [pa.zPosition, zPosition-ds.floorWidth/2];
 %             if pa.targetContrast==1
@@ -278,20 +279,21 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
 %              
             
             % stationary object
+            
             glPushMatrix;
-            glTranslatef(.5*(-pa.LR(pa.trialNumber)),pa.floorHeight+pa.paddleHalfHeight,-ds.floorWidth/2); 
+            glTranslatef(.5*(-pa.LR(pa.trialNumber)),pa.floorHeight+pa.paddleHalfHeight+pa.aboveground,-ds.floorWidth/3); 
             glCallList(ds.paddleList);
             glPopMatrix;
             
             
             % place random stationary objects
-            for b = 1:pa.nball
-            	glPushMatrix;
-                glTranslatef(pa.positions(1,b),pa.floorHeight+pa.paddleHalfHeight,pa.positions(2,b)); 
-                glCallList(ds.paddleList);
-                glPopMatrix;
-            end
-            
+%             for b = 1:pa.nball
+%             	glPushMatrix;
+%                 glTranslatef(pa.positions(1,b),pa.floorHeight+pa.paddleHalfHeight,pa.positions(2,b)); 
+%                 glCallList(ds.paddleList);
+%                 glPopMatrix;
+%             end
+%             
                 
 %             glBindTexture(GL.TEXTURE_2D,ds.floor_texid);
 %             glCallList(ds.floorTexture);

@@ -40,7 +40,7 @@ else % oculus not connected
     oc.defaultState = defaultState; % TODO: Replace this with initialstate and drop references to defaultstate altogether
 
     % Initial view is rotated and shifted, setting below do not fix it
-    ipd = .064; % default ipd (in m)
+    ipd = 0; %.064; % default ipd (in m)
     oc.defaultState.modelViewDataLeft = eye(4);
     oc.defaultState.modelViewDataLeft(4) = -ipd/2;
     oc.defaultState.modelViewDataRight = eye(4);
@@ -73,7 +73,7 @@ end
 
 
 ds.experimentType = 'fixed'; % 'lagged'; % 'fixed'; % 'active' % tracking without lag = 'active'; tracking with lag = 'lagged'; no tracking = 'fixed'
-
+ds.binocular = 0;
 switch ds.experimentType
     case {'active'}
         ds.trackingFlag = 1; % screen will update with head movements
@@ -204,7 +204,12 @@ glMatrixMode(GL.PROJECTION);
 
 % Retrieve and set camera projection matrix for optimal rendering on the HMD:
 if ~isempty(ds.hmd)
-    [ds.projMatrix{1} ds.projMatrix{2}] = PsychVRHMD('GetStaticRenderParameters', ds.hmd);%, 0.01, 5);  % add here the clipping plane distances; they are [clipNear=0.01],[clipFar=10000] by default
+    [ds.projMatrix{1}, ds.projMatrix{2}] = PsychVRHMD('GetStaticRenderParameters', ds.hmd);%, 0.01, 5);  % add here the clipping plane distances; they are [clipNear=0.01],[clipFar=10000] by default
+    if ~ds.binocular
+        ipd = ds.projMatrix{2}(1,3)-ds.projMatrix{1}(1,3);
+        ds.projMatrix{1}(1,3) = ds.projMatrix{1}(1,3)+ipd/2;
+        ds.projMatrix{2}(1,3) = ds.projMatrix{1}(1,3)-ipd/2;
+    end
 else
     
     ds.projMatrix{1} = [1.1903         0   -0.1486         0
@@ -235,6 +240,7 @@ end
 oc.modelViewDataLeft = []; % may as well save the model view matrix data as well - the hope is that this covers all of the critical information to later go back and analyze/reconstruct the head motion
 oc.modelViewDataRight = []; % may as well save the model view matrix data as well - the hope is that this covers all of the critical information to later go back and analyze/reconstruct the head motion
 oc.HMD = [];
+oc.trialStart = [];
 % glLoadMatrixd(projMatrix);
 
 % Setup modelview matrix: This defines the position, orientation and

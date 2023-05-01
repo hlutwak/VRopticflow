@@ -56,8 +56,9 @@ pa.ceilingHeight = 1.5; % m
 %% parameters for the adjustable paddle
 
 pa.paddleHalfWidth = 0.075;% m
-pa.paddleHalfHeight = 0.075;% m
+pa.paddleHalfHeight = 0.075;% m 0.075
 pa.paddleHalfDepth = 0.075;% m
+pa.aboveground = 0.15; %0.15
 % pa.paddleHeightFactor = 1;% 0.0057 m 
 pa.paddleAngle = 0; % deg - start at the rightward position
 pa.shiftPaddle = 0.25;
@@ -82,8 +83,8 @@ pa.trialNumber = 0; % gotta start somewhere
 
 % Set up a full factorial design 
 pa.nRepeats = 10; % each target contrast condition gets pa.nRepeats trials - 75*3 = 225 per block 
-pa.speed = 0.01:0.01:0.05; %speeds m/s
-pa.direction = pi/3:pi/3:2*pi;
+pa.speed = 0.1; %speeds m/s
+pa.direction = deg2rad(240);
 factorial = fullfact([length(pa.speed), length(pa.direction)]); 
 factorial = repmat(factorial,pa.nRepeats,1); % repeat the full factorial design nRepeats times
 pa.fullFactorial = NaN(size(factorial));
@@ -93,7 +94,7 @@ pa.fullFactorial = NaN(size(factorial));
 % stdev=0.02m - the 0.061 m/s and -0.061 m/s would then be 3 stdevs from the mean,
 % allowing us to cut off only a small percentage of speeds that come up
 % for rtr=1:pa.nTrials 
-%     % sample the vx and vz independently
+%     % sample the vx and vz indendently
 %         inRange = 0;
 %         while inRange==0
 %             pa.xSpeedValues(rtr) = 0.005; %.*randn(1,1); % mean=0, stdev=0.02 
@@ -111,7 +112,7 @@ pa.nTrials = size(pa.fullFactorial,1);
 pa.fullFactorial = pa.fullFactorial(randperm(pa.nTrials),:); % Randomly permute order of trial presentation
 pa.fullFactorial(end+1,:) = pa.fullFactorial(1,:); % repeat the first trial because it is effectively a "junk" trial
 
-pa.LR = randi([0,1],1,pa.nTrials)*2-1;
+pa.LR = -1*ones(1, pa.nTrials); %randi([0,1],1,pa.nTrials)*2-1;
 pa.LRresponse = NaN(1,pa.nTrials);
 
 pa.response = []; % Eventual response matrix
