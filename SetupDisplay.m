@@ -73,7 +73,7 @@ end
 
 
 ds.experimentType = 'fixed'; % 'lagged'; % 'fixed'; % 'active' % tracking without lag = 'active'; tracking with lag = 'lagged'; no tracking = 'fixed'
-ds.monocular = 1;
+ds.monocular = 0;
 switch ds.experimentType
     case {'active'}
         ds.trackingFlag = 1; % screen will update with head movements

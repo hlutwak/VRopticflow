@@ -13,7 +13,7 @@
 %% Important note about coding of angles in Oculus space:
 
 % In the Oculus, angles are coded ccw - so, straight right = 0 deg,
-% directly in front of fix ation = 90 deg, straight left = 180 deg, directly
+% directly in front of fixation = 90 deg, straight left = 180 deg, directly
 % behind fixation = 270 deg 
 
 
@@ -254,7 +254,7 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
 
             % Target position 
             % make the onset delayed
-            delay = 0.25;
+            delay = 0;
             if ds.vbl <  pa.trialOnset + delay
                 t = 0;
             else
@@ -264,7 +264,7 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
             zPosition = pa.zSpeed.*t;  %pa.zSpeed.*t
             
             glPushMatrix;
-            aboveground = .15;
+            aboveground = 0;
             glTranslatef(xPosition+.5*(pa.LR(pa.trialNumber)),pa.floorHeight+pa.paddleHalfHeight+pa.aboveground,zPosition-ds.floorWidth/3); % shift the target to its position along its trajectory for this frame
 %             pa.xPosition = [pa.xPosition, xPosition+.5*(pa.LR(pa.trialNumber))];
 %             pa.zPosition = [pa.zPosition, zPosition-ds.floorWidth/2];

@@ -58,7 +58,7 @@ pa.ceilingHeight = 1.5; % m
 pa.paddleHalfWidth = 0.075;% m
 pa.paddleHalfHeight = 0.075;% m 0.075
 pa.paddleHalfDepth = 0.075;% m
-pa.aboveground = 0.15; %0.15
+pa.aboveground = 0; %0.15
 % pa.paddleHeightFactor = 1;% 0.0057 m 
 pa.paddleAngle = 0; % deg - start at the rightward position
 pa.shiftPaddle = 0.25;
@@ -83,8 +83,8 @@ pa.trialNumber = 0; % gotta start somewhere
 
 % Set up a full factorial design 
 pa.nRepeats = 10; % each target contrast condition gets pa.nRepeats trials - 75*3 = 225 per block 
-pa.speed = 0.1; %speeds m/s
-pa.direction = deg2rad(240);
+pa.speed = [0.5, 0.4, 0.3, 0.2,0.1]; %speeds m/s
+pa.direction = deg2rad(90); %(0 is to the right, 90 is forward, 270 is backwards)
 factorial = fullfact([length(pa.speed), length(pa.direction)]); 
 factorial = repmat(factorial,pa.nRepeats,1); % repeat the full factorial design nRepeats times
 pa.fullFactorial = NaN(size(factorial));
@@ -106,13 +106,13 @@ pa.fullFactorial = NaN(size(factorial));
 % end
 
 % pa.fullFactorial(:,1) = pa.targetContrast(pa.fullFactorial(:,1)); % instead of having this be indices of the contrast values it instead will have the actual contrast values - much nicer for data analysis
-pa.fullFactorial(:,1) = (pa.speed(factorial(:,1)).*cos(pa.direction(factorial(:,2))))';
-pa.fullFactorial(:,2) = (pa.speed(factorial(:,1)).*sin(pa.direction(factorial(:,2))))';
+pa.fullFactorial(:,1) = (pa.speed(factorial(:,1))'.*cos(pa.direction(factorial(:,2))));
+pa.fullFactorial(:,2) = -(pa.speed(factorial(:,1))'.*sin(pa.direction(factorial(:,2))));
 pa.nTrials = size(pa.fullFactorial,1);
 pa.fullFactorial = pa.fullFactorial(randperm(pa.nTrials),:); % Randomly permute order of trial presentation
-pa.fullFactorial(end+1,:) = pa.fullFactorial(1,:); % repeat the first trial because it is effectively a "junk" trial
+% pa.fullFactorial(end+1,:) = pa.fullFactorial(1,:); % repeat the first trial because it is effectively a "junk" trial
 
-pa.LR = -1*ones(1, pa.nTrials); %randi([0,1],1,pa.nTrials)*2-1;
+pa.LR = randi([0,1],1,pa.nTrials)*2-1;  %-1*ones(1, pa.nTrials);
 pa.LRresponse = NaN(1,pa.nTrials);
 
 pa.response = []; % Eventual response matrix
