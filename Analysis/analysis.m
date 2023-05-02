@@ -45,3 +45,11 @@ for ii = 1:s(3)
     imagesc(screenCap(:,:,ii)), colormap(gray)
     pause(1/10)
 end
+
+
+%% response data
+pcorrect = NaN(size(pa.speed));
+for cond = 1:length(pa.speed)
+    idx = find(-pa.fullFactorial(:,2) == pa.speed(cond));
+    pcorrect(cond) = sum(eq(pa.LR(idx), pa.LRresponse(idx)))/pa.nRepeats;
+end
