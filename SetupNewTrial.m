@@ -19,7 +19,7 @@ if pa.trialNumber>0 % if it's past the first trial, wait for the Up Arrow key to
             if pa.trialNumber <= pa.nTrials
                 
                 pa.positions = -ds.floorWidth/2+2*ds.floorWidth/2*rand(2,pa.nball); %uniform random positions across floor
-                pa.positions(2,:) = pa.positions(2,:)-ds.floorWidth/2;
+                pa.positions(2,:) = -ds.floorWidth+ds.floorWidth/2*rand(1,pa.nball); %pa.positions(2,:)-ds.floorWidth/2;
                 exclude = [0;-ds.floorWidth/2]; %x,z coordinate where fixation target is
                 while sum(vecnorm(pa.positions-exclude)<pa.fixationSize+pa.paddleHalfWidth)>0 %at least one position overlaps with fixation
                     idx = find(vecnorm(pa.positions-exclude)<pa.fixationSize+pa.paddleHalfWidth);

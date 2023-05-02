@@ -286,13 +286,13 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
             glPopMatrix;
             
             
-            % place random stationary objects
-%             for b = 1:pa.nball
-%             	glPushMatrix;
-%                 glTranslatef(pa.positions(1,b),pa.floorHeight+pa.paddleHalfHeight,pa.positions(2,b)); 
-%                 glCallList(ds.paddleList);
-%                 glPopMatrix;
-%             end
+            %place random stationary objects
+            for b = 1:pa.nball
+            	glPushMatrix;
+                glTranslatef(pa.positions(1,b),pa.floorHeight+pa.paddleHalfHeight,pa.positions(2,b)); 
+                glCallList(ds.paddleList);
+                glPopMatrix;
+            end
 %             
                 
 %             glBindTexture(GL.TEXTURE_2D,ds.floor_texid);
