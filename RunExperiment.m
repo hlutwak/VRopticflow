@@ -34,23 +34,23 @@
  
 global DEBUG_FLAG KEYBOARD_FLAG
 DEBUG_FLAG = 1; %1
-KEYBOARD_FLAG = 0; %1 % there is a call to 'keyboard' in SetupDisplay that was breaking the code when using the hmd so I created a flag to turn it on/off - not certain what it is for (JF)
- 
-if DEBUG_FLAG
-    Screen('Preference', 'SkipSyncTests', 1); % For debugging
+K EYBOARD_FLAG = 0; %1 % there is a call to 'keyboard' in SetupDisplay that was breaking the code when using the hmd so I created a flag to turn it on/off - not certain what it is for (JF)
+  
+if  DEBUG_FLAG
+      Screen('Preference', 'SkipSyncTests', 1); % For debugging
 end
-
-% Setup Psychtoolbox for OpenGL 3D rendering support and initialize the
-% mogl OpenGL for Matlab/Octave wrapper:
-global GL; % GL data structure needed f or all OpenGL programs
-InitializeMatlabOpenGL(1);
+ 
+% Set up Psychtoolbox for OpenGL 3D rendering support and initialize the
+% mo gl OpenGL for Matlab/Octave wrapper:
+glo bal GL; % GL data structure needed f or all OpenGL programs
+I  nitializeMatlabOpenGL(1);
 PsychDefaultSetup(2); % the input of 2 means: execute the AssertOpenGL command, execute KbName('UnifyKeyNames') routine, AND unifies the color mode and switches from 0-255 to 0.0-1.0 - color part only impacts the current function or script, not ones that are called
-
-addpath(genpath([pwd filesep() 'Tools'])); % contains 'isodd.m' and 'oneoverf.m' for texture rendering
-
+ 
+a ddpath(genpath([pwd filesep() 'Tools'])); % contains 'isodd.m' and 'oneoverf.m' for texture rendering
+  
 % Initialize screen, experimental parameters, etc.
-[ds,oc] = SetupDisplay(); %(oc); % set up the  display, based on the DK2 
-[ds,pa] = SetupParameters(ds); % set up the experimental parameters for this session
+ [ds,oc] = SetupDisplay(); %(oc); % set up the  display, based on the DK2 
+  [ds,pa] = SetupParameters(ds); % set up the experimental parameters for this session
 [ds,pa] = CreateTextures(ds, pa); % create the surround & paddle face textures as well as the ceiling, floor, and walls of the virtual room - just needs to be done once
 kb = SetupKeyboard(); % get the keyboard info for the participant's responses
 % ListenChar(2);
