@@ -25,13 +25,13 @@
 %% IMPORTANT!  The Oculus must be plugged in and turned on *before* starting MATLAB
 % The individual must be wearing the device prior to starting the
 % experimental program to achieve proper frame rate
-% Also the Oculus VR runtime version '0.5.0.1' *must* be installed for PTB
-% to properly interact with/recognize the Oculus DK2, otherwise, use the
+% Als o the Oculus VR runtime version '0.5.0.1' *must* be installed for PTB
+%   to properly interact with/recognize the Oculus DK2, otherwise, use the
 % latest version of the runtime for the CV1 (note: cannot have 2 versions
-% on one ma chine)
-clear all; 
-close all;  
-
+%  on one ma chine)
+ clear all; 
+ close all;  
+ 
 global DEBUG_FLAG KEYBOARD_FLAG
 DEBUG_FLAG = 1; %1
 KEYBOARD_FLAG = 0; %1 % there is a call to 'keyboard' in SetupDisplay that was breaking the code when using the hmd so I created a flag to turn it on/off - not certain what it is for (JF)
@@ -264,7 +264,7 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
             zPosition = pa.zSpeed.*t;  %pa.zSpeed.*t
             
             glPushMatrix;
-            glTranslatef(xPosition+.5*(pa.LR(pa.trialNumber)),pa.floorHeight+pa.paddleHalfHeight,zPosition-pa  .floorWidth/2); % shift the target to its position along its trajectory for this frame
+            glTranslatef(xPosition+.5*(pa.LR(pa.trialNumber)),pa.floorHeight+pa.paddleHalfHeight,zPosition-pa.floorWidth/2); % shift the target to its position along its trajectory for this frame
 %             pa.xPosition = [pa.xPosition, xPosition+.5*(pa.LR(pa.trialNumber))];
 %             pa.zPosition = [pa.zPosition, zPosition-pa.floorWidth/2];
 %             if pa.targetContrast==1
