@@ -51,6 +51,7 @@ pa.fixationLineLength = 0.0079; % m
 pa.apertureRadius = 7.5;  % deg
    
 pa.floorHeight = -1; % m
+pa.floorWidth = 6;
 pa.ceilingHeight = 1.5; % m 
     
 %% parameters for the adjustable paddle
@@ -87,6 +88,7 @@ pa.direction = pi/3:pi/3:2*pi;
 factorial = fullfact([length(pa.speed), length(pa.direction)]); 
 factorial = repmat(factorial,pa.nRepeats,1); % repeat the full factorial design nRepeats times
 pa.fullFactorial = NaN(size(factorial));
+pa.nTrials = size(pa.fullFactorial,1);
 
 
 % *Gaussian* vx and vz sampling each from a distribution with mean=0 and

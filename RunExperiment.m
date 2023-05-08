@@ -28,9 +28,9 @@
 % Also the Oculus VR runtime version '0.5.0.1' *must* be installed for PTB
 % to properly interact with/recognize the Oculus DK2, otherwise, use the
 % latest version of the runtime for the CV1 (note: cannot have 2 versions
-% on one machine)
-clear all;
-close all;
+% on one ma chine)
+clear all; 
+close all;  
 
 global DEBUG_FLAG KEYBOARD_FLAG
 DEBUG_FLAG = 1; %1
@@ -42,7 +42,7 @@ end
 
 % Setup Psychtoolbox for OpenGL 3D rendering support and initialize the
 % mogl OpenGL for Matlab/Octave wrapper:
-global GL; % GL data structure needed for all OpenGL programs
+global GL; % GL data structure needed f or all OpenGL programs
 InitializeMatlabOpenGL(1);
 PsychDefaultSetup(2); % the input of 2 means: execute the AssertOpenGL command, execute KbName('UnifyKeyNames') routine, AND unifies the color mode and switches from 0-255 to 0.0-1.0 - color part only impacts the current function or script, not ones that are called
 
@@ -53,7 +53,7 @@ addpath(genpath([pwd filesep() 'Tools'])); % contains 'isodd.m' and 'oneoverf.m'
 [ds,pa] = SetupParameters(ds); % set up the experimental parameters for this session
 [ds,pa] = CreateTextures(ds, pa); % create the surround & paddle face textures as well as the ceiling, floor, and walls of the virtual room - just needs to be done once
 kb = SetupKeyboard(); % get the keyboard info for the participant's responses
-ListenChar(2);
+% ListenChar(2);
 if ~DEBUG_FLAG
     HideCursor(ds.screenId); 
     ListenChar(2); % Stop making keypresses show up in the matlab scripts and
@@ -134,28 +134,33 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
     if isempty(ds.hmd) % Oculus is not connected - will display a poor imitation of the Oculus rift on your main computer screen
         state = oc.defaultState; % just set to a default, non-updating viewpoint
     else   % Oculus is connected - uses PTB's code + openGL code to display in the HMD
-        % Track and predict head position and orientation, retrieve modelview
-        % camera matrices for rendering of each eye. Apply some global transformation
+        % Track and predict head position and or ientation, retrieve modelview
+        % camera matrices for rendering of each  eye. Apply some global transformation
         % to returned camera matrices. In this case a translation + rotation, as defined
-        % by the PsychGetPositionYawMatrix() helper function:
+        % by the PsychGetPositionYawMatrix() h elper function:
         state = PsychVRHMD('PrepareRender', ds.hmd, ds.globalHeadPose);  % Mark the start of the rendering cycle for a new 3D rendered stereoframe. Return a struct 'state' which contains various useful bits of information for 3D stereoscopic rendering of a scene, based on head tracking data
-        oc.HMD = [oc.HMD; state.modelView{1}];
+        oc.HMD = [oc.HMD; state.modelView{1  }];
     end
 
     if pa.trialNumber>track_trial %dont' update head position during a trial
        
        if pa.trialNumber>1
-           eye = originaleye;
+           eye.eyeIndex = 0;
+           eye.modelView = state.modelViewDataRight;
        else
-           eye = PsychVRHMD('GetEyePose', ds.hmd, ds.renderPass, ds.globalHeadPose);
-           R = [1 0 0; 0 cos(pa.gazeangle) -sin(pa.gazeangle); 0 sin(pa.gazeangle) cos(pa.gazeangle)];
-           eye.modelView = [1 0 0 0; 0 1 0 0; 0 0 1 -ds.viewingDistance; 0 0 0 1];
-           eye.modelView(1:3,1:3) = eye.modelView(1:3,1:3)*R; 
-           originaleye = eye;
-       end
-       track_trial = track_trial+1;
-       
-    end
+           if isempty(ds.hmd)
+               eye.modelView = state.modelViewDataRight;
+           else %if hmd is connected
+               eye = PsychVRHMD('GetEyePose', ds.hmd, ds.renderPass, ds.globalHeadPose);
+               R = [1 0 0; 0 cos(pa.gazeangle) -sin(pa.gazeangle); 0 sin(pa.gazeangle) cos(pa.gazeangle)];
+               eye.modelView = [1 0 0 0; 0 1 0 0; 0 0 1 -ds.viewingDistance; 0 0 0 1];
+                eye.modelView(1:3,1:3) = eye.modelView(1:3,1:3)*R;  
+                originaleye = eye;
+           end
+        end
+        track_trial = track_trial+1;
+        
+    end  
     
     % Render the scene separately for each eye:
     for renderPass = 0:1 %0 left, 1 right eye
@@ -166,16 +171,16 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
             
             eye.eyeIndex = ds.renderPass; % We are switching eye index, but not the eye.modelview here
 
-            % CSB: this inits camera matrix if it is empty
-            % BR: This should happen outside of the loop init'd on line 131
-            if ~isfield(eye,'modelView') % checks if camera matrix exists. it shouldn't on first trial and it will be init'd.
-                if ds.renderPass==0 % drawing left eye
-                    eye.modelView = oc.defaultState.modelViewDataLeft;
-                elseif ds.renderPass==1 % drawing right eye
-                    eye.modelView =  oc.defaultState.modelViewDataRight;
-%                     eye.modelView(1,4) =  eye.modelView(1,4)+100; % CSB: debug
-                end
-            end
+%             % CSB: this inits camera matrix if it is empty
+%             % BR: This should happen outside of the loop init'd on line 131
+%             if ~isfield(eye,'modelView') % checks if camera matrix exists. it shouldn't on first trial and it will be init'd.
+%                 if ds.renderPass==0 % drawing left eye
+%                     eye.modelView = oc.defaultState.modelViewDataLeft;
+%                 elseif ds.renderPass==1 % drawing right eye
+%                     eye.modelView =  oc.defaultState.modelViewDataRight;
+% %                     eye.modelView(1,4) =  eye.modelView(1,4)+100; % CSB: debug
+%                 end
+%             end
             
             [pa, kb, eye] = GetKeyboardHeadmotion(pa, ds, kb, eye);  % query the keyboard to allow the observer to rotate the paddle and eventually lock in his/her response to initiate a new trial
 
@@ -237,7 +242,7 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
         
         % fixation target
         glPushMatrix;
-        glTranslatef(0,pa.floorHeight+pa.fixationSize,-ds.floorWidth/2);
+        glTranslatef(0,pa.floorHeight+pa.fixationSize,-pa.floorWidth/2);
         glCallList(ds.highcontrastTarget);
         glPopMatrix;
         
@@ -259,9 +264,9 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
             zPosition = pa.zSpeed.*t;  %pa.zSpeed.*t
             
             glPushMatrix;
-            glTranslatef(xPosition+.5*(pa.LR(pa.trialNumber)),pa.floorHeight+pa.paddleHalfHeight,zPosition-ds.floorWidth/2); % shift the target to its position along its trajectory for this frame
+            glTranslatef(xPosition+.5*(pa.LR(pa.trialNumber)),pa.floorHeight+pa.paddleHalfHeight,zPosition-pa  .floorWidth/2); % shift the target to its position along its trajectory for this frame
 %             pa.xPosition = [pa.xPosition, xPosition+.5*(pa.LR(pa.trialNumber))];
-%             pa.zPosition = [pa.zPosition, zPosition-ds.floorWidth/2];
+%             pa.zPosition = [pa.zPosition, zPosition-pa.floorWidth/2];
 %             if pa.targetContrast==1
                 glCallList(ds.paddleList);
                 glPopMatrix;
@@ -274,7 +279,7 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
             
             % stationary object
             glPushMatrix;
-            glTranslatef(.5*(-pa.LR(pa.trialNumber)),pa.floorHeight+pa.paddleHalfHeight,-ds.floorWidth/2); 
+            glTranslatef(.5*(-pa.LR(pa.trialNumber)),pa.floorHeight+pa.paddleHalfHeight,-pa.floorWidth/2); 
             glCallList(ds.paddleList);
             glPopMatrix;
             
@@ -371,12 +376,12 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
             if ~pa.feedbackGiven
 %                 if pa.LRresponse(pa.trialNumber) == pa.LR(pa.trialNumber)  %does the response match the target side
 %                         glPushMatrix;  
-%                         glTranslatef(0,pa.floorHeight+pa.targetSize,-ds.floorWidth/2-0.5); % display green sphere
+%                         glTranslatef(0,pa.floorHeight+pa.targetSize,-pa.floorWidth/2-0.5); % display green sphere
 %                         glCallList(ds.correct);
 %                         glPopMatrix;
 %                 else
 %                         glPushMatrix;
-%                         glTranslatef(0,pa.floorHeight+pa.targetSize,-ds.floorWidth/2-0.5); % display red sphere
+%                         glTranslatef(0,pa.floorHeight+pa.targetSize,-pa.floorWidth/2-0.5); % display red sphere
 %                         glCallList(ds.incorrect);
 %                         glPopMatrix;
 %                 end
@@ -429,12 +434,12 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
 
                 if pa.LRresponse(pa.trialNumber) == pa.LR(pa.trialNumber)  %does the response match the target side
                         glPushMatrix;
-                        glTranslatef(0,pa.floorHeight+pa.fixationSize,-(ds.floorWidth/2)); % display green sphere
+                        glTranslatef(0,pa.floorHeight+pa.fixationSize,-(pa.floorWidth/2)); % display green sphere
                         glCallList(ds.correct);
                         glPopMatrix;
                 else
                         glPushMatrix;
-                        glTranslatef(0,pa.floorHeight+pa.fixationSize,-(ds.floorWidth/2)); % display red sphere
+                        glTranslatef(0,pa.floorHeight+pa.fixationSize,-(pa.floorWidth/2)); % display red sphere
                         glCallList(ds.incorrect);
                         glPopMatrix;
                 end
@@ -478,7 +483,7 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
         ds.tElapsed = (ds.vbl - tStart) * 1;
         
         % Repeat for renderPass of other eye
-    end
+    end 
     
     % Head position tracked in the HMD?
     if ~isempty(ds.hmd)

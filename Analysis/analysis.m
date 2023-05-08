@@ -41,7 +41,10 @@ figure, scatter(pa.fullFactorial(:,1), pa.fullFactorial(:,2)), axis equal
 s = size(screenCap);
 
 figure
+set(gcf,'position',[0, 0, 1280, 1600])
+
 for ii = 1:s(3)
     imagesc(screenCap(:,:,ii)), colormap(gray)
+    axis equal
     pause(1/10)
 end
