@@ -7,10 +7,11 @@ global DEBUG_FLAG KEYBOARD_FLAG
 InitializeMatlabOpenGL(1);
 PsychDefaultSetup(2); % the input of 2 means: execute the AssertOpenGL command, execute KbName('UnifyKeyNames') routine, AND unifies the color mode and switches from 0-255 to 0.0-1.0 - color part only impacts the current function or script, not ones that are called
 
-ds.oculusConnected = 1; %0 % Is the HMD connected
+ds.oculusConnected = 0; %0 % Is the HMD connected
 ds.screenId = max(Screen('Screens')); % Find the screen to use for display:
 ds.multiSample = 8;
 ds.doSeparateEyeRender = 1; % render two eyes' views
+ds.monocular = 1;
 PsychImaging('PrepareConfiguration');
 
 % even in the 'fixed' viewing condition, we still want to track the head
@@ -40,7 +41,11 @@ else % oculus not connected
     oc.defaultState = defaultState; % TODO: Replace this with initialstate and drop references to defaultstate altogether
 
     % Initial view is rotated and shifted, setting below do not fix it
-    ipd = 0.064; %.064; % default ipd (in m)
+    if ds.monocular
+        ipd = 0; % default ipd (in m) .064
+    else 
+        ipd = .064;
+    end
     oc.defaultState.modelViewDataLeft = eye(4);
     oc.defaultState.modelViewDataLeft(4) = -ipd/2;
     oc.defaultState.modelViewDataRight = eye(4);
@@ -73,7 +78,7 @@ end
 
 
 ds.experimentType = 'fixed'; % 'lagged'; % 'fixed'; % 'active' % tracking without lag = 'active'; tracking with lag = 'lagged'; no tracking = 'fixed'
-ds.monocular = 0;
+
 switch ds.experimentType
     case {'active'}
         ds.trackingFlag = 1; % screen will update with head movements
@@ -100,7 +105,6 @@ if ~isempty(ds.hmd) % CSB: if using hmd
     ds.halfHeight = ds.Height/2;
     ds.Width = .7614; % virtual width of the surround texture in meters, based on viewing distance - we want this to relate to the longer dimension of the display
     ds.halfWidth = ds.Width/2;
-    % ds.floorWidth = 6;
     ds.xc = RectHeight(ds.windowRect)/2; % the horizontal center of the display in pixels
     ds.yc = RectWidth(ds.windowRect)/2; % the vertical center of the display in pixels
     ds.textCoords = [ds.yc ds.xc];
@@ -202,6 +206,7 @@ glBlendFunc(GL.SRC_ALPHA, GL.ONE_MINUS_SRC_ALPHA);
 % well, the best aproximation one can do with 3 lines of code ;-)
 glMatrixMode(GL.PROJECTION);
 
+
 % Retrieve and set camera projection matrix for optimal rendering on the HMD:
 if ~isempty(ds.hmd)
     [ds.projMatrix{1}, ds.projMatrix{2}] = PsychVRHMD('GetStaticRenderParameters', ds.hmd);%, 0.01, 5);  % add here the clipping plane distances; they are [clipNear=0.01],[clipFar=10000] by default
@@ -211,6 +216,18 @@ if ~isempty(ds.hmd)
         ds.projMatrix{2}(1,3) = ds.projMatrix{2}(1,3)-ipd/2;
     end
 else
+    if ds.monocular
+            ds.projMatrix{1} = [1.1903         0   0         0
+        0    0.9998   -0.1107         0
+        0         0   -1.0000   -0.0200
+        0         0   -1.0000         0];
+    
+    ds.projMatrix{2} = [1.1903         0   0         0
+        0    0.9998   -0.1107         0
+        0         0   -1.0000   -0.0200
+        0         0   -1.0000         0];
+    
+    else
     
     ds.projMatrix{1} = [1.1903         0   -0.1486         0
         0    0.9998   -0.1107         0
@@ -234,13 +251,13 @@ else
                            0         0   -1.0000         0];
     %}
     % CSB
+    end
 end
 
 % Initialize oculus modelview for head motion tracking
 oc.modelViewDataLeft = []; % may as well save the model view matrix data as well - the hope is that this covers all of the critical information to later go back and analyze/reconstruct the head motion
 oc.modelViewDataRight = []; % may as well save the model view matrix data as well - the hope is that this covers all of the critical information to later go back and analyze/reconstruct the head motion
 oc.HMD = [];
-oc.trialStart = [];
 % glLoadMatrixd(projMatrix);
 
 % Setup modelview matrix: This defines the position, orientation and
