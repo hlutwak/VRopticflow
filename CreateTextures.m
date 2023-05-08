@@ -353,16 +353,16 @@ glNewList(ds.floorTexture, GL.COMPILE);
 
 glBegin(GL_QUADS);
 glTexCoord2f(0, 0);
-glVertex3f(-ds.floorWidth/2,pa.floorHeight,ds.viewingDistance);
+glVertex3f(-pa.floorWidth/2,pa.floorHeight,ds.viewingDistance);
 
 glTexCoord2f(0 ,1);
-glVertex3f(-ds.floorWidth/2,pa.floorHeight,-ds.floorWidth);
+glVertex3f(-pa.floorWidth/2,pa.floorHeight,-pa.floorWidth);
 
 glTexCoord2f(1,1);
-glVertex3f(ds.floorWidth/2,pa.floorHeight,-ds.floorWidth);
+glVertex3f(pa.floorWidth/2,pa.floorHeight,-pa.floorWidth);
 
 glTexCoord2f(1,0);
-glVertex3f(ds.floorWidth/2,pa.floorHeight,ds.viewingDistance);
+glVertex3f(pa.floorWidth/2,pa.floorHeight,ds.viewingDistance);
 glEnd;
 
 glEndList(); % done with the floor

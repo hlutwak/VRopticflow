@@ -100,7 +100,7 @@ if ~isempty(ds.hmd) % CSB: if using hmd
     ds.halfHeight = ds.Height/2;
     ds.Width = .7614; % virtual width of the surround texture in meters, based on viewing distance - we want this to relate to the longer dimension of the display
     ds.halfWidth = ds.Width/2;
-    ds.floorWidth = 6;
+    % ds.floorWidth = 6;
     ds.xc = RectHeight(ds.windowRect)/2; % the horizontal center of the display in pixels
     ds.yc = RectWidth(ds.windowRect)/2; % the vertical center of the display in pixels
     ds.textCoords = [ds.yc ds.xc];

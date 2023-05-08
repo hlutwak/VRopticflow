@@ -51,6 +51,7 @@ pa.fixationLineLength = 0.0079; % m
 pa.apertureRadius = 7.5;  % deg
    
 pa.floorHeight = -1; % m
+pa.floorWidth = 6; % m
 pa.ceilingHeight = 1.5; % m 
     
 %% parameters for the adjustable paddle
