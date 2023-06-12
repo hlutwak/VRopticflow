@@ -7,11 +7,11 @@ global DEBUG_FLAG KEYBOARD_FLAG
 InitializeMatlabOpenGL(1);
 PsychDefaultSetup(2); % the input of 2 means: execute the AssertOpenGL command, execute KbName('UnifyKeyNames') routine, AND unifies the color mode and switches from 0-255 to 0.0-1.0 - color part only impacts the current function or script, not ones that are called
 
-ds.oculusConnected = 0; %0 % Is the HMD connected
+ds.oculusConnected = 1; %0 % Is the HMD connected
 ds.screenId = max(Screen('Screens')); % Find the screen to use for display:
 ds.multiSample = 8;
 ds.doSeparateEyeRender = 1; % render two eyes' views
-ds.monocular = 1;
+ds.monocular = 0;
 PsychImaging('PrepareConfiguration');
 
 % even in the 'fixed' viewing condition, we still want to track the head

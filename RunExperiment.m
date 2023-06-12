@@ -139,17 +139,17 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
         % to returned camera matrices. In this case a translation + rotation, as defined
         % by the PsychGetPositionYawMatrix() h elper function:
         state = PsychVRHMD('PrepareRender', ds.hmd, ds.globalHeadPose);  % Mark the start of the rendering cycle for a new 3D rendered stereoframe. Return a struct 'state' which contains various useful bits of information for 3D stereoscopic rendering of a scene, based on head tracking data
-        oc.HMD = [oc.HMD; state.modelView{1  }];
+        oc.HMD = [oc.HMD; state.modelView{1}];
     end
 
     if pa.trialNumber>track_trial %dont' update head position during a trial
        
        if pa.trialNumber>1
            eye.eyeIndex = 0;
-           eye.modelView = state.modelViewDataRight;
+           eye.modelView = oc.modelViewDataRight(1:4,:);
        else
            if isempty(ds.hmd)
-               eye.modelView = state.modelViewDataRight;
+               eye.modelView = oc.modelViewDataRight(1:4,:);
            else %if hmd is connected
                eye = PsychVRHMD('GetEyePose', ds.hmd, ds.renderPass, ds.globalHeadPose);
                R = [1 0 0; 0 cos(pa.gazeangle) -sin(pa.gazeangle); 0 sin(pa.gazeangle) cos(pa.gazeangle)];
