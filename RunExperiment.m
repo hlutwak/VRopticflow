@@ -1,6 +1,6 @@
-   % function RunExperiment
-  
-% 14-Dec-2015  jf Written. Derived from OculusSDK2PongDemo_Fixed.m   
+% function RunExperiment
+
+% 14-Dec-2015  jf Written. Derived from OculusSDK2PongDemo_Fixed.m
 % 6-Jan-2016  jf Edited to improve lagg      ed condition performance
 % 14-Jan-2016 jf  Switched over to Windows platform and optimized the code
 % for timing and stimulus presentation - including now measured gamma
@@ -14,48 +14,48 @@
 
 % In the Oculus, angles are coded ccw - so, straight right = 0 deg,
 % directly in front of fix ation = 90 deg, straight left = 180 deg, directly
-% behind fixation = 270 deg 
+% behind fixation = 270 deg
 
-
-%% Basic per subject inputs:  
+%% Basic per subject inputs:
 
 % Use SetupDisplay.m to establish experimental condition as active, fixed, or lagged (line 51, ds.experimentType)
 % Use SetupParameters.m to establish participant number for the data file names (line 11, pa.subjectName and line 12, pa.feedbackFlag)
- 
+
 %% IMPORTANT!  The Oculus must be plugged in and turned on *before* starting MATLAB
 % The individual must be wearing the device prior to starting the
 % experimental program to achieve proper frame rate
-% Als o the Oculus VR runtime version '0.5.0.1' *must* be installed for PTB
-%   to properly interact with/recognize the Oculus DK2, otherwise, use the
+% Also the Oculus VR runtime version '0.5.0.1' *must* be installed for PTB
+% to properly interact with/recognize the Oculus DK2, otherwise, use the
 % latest version of the runtime for the CV1 (note: cannot have 2 versions
-%  on one ma chine)
- clear all; 
- close all;  
- 
+% on one machine)
+
+clear all;
+close all;
+
 global DEBUG_FLAG KEYBOARD_FLAG
 DEBUG_FLAG = 1; %1
-K EYBOARD_FLAG = 0; %1 % there is a call to 'keyboard' in SetupDisplay that was breaking the code when using the hmd so I created a flag to turn it on/off - not certain what it is for (JF)
-  
-if  DEBUG_FLAG
-      Screen('Preference', 'SkipSyncTests', 1); % For debugging
+KEYBOARD_FLAG = 0; %1 % there is a call to 'keyboard' in SetupDisplay that was breaking the code when using the hmd so I created a flag to turn it on/off - not certain what it is for (JF)
+
+if DEBUG_FLAG
+    Screen('Preference', 'SkipSyncTests', 1); % For debugging
 end
- 
+
 % Set up Psychtoolbox for OpenGL 3D rendering support and initialize the
 % mo gl OpenGL for Matlab/Octave wrapper:
-glo bal GL; % GL data structure needed f or all OpenGL programs
-I  nitializeMatlabOpenGL(1);
+global GL; % GL data structure needed for all OpenGL programs
+InitializeMatlabOpenGL(1);
 PsychDefaultSetup(2); % the input of 2 means: execute the AssertOpenGL command, execute KbName('UnifyKeyNames') routine, AND unifies the color mode and switches from 0-255 to 0.0-1.0 - color part only impacts the current function or script, not ones that are called
- 
-a ddpath(genpath([pwd filesep() 'Tools'])); % contains 'isodd.m' and 'oneoverf.m' for texture rendering
-  
+
+addpath(genpath([pwd filesep() 'Tools'])); % contains 'isodd.m' and 'oneoverf.m' for texture rendering
+
 % Initialize screen, experimental parameters, etc.
- [ds,oc] = SetupDisplay(); %(oc); % set up the  display, based on the DK2 
-  [ds,pa] = SetupParameters(ds); % set up the experimental parameters for this session
+[ds,oc] = SetupDisplay(); %(oc); % set up the  display, based on the DK2
+[ds,pa] = SetupParameters(ds); % set up the experimental parameters for this session
 [ds,pa] = CreateTextures(ds, pa); % create the surround & paddle face textures as well as the ceiling, floor, and walls of the virtual room - just needs to be done once
 kb = SetupKeyboard(); % get the keyboard info for the participant's responses
 % ListenChar(2);
 if ~DEBUG_FLAG
-    HideCursor(ds.screenId); 
+    HideCursor(ds.screenId);
     ListenChar(2); % Stop making keypresses show up in the matlab scripts and
     %command window - it's really annoying and can cause all sorts of problems! % CSB: debug
 end
