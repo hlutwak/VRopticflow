@@ -11,7 +11,7 @@ ds.oculusConnected = 1; %0 % Is the HMD connected
 ds.screenId = max(Screen('Screens')); % Find the screen to use for display:
 ds.multiSample = 8;
 ds.doSeparateEyeRender = 1; % render two eyes' views
-ds.monocular = 0;
+ds.binocular = 0;
 PsychImaging('PrepareConfiguration');
 
 % even in the 'fixed' viewing condition, we still want to track the head
@@ -41,10 +41,10 @@ else % oculus not connected
     oc.defaultState = defaultState; % TODO: Replace this with initialstate and drop references to defaultstate altogether
 
     % Initial view is rotated and shifted, setting below do not fix it
-    if ds.monocular
-        ipd = 0; % default ipd (in m) .064
+    if ds.binocular
+        ipd = .064; % default ipd (in m) .064
     else 
-        ipd = .064;
+        ipd = 0;
     end
     oc.defaultState.modelViewDataLeft = eye(4);
     oc.defaultState.modelViewDataLeft(4) = -ipd/2;
@@ -210,13 +210,13 @@ glMatrixMode(GL.PROJECTION);
 % Retrieve and set camera projection matrix for optimal rendering on the HMD:
 if ~isempty(ds.hmd)
     [ds.projMatrix{1}, ds.projMatrix{2}] = PsychVRHMD('GetStaticRenderParameters', ds.hmd);%, 0.01, 5);  % add here the clipping plane distances; they are [clipNear=0.01],[clipFar=10000] by default
-    if ds.monocular
-        ipd = ds.projMatrix{2}(1,3)-ds.projMatrix{1}(1,3);
-        ds.projMatrix{1}(1,3) = ds.projMatrix{1}(1,3)+ipd/2;
-        ds.projMatrix{2}(1,3) = ds.projMatrix{2}(1,3)-ipd/2;
-    end
+%     if ds.monocular
+%         ipd = ds.projMatrix{2}(1,3)-ds.projMatrix{1}(1,3);
+%         ds.projMatrix{1}(1,3) = ds.projMatrix{1}(1,3)+ipd/2;
+%         ds.projMatrix{2}(1,3) = ds.projMatrix{2}(1,3)-ipd/2;
+%     end
 else
-    if ds.monocular
+    if ~ds.binocular
             ds.projMatrix{1} = [1.1903         0   0         0
         0    0.9998   -0.1107         0
         0         0   -1.0000   -0.0200

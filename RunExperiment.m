@@ -190,6 +190,7 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
             % camera rendering that eyes view. The returned pose vector actually
             % describes tracked head pose, ie. HMD position and orientation in space.
             
+            
 
             [pa, kb, eye] = GetKeyboardHeadmotion(pa,ds,kb,eye);
             % this is for saving purposes to recreate participants' head motion
@@ -240,11 +241,13 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
         
         glPushMatrix;
         
-        % fixation target
-        glPushMatrix;
-        glTranslatef(0,pa.floorHeight+pa.fixationSize,-pa.floorWidth/2);
-        glCallList(ds.highcontrastTarget);
-        glPopMatrix;
+        if ds.binocular || (~ds.binocular && ds.renderPass)
+            % fixation target
+            glPushMatrix;
+            glTranslatef(0,pa.floorHeight+pa.fixationSize,-pa.floorWidth/2);
+            glCallList(ds.highcontrastTarget);
+            glPopMatrix;
+        end
         
        
           
@@ -263,33 +266,35 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
             xPosition =pa.xSpeed.*t;  %pa.xSpeed.*t;
             zPosition = pa.zSpeed.*t;  %pa.zSpeed.*t
             
-            glPushMatrix;
-            glTranslatef(xPosition+.5*(pa.LR(pa.trialNumber)),pa.floorHeight+pa.paddleHalfHeight,zPosition-pa.floorWidth/2); % shift the target to its position along its trajectory for this frame
-%             pa.xPosition = [pa.xPosition, xPosition+.5*(pa.LR(pa.trialNumber))];
-%             pa.zPosition = [pa.zPosition, zPosition-pa.floorWidth/2];
-%             if pa.targetContrast==1
+            if ds.binocular || (~ds.binocular && ds.renderPass)
+                glPushMatrix;
+                glTranslatef(xPosition+.5*(pa.LR(pa.trialNumber)),pa.floorHeight+pa.paddleHalfHeight,zPosition-pa.floorWidth/2); % shift the target to its position along its trajectory for this frame
+    %             pa.xPosition = [pa.xPosition, xPosition+.5*(pa.LR(pa.trialNumber))];
+    %             pa.zPosition = [pa.zPosition, zPosition-pa.floorWidth/2];
+    %             if pa.targetContrast==1
+                    glCallList(ds.paddleList);
+                    glPopMatrix;
+    %             elseif pa.targetContrast==0.15
+    %                 glCallList(ds.midcontrastTarget);
+    %             elseif pa.targetContrast==0.075
+    %                 glCallList(ds.lowcontrastTarget); 
+    %             end
+    %              
+
+                % stationary object
+                glPushMatrix;
+                glTranslatef(.5*(-pa.LR(pa.trialNumber)),pa.floorHeight+pa.paddleHalfHeight,-pa.floorWidth/2); 
                 glCallList(ds.paddleList);
                 glPopMatrix;
-%             elseif pa.targetContrast==0.15
-%                 glCallList(ds.midcontrastTarget);
-%             elseif pa.targetContrast==0.075
-%                 glCallList(ds.lowcontrastTarget); 
-%             end
-%              
-            
-            % stationary object
-            glPushMatrix;
-            glTranslatef(.5*(-pa.LR(pa.trialNumber)),pa.floorHeight+pa.paddleHalfHeight,-pa.floorWidth/2); 
-            glCallList(ds.paddleList);
-            glPopMatrix;
-            
-            
-            % place random stationary objects
-            for b = 1:pa.nball
-            	glPushMatrix;
-                glTranslatef(pa.positions(1,b),pa.floorHeight+pa.paddleHalfHeight,pa.positions(2,b)); 
-                glCallList(ds.paddleList);
-                glPopMatrix;
+
+
+                % place random stationary objects
+                for b = 1:pa.nball
+                    glPushMatrix;
+                    glTranslatef(pa.positions(1,b),pa.floorHeight+pa.paddleHalfHeight,pa.positions(2,b)); 
+                    glCallList(ds.paddleList);
+                    glPopMatrix;
+                end
             end
             
                 
@@ -431,7 +436,7 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
 %             glDepthMask(GL.TRUE); % resume the ability to make changes to the depth buffer for proper rendering of remaining components
 %             glBlendFunc(GL.SRC_ALPHA, GL.ONE_MINUS_SRC_ALPHA); % re-store the proper blending function
 %             
-
+            if ds.binocular || (~ds.binocular && ds.renderPass)
                 if pa.LRresponse(pa.trialNumber) == pa.LR(pa.trialNumber)  %does the response match the target side
                         glPushMatrix;
                         glTranslatef(0,pa.floorHeight+pa.fixationSize,-(pa.floorWidth/2)); % display green sphere
@@ -443,6 +448,7 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
                         glCallList(ds.incorrect);
                         glPopMatrix;
                 end
+            end
                 
         elseif (kb.responseGiven && pa.feedbackFlag==0) || (kb.responseGiven && pa.feedbackFlag==1 && pa.feedbackGiven==1) || (kb.responseGiven && pa.feedbackFlag==2 && pa.feedbackGiven==1) % done, set up for the next trial (i.e., determine the new random trajectory)
             %                 5, % debugging flag
@@ -467,14 +473,15 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
 %         glCallList(ds.wallTexture);
 %         glBindTexture(GL.TEXTURE_2D,ds.ceiling_texid);
 %         glCallList(ds.ceilingTexture);
-        
+        if ds.binocular || (~ds.binocular && ds.renderPass)
             glBindTexture(GL.TEXTURE_2D,ds.floor_texid);
             glCallList(ds.floorTexture);
         
 %         glBindTexture(GL.TEXTURE_2D,ds.wall_texid); 
 %         glCallList(ds.surroundTexture); % 1/f noise texture surround -  comes from CreateTexturesforSDK2.m
 %           
-        glBindTexture(GL.TEXTURE_2D, 0);
+            glBindTexture(GL.TEXTURE_2D, 0);
+        end
         
         % Manually disable 3D mode before switching to other eye or to flip:
         Screen('EndOpenGL', ds.w);
