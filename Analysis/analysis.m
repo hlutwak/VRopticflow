@@ -58,6 +58,6 @@ for speed = 1:length(pa.speed)
     for direction = 1:length(pa.direction)
         idx_dir = find(pa.fullFactorial(:,4) == pa.direction(direction));
         idx = intersect(idx_speed, idx_dir);
-        pcorrect(cond) = sum(eq(pa.LR(idx), pa.LRresponse(idx)))/pa.nRepeats;
+        pcorrect(speed,direction) = sum(eq(pa.LR(idx), pa.LRresponse(idx)))/pa.nRepeats;
     end
 end
