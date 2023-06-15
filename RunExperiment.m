@@ -257,7 +257,7 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
 
             % Target position 
             % make the onset delayed
-            delay = 0.5;
+            delay = 0;
             if ds.vbl <  pa.trialOnset + delay
                 t = 0;
             else
@@ -268,7 +268,7 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
             
             if ds.binocular || (~ds.binocular && ds.renderPass)
                 glPushMatrix;
-                glTranslatef(xPosition+.5*(pa.LR(pa.trialNumber)),pa.floorHeight+pa.paddleHalfHeight,zPosition-pa.floorWidth/2); % shift the target to its position along its trajectory for this frame
+                glTranslatef(xPosition+.5*(pa.LR(pa.trialNumber)),pa.floorHeight+pa.paddleHalfHeight+pa.aboveground,zPosition-pa.floorWidth/2); % shift the target to its position along its trajectory for this frame
     %             pa.xPosition = [pa.xPosition, xPosition+.5*(pa.LR(pa.trialNumber))];
     %             pa.zPosition = [pa.zPosition, zPosition-pa.floorWidth/2];
     %             if pa.targetContrast==1
@@ -283,18 +283,18 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
 
                 % stationary object
                 glPushMatrix;
-                glTranslatef(.5*(-pa.LR(pa.trialNumber)),pa.floorHeight+pa.paddleHalfHeight,-pa.floorWidth/2); 
+                glTranslatef(.5*(-pa.LR(pa.trialNumber)),pa.floorHeight+pa.paddleHalfHeight+pa.aboveground,-pa.floorWidth/2); 
                 glCallList(ds.paddleList);
                 glPopMatrix;
 
 
                 % place random stationary objects
-                for b = 1:pa.nball
-                    glPushMatrix;
-                    glTranslatef(pa.positions(1,b),pa.floorHeight+pa.paddleHalfHeight,pa.positions(2,b)); 
-                    glCallList(ds.paddleList);
-                    glPopMatrix;
-                end
+%                 for b = 1:pa.nball
+%                     glPushMatrix;
+%                     glTranslatef(pa.positions(1,b),pa.floorHeight+pa.paddleHalfHeight,pa.positions(2,b)); 
+%                     glCallList(ds.paddleList);
+%                     glPopMatrix;
+%                 end
             end
             
                 

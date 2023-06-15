@@ -51,8 +51,13 @@ end
 
 
 %% response data
-pcorrect = NaN(size(pa.speed));
-for cond = 1:length(pa.speed)
-    idx = find(-pa.fullFactorial(:,2) == pa.speed(cond));
-    pcorrect(cond) = sum(eq(pa.LR(idx), pa.LRresponse(idx)))/pa.nRepeats;
+% 90 is forward, 270 is backward
+pcorrect = NaN(length(pa.speed),length(pa.direction));
+for speed = 1:length(pa.speed)
+    idx_speed = find(pa.fullFactorial(:,3) == pa.speed(speed));
+    for direction = 1:length(pa.direction)
+        idx_dir = find(pa.fullFactorial(:,4) == pa.direction(direction));
+        idx = intersect(idx_speed, idx_dir);
+        pcorrect(cond) = sum(eq(pa.LR(idx), pa.LRresponse(idx)))/pa.nRepeats;
+    end
 end
