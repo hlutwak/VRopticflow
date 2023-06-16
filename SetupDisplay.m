@@ -58,7 +58,7 @@ if ~isempty(ds.hmd) % Oculus connected
     [ds.w, ds.windowRect] = PsychImaging('OpenWindow', ds.screenId, 0, [], [], [], [], ds.multiSample);  % keeps automatically setting the stereo mode to 6 for the oculus - this is because, as indicated in MorphDemo.m: "% Fake some stereomode if HMD is used, to trigger stereo rendering"
 else % Oculus not connected
     if ds.screenId % more than one screen connected, run fullscreen
-        ds.winRect = [];
+        ds.winRect = [0 0 800 400];
     else
         ds.winRect = [0 0 800 400];
     end

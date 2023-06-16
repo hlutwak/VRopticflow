@@ -600,7 +600,9 @@ ds.dot = glGenLists(1);
 glNewList(ds.dot, GL.COMPILE);
 glBegin(GL_POINTS);
 glColor4f(1.0, 1.0, 1.0, 1.0);
-glVertex3f(0.0, 0.0, 0.0);
+for d = 1:pa.ndots
+    glVertex3f(ds, 0.0, 0.0);
+end
 glEnd;
 glEndList();
 
