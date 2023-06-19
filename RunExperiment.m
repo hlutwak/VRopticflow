@@ -152,10 +152,13 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
                eye.modelView = oc.modelViewDataRight(1:4,:);
            else %if hmd is connected
                eye = PsychVRHMD('GetEyePose', ds.hmd, ds.renderPass, ds.globalHeadPose);
-               R = [1 0 0; 0 cos(pa.gazeangle) -sin(pa.gazeangle); 0 sin(pa.gazeangle) cos(pa.gazeangle)];
-               eye.modelView = [1 0 0 0; 0 1 0 0; 0 0 1 -ds.viewingDistance; 0 0 0 1];
-                eye.modelView(1:3,1:3) = eye.modelView(1:3,1:3)*R;  
-                originaleye = eye;
+               if ~ds.trackingFlag
+                   R = [1 0 0; 0 cos(pa.gazeangle) -sin(pa.gazeangle); 0 sin(pa.gazeangle) cos(pa.gazeangle)];
+                   eye.modelView = [1 0 0 0; 0 1 0 0; 0 0 1 -ds.viewingDistance; 0 0 0 1];
+                   eye.modelView(1:3,1:3) = eye.modelView(1:3,1:3)*R;
+                   originaleye = eye;
+               else
+               end
            end
         end
         track_trial = track_trial+1;
@@ -192,7 +195,13 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
             
             
 
-            [pa, kb, eye] = GetKeyboardHeadmotion(pa,ds,kb,eye);
+            if ds.trackingFlag
+                eye = PsychVRHMD('GetEyePose', ds.hmd, ds.renderPass, ds.globalHeadPose);
+            else
+                [pa, kb, eye] = GetKeyboardHeadmotion(pa,ds,kb,eye);
+
+            end
+            
             % this is for saving purposes to recreate participants' head motion
 
             if ds.renderPass % drawing right eye
