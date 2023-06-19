@@ -610,6 +610,14 @@ glColor4f(0,1,0,pa.targetContrast(1));
 gluSphere(quadratic,pa.targetSize,nSlices,nStacks);
 glEndList();
 
+ds.dot = glGenLists(1);
+glNewList(ds.dot, GL.COMPILE);
+glBegin(GL_POINTS);
+glColor4f(1.0, 1.0, 1.0, 1.0);
+glVertex3f(0.0, 0.0, 0.0);
+glEnd;
+glEndList();
+
 
 % Close the OpenGL rendering context
 Screen('EndOpenGL', ds.w);

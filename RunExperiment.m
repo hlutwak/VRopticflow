@@ -4,7 +4,7 @@
 % 6-Jan-2016  jf Edited to improve lagg      ed condition performance
 % 14-Jan-2016 jf  Switched over to Windows platform and optimized the code
 % for timing and stimulus presentation - including now measured gamma
-% correction
+% correction  
 % 19-Aug-2016 jf Added a few modifications: randomized paddle start angle
 % on each trial, feedback options, random/variable lag for lagged condition
 % Dec-Jan-2019 - JF updated code to  work with CV1; minor changes to call of
@@ -14,7 +14,8 @@
 
 % In the Oculus, angles are coded ccw - so, straight right = 0 deg,
 % directly in front of fix ation = 90 deg, straight left = 180 deg, directly
-% behind fixation = 270 deg
+% behind fixation = 270 deg        
+
 
 %% Basic per subject inputs:
 
@@ -149,7 +150,7 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
            eye.modelView = oc.modelViewDataRight(1:4,:);
        else
            if isempty(ds.hmd)
-               eye.modelView = oc.modelViewDataRight(1:4,:);
+               eye.modelView = oc.defaultState.modelViewDataRight;
            else %if hmd is connected
                eye = PsychVRHMD('GetEyePose', ds.hmd, ds.renderPass, ds.globalHeadPose);
                if ~ds.trackingFlag
@@ -186,7 +187,8 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
 %             end
             
             [pa, kb, eye] = GetKeyboardHeadmotion(pa, ds, kb, eye);  % query the keyboard to allow the observer to rotate the paddle and eventually lock in his/her response to initiate a new trial
-
+            oc.modelViewDataRight = [oc.modelViewDataRight; eye.modelView];
+            
         else % hmd connected
             % Query which eye to render in this ds.renderPass, and query its
             % eyePose vector for the predicted eye position to use for the virtual
@@ -256,6 +258,12 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
             glTranslatef(0,pa.floorHeight+pa.fixationSize,-pa.floorWidth/2);
             glCallList(ds.highcontrastTarget);
             glPopMatrix;
+            
+            glPushMatrix;
+            glTranslatef(0,pa.floorHeight+pa.fixationSize,-pa.floorWidth/2+1);
+            glCallList(ds.dot);
+            glPopMatrix;
+            
         end
         
        
@@ -304,6 +312,14 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
 %                     glCallList(ds.paddleList);
 %                     glPopMatrix;
 %                 end
+
+                % dots in scene
+                for b = 1:pa.ndots
+                    glPushMatrix;
+                    glTranslatef(pa.positions(1,b),-.5,pa.positions(2,b)); 
+                    glCallList(ds.dot);
+                    glPopMatrix;
+                end
             end
             
                 

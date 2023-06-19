@@ -43,6 +43,7 @@ pa.baseDir = pwd;
 pa.gazeangle = deg2rad(15); %angle camera is looking at the ground
 pa.translation = 1; %m/s forward
 
+
 pa.fixationDiskRadius = 2.5; % deg
 pa.fixationHalfSquareSize = 1;  % deg - just the 'box' in which the fixation lines will be drawn
 pa.fixationHalfSquare = 0.0157; % m 
@@ -76,7 +77,7 @@ pa.targetRadius = .25; % deg  0.25;
 pa.targetSize = 0.025;% m
 pa.fixationSize = pa.targetSize/2;
 pa.nball = 50; %number of randomly placed objects
-  
+pa.ndots = pa.nball; % number of dots in dot task
 
 %% experimental structure/design
 
