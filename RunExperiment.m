@@ -4,7 +4,7 @@
 % 6-Jan-2016  jf Edited to improve lagg      ed condition performance
 % 14-Jan-2016 jf  Switched over to Windows platform and optimized the code
 % for timing and stimulus presentation - including now measured gamma
-% correction
+% correction  
 % 19-Aug-2016 jf Added a few modifications: randomized paddle start angle
 % on each trial, feedback options, random/variable lag for lagged condition
 % Dec-Jan-2019 - JF updated code to  work with CV1; minor changes to call of
@@ -307,7 +307,7 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
                 % dots in scene
                 for b = 1:pa.ndots
                     glPushMatrix;
-                    glTranslatef(pa.positions(1,b),pa.floorHeight+pa.paddleHalfHeight,pa.positions(2,b)); 
+                    glTranslatef(pa.positions(1,b),-.5,pa.positions(2,b)); 
                     glCallList(ds.dot);
                     glPopMatrix;
                 end
