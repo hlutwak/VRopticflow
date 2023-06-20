@@ -9,9 +9,10 @@ PsychDefaultSetup(2); % the input of 2 means: execute the AssertOpenGL command, 
 
 ds.oculusConnected = 1; %0 % Is the HMD connected
 ds.screenId = max(Screen('Screens')); % Find the screen to use for display:
-ds.multiSample = 8;
+ds.multiSample = 16;
 ds.doSeparateEyeRender = 1; % render two eyes' views
 ds.binocular = 1;
+ds.eyesimulation = 1;
 PsychImaging('PrepareConfiguration');
 
 % even in the 'fixed' viewing condition, we still want to track the head

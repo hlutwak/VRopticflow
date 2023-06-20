@@ -128,6 +128,7 @@ breakTime = 0;  % participants are running in the task
 kb.nextTrialKey = 0;
 track_trial = 0;
 track = [];
+track_theta = [];
 
 while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until all of the trials have been completed or the escape key is pressed to quit out
     
@@ -148,6 +149,7 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
        if pa.trialNumber>1
            eye.eyeIndex = 0;
            eye.modelView = oc.modelViewDataRight(1:4,:);
+
        else
            if isempty(ds.hmd)
                eye.modelView = oc.defaultState.modelViewDataRight;
@@ -158,6 +160,8 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
                    eye.modelView = [1 0 0 0; 0 1 0 0; 0 0 1 -ds.viewingDistance; 0 0 0 1];
                    eye.modelView(1:3,1:3) = eye.modelView(1:3,1:3)*R;
                    originaleye = eye;
+                   theta = pa.gazeangle;
+                   track_theta = [track_theta,theta];
                else
                end
            end
@@ -259,10 +263,10 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
             glCallList(ds.highcontrastTarget);
             glPopMatrix;
             
-            glPushMatrix;
-            glTranslatef(0,pa.floorHeight+pa.fixationSize,-pa.floorWidth/2+1);
-            glCallList(ds.dot);
-            glPopMatrix;
+%             glPushMatrix;
+%             glTranslatef(0,pa.floorHeight+pa.fixationSize,-pa.floorWidth/2+1);
+%             glCallList(ds.dot);
+%             glPopMatrix;
             
         end
         
@@ -326,10 +330,22 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
 %             glBindTexture(GL.TEXTURE_2D,ds.floor_texid);
 %             glCallList(ds.floorTexture);
 
-            eye.modelView(3,4) =  pa.translation.*(ds.vbl-pa.trialOnset); %eye.modelView(3,4) + %eye.modelView(2,4) - %(ds.vbl-pa.trialOnset)
-            track = [track (ds.vbl-pa.trialOnset)];
-            eye.modelView(2,4) = - pa.translation.*(ds.vbl-pa.trialOnset)*sin(pa.gazeangle); %adjust so translation is strictly foward
-
+            if ds.eyesimulation % simulate eye rotation along with translation
+                eye.modelView(3,4) =  pa.translation.*(ds.vbl-pa.trialOnset); %eye.modelView(3,4) + %eye.modelView(2,4) - %(ds.vbl-pa.trialOnset)
+                track = [track (ds.vbl-pa.trialOnset)];
+                    theta = atan(-pa.floorHeight./(pa.floorWidth/2-pa.translation*(ds.vbl-pa.trialOnset))); % update theta for observer fixating at a point at the ground in front of them, fixation m away
+                    dtheta = theta - track_theta(end);
+                    R = [1 0 0; 0 cos(dtheta) -sin(dtheta); 0 sin(dtheta) cos(dtheta)];
+                    eye.modelView(1:3,1:3) = eye.modelView(1:3,1:3)*R;
+                    track_theta = [track_theta, theta];
+                    eye.modelView(2,4) = - pa.translation.*(ds.vbl-pa.trialOnset)*sin(dtheta); %adjust so translation is strictly foward
+            else % just do translation
+                eye.modelView(3,4) =  pa.translation.*(ds.vbl-pa.trialOnset); %eye.modelView(3,4) + %eye.modelView(2,4) - %(ds.vbl-pa.trialOnset)
+                track = [track (ds.vbl-pa.trialOnset)];
+                eye.modelView(2,4) = - pa.translation.*(ds.vbl-pa.trialOnset)*sin(pa.gazeangle); %adjust so translation is strictly foward
+                
+            end
+            
             pa.responseOnset = ds.vbl; % start the timer on the response time
             
 

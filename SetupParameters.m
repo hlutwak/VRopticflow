@@ -40,7 +40,6 @@ pa.baseDir = pwd;
 
 
 %% parameters for the texture surround and virtual 'room'
-pa.gazeangle = deg2rad(15); %angle camera is looking at the ground
 pa.translation = 1; %m/s forward
 
 
@@ -54,6 +53,9 @@ pa.apertureRadius = 7.5;  % deg
 pa.floorHeight = -1; % m
 pa.floorWidth = 6;
 pa.ceilingHeight = 1.5; % m 
+
+pa.gazeangle = atan(-pa.floorHeight/(pa.floorWidth/2)); %angle camera is looking towards the ground
+
     
 %% parameters for the adjustable paddle
 

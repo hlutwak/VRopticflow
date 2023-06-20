@@ -304,7 +304,7 @@ roomSize = 0.45*4;
 % 
 
 % % 1/f floor
-floorSize = 512; % power of 2
+floorSize = 1024; % power of 2
 
 [x,y] = meshgrid(-floorSize+1:floorSize,-floorSize+1:floorSize);
 % temp = zeros(floorSize*floorSize*3, 1);
@@ -321,8 +321,8 @@ noys(4,:,:) = 255;
 glBindTexture(GL_TEXTURE_2D, ds.floor_texid);
 glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, mag_filter);
-glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, min_filter);
+% glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, mag_filter);
+% glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, min_filter);
 glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
 glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, floorSize, floorSize, 0, GL_RGBA, GL_UNSIGNED_BYTE, noys);
 % glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1024, 1024, 0, GL_RGB, GL_UNSIGNED_BYTE, floor_tex_data);
@@ -351,34 +351,34 @@ mul = 1.0;
 ds.floorTexture = glGenLists(1); 
 glNewList(ds.floorTexture, GL.COMPILE);
 
-% glBegin(GL_QUADS);
-% glTexCoord2f(0, 0);
-% glVertex3f(-pa.floorWidth/2,pa.floorHeight,ds.viewingDistance);
-% 
-% glTexCoord2f(0 ,1);
-% glVertex3f(-pa.floorWidth/2,pa.floorHeight,-pa.floorWidth);
-% 
-% glTexCoord2f(1,1);
-% glVertex3f(pa.floorWidth/2,pa.floorHeight,-pa.floorWidth);
-% 
-% glTexCoord2f(1,0);
-% glVertex3f(pa.floorWidth/2,pa.floorHeight,ds.viewingDistance);
-% glEnd;
-
 glBegin(GL_QUADS);
 glTexCoord2f(0, 0);
-glVertex3f(-pa.floorWidth/2,-pa.floorWidth/2,-5);
+glVertex3f(-pa.floorWidth/2,pa.floorHeight,ds.viewingDistance);
 
-glTexCoord2f(0 ,1);
-glVertex3f(-pa.floorWidth/2,pa.floorWidth/2,-5);
+glTexCoord2f(0 ,.5);
+glVertex3f(-pa.floorWidth/2,pa.floorHeight,-pa.floorWidth);
 
-glTexCoord2f(1,1);
-glVertex3f(pa.floorWidth/2,pa.floorWidth/2,-5);
+glTexCoord2f(.5,.5);
+glVertex3f(pa.floorWidth/2,pa.floorHeight,-pa.floorWidth);
 
-glTexCoord2f(1,0);
-glVertex3f(pa.floorWidth/2,-pa.floorWidth/2,-5);
+glTexCoord2f(.5,0);
+glVertex3f(pa.floorWidth/2,pa.floorHeight,ds.viewingDistance);
 glEnd;
-
+% 
+% glBegin(GL_QUADS);
+% glTexCoord2f(0, 0);
+% glVertex3f(-pa.floorWidth/2,-pa.floorWidth/2,-5);
+% 
+% glTexCoord2f(0 ,1);
+% glVertex3f(-pa.floorWidth/2,pa.floorWidth/2,-5);
+% 
+% glTexCoord2f(1,1);
+% glVertex3f(pa.floorWidth/2,pa.floorWidth/2,-5);
+% 
+% glTexCoord2f(1,0);
+% glVertex3f(pa.floorWidth/2,-pa.floorWidth/2,-5);
+% glEnd;
+% 
 glEndList(); % done with the floor
 
 % OLD FLOOR
