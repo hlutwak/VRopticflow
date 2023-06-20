@@ -129,7 +129,7 @@ kb.nextTrialKey = 0;
 track_trial = 0;
 track = [];
 track_theta = [];
-
+track_dtheta = [];
 while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until all of the trials have been completed or the escape key is pressed to quit out
     
     % Get HMD state
@@ -335,6 +335,7 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
                 track = [track (ds.vbl-pa.trialOnset)];
                     theta = atan(-pa.floorHeight./(pa.floorWidth/2-pa.translation*(ds.vbl-pa.trialOnset))); % update theta for observer fixating at a point at the ground in front of them, fixation m away
                     dtheta = theta - track_theta(end);
+                    track_dtheta = [track_dtheta, dtheta];
                     R = [1 0 0; 0 cos(dtheta) -sin(dtheta); 0 sin(dtheta) cos(dtheta)];
                     eye.modelView(1:3,1:3) = eye.modelView(1:3,1:3)*R;
                     track_theta = [track_theta, theta];
