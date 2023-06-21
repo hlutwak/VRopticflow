@@ -345,7 +345,7 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
                     R = [1 0 0; 0 cos(dtheta) -sin(dtheta); 0 sin(dtheta) cos(dtheta)];
                     eye.modelView(1:3,1:3) = eye.modelView(1:3,1:3)*R;
                     track_theta = [track_theta, theta];
-                    eye.modelView(2,4) = -pa.translation.*(ds.vbl-pa.trialOnset)*sin(theta); %adjust so translation is strictly foward
+                    eye.modelView(2,4) = -pa.translation.*(ds.vbl-pa.trialOnset)*sin(dtheta); %adjust so translation is strictly foward
             else % just do translation
                 eye.modelView(3,4) =  pa.translation.*(ds.vbl-pa.trialOnset); %eye.modelView(3,4) + %eye.modelView(2,4) - %(ds.vbl-pa.trialOnset)
                 track = [track (ds.vbl-pa.trialOnset)];
