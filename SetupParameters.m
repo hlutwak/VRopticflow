@@ -73,7 +73,7 @@ pa.paddleOrbitShift = 0.1185;% m
 
 %% parameters for the target - will establish the speed distributions below
 
-pa.targetMotionDuration = 1; % 1 s
+pa.targetMotionDuration = .5; % 1 s
 pa.targetContrast = [1 0.15 0.075]; % fully-visible target, 15% and 7.5% contrast
 pa.targetRadius = .25; % deg  0.25;
 pa.targetSize = 0.025;% m
@@ -91,7 +91,7 @@ pa.nRepeats = 10; % each target contrast condition gets pa.nRepeats trials - 75*
 pa.speed = [0.5, 0.4, 0.3, 0.2, 0.1]; %speeds m/s
 
 
-pa.direction = [deg2rad(90),deg2rad(270)] ; %(0 is to the right, 90 is forward, 270 is backwards)
+pa.direction = deg2rad([0, 45, 90, 135, 180, 225, 270, 315]) ; %(0 is to the right, 90 is forward, 270 is backwards)
 factorial = fullfact([length(pa.speed), length(pa.direction)]); 
 factorial = repmat(factorial,pa.nRepeats,1); % repeat the full factorial design nRepeats times
 pa.fullFactorial = NaN(size(factorial));

@@ -309,19 +309,19 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
     %              
 
                 % stationary object
-                glPushMatrix;
-                glTranslatef(.5*(-pa.LR(pa.trialNumber)),pa.floorHeight+pa.paddleHalfHeight+pa.aboveground,-pa.floorWidth/2); 
-                glCallList(ds.paddleList);
-                glPopMatrix;
+%                 glPushMatrix;
+%                 glTranslatef(.5*(-pa.LR(pa.trialNumber)),pa.floorHeight+pa.paddleHalfHeight+pa.aboveground,-pa.floorWidth/2); 
+%                 glCallList(ds.paddleList);
+%                 glPopMatrix;
 
 
                 % place random stationary objects
-%                 for b = 1:pa.nball
-%                     glPushMatrix;
-%                     glTranslatef(pa.positions(1,b),pa.floorHeight+pa.paddleHalfHeight,pa.positions(2,b)); 
-%                     glCallList(ds.paddleList);
-%                     glPopMatrix;
-%                 end
+                for b = 1:pa.nball
+                    glPushMatrix;
+                    glTranslatef(pa.positions(1,b),pa.floorHeight+pa.paddleHalfHeight,pa.positions(2,b)); 
+                    glCallList(ds.paddleList);
+                    glPopMatrix;
+                end
 
                 % dots in scene
 %                 for b = 1:pa.ndots
@@ -342,15 +342,14 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
                     theta = atan(-pa.floorHeight./(pa.floorWidth/2-pa.translation*(ds.vbl-pa.trialOnset))); % update theta for observer fixating at a point at the ground in front of them, fixation m away
                     dtheta = theta - track_theta(end);
                     track_dtheta = [track_dtheta, dtheta];
-                    R = [1 0 0; 0 cos(dtheta) -sin(dtheta); 0 sin(dtheta) cos(dtheta)];
+                    R = [1 0 0; 0 cos(dtheta) -sin(dtheta); 0 sin(dtheta) cos(dtheta)]; % viewing angle is changed upon each update, so only rotate the difference in what the angle should be
                     eye.modelView(1:3,1:3) = eye.modelView(1:3,1:3)*R;
                     track_theta = [track_theta, theta];
-                    eye.modelView(2,4) = -pa.translation.*(ds.vbl-pa.trialOnset)*sin(theta); %adjust so translation is strictly foward
+                    eye.modelView(2,4) = -pa.translation.*(ds.vbl-pa.trialOnset)*sin(theta); %adjust so translation is strictly foward, absolute world coordinate
             else % just do translation
                 eye.modelView(3,4) =  pa.translation.*(ds.vbl-pa.trialOnset); %eye.modelView(3,4) + %eye.modelView(2,4) - %(ds.vbl-pa.trialOnset)
                 track = [track (ds.vbl-pa.trialOnset)];
                 eye.modelView(2,4) = - pa.translation.*(ds.vbl-pa.trialOnset)*sin(pa.gazeangle); %adjust so translation is strictly foward
-                
             end
             
             pa.responseOnset = ds.vbl; % start the timer on the response time
