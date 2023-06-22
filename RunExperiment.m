@@ -309,16 +309,16 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
     %              
 
                 % stationary object
-%                 glPushMatrix;
-%                 glTranslatef(.5*(-pa.LR(pa.trialNumber)),pa.floorHeight+pa.paddleHalfHeight+pa.aboveground,-pa.floorWidth/2); 
-%                 glCallList(ds.paddleList);
-%                 glPopMatrix;
+                glPushMatrix;
+                glTranslatef(.5*(-pa.LR(pa.trialNumber)),pa.floorHeight+pa.paddleHalfHeight+pa.aboveground,-pa.floorWidth/2); 
+                glCallList(ds.paddleList);
+                glPopMatrix;
 
 
                 % place random stationary objects
                 for b = 1:pa.nball
                     glPushMatrix;
-                    glTranslatef(pa.positions(1,b),pa.floorHeight+pa.paddleHalfHeight,pa.positions(2,b)); 
+                    glTranslatef(pa.positions(1,b),pa.floorHeight+pa.paddleHalfHeight+pa.positions(2,b),pa.positions(3,b)); 
                     glCallList(ds.paddleList);
                     glPopMatrix;
                 end

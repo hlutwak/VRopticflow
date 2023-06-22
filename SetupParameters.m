@@ -88,7 +88,7 @@ pa.trialNumber = 0; % gotta start somewhere
 % Set up a full factorial design 
 pa.nRepeats = 10; % each target contrast condition gets pa.nRepeats trials - 75*3 = 225 per block 
 % pa.speed = [0.5, 0.4, 0.3, 0.2,0.1]; %speeds m/s
-pa.speed = [0.5, 0.4, 0.3, 0.2, 0.1]; %speeds m/s
+pa.speed = [0.5, 0.25, 0.1]; %speeds m/s
 
 
 pa.direction = deg2rad([0, 45, 90, 135, 180, 225, 270, 315]) ; %(0 is to the right, 90 is forward, 270 is backwards)

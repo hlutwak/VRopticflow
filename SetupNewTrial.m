@@ -18,9 +18,10 @@ if pa.trialNumber>0 % if it's past the first trial, wait for the Up Arrow key to
             
             if pa.trialNumber <= pa.nTrials
                 
-                pa.positions = -pa.floorWidth/2+2*pa.floorWidth/2*rand(2,pa.nball); %uniform random positions across floor
-                pa.positions(2,:) = pa.positions(2,:)-pa.floorWidth/2;
-                exclude = [0;-pa.floorWidth/2]; %x,z coordinate where fixation target is
+                pa.positions = -pa.floorWidth/2+2*pa.floorWidth/2*rand(3,pa.nball); %uniform random positions across floor, random height within range of y position of moving target
+                pa.positions(3,:) = pa.positions(3,:)-pa.floorWidth/2;
+                pa.positions(2,:) = pa.aboveground*rand(1,pa.nball);
+                exclude = [0; pa.floorHeight;-pa.floorWidth/2]; %x,z coordinate where fixation target is
                 while sum(vecnorm(pa.positions-exclude)<pa.fixationSize+pa.paddleHalfWidth)>0 %at least one position overlaps with fixation
                     idx = find(vecnorm(pa.positions-exclude)<pa.fixationSize+pa.paddleHalfWidth);
                     pa.positions(:,idx) = -pa.floorWidth/2+2*pa.floorWidth/2*rand(2,length(idx));
@@ -72,15 +73,16 @@ else % if it is just the first trial, start right up after the subject presses '
         pa.xSpeed = pa.fullFactorial(pa.thisTrial,1);
         pa.zSpeed = pa.fullFactorial(pa.thisTrial,2);
        
-
-       pa.positions = -pa.floorWidth/2+2*pa.floorWidth/2*rand(2,pa.nball); %uniform random positions across floor
-       pa.positions(2,:) = pa.positions(2,:)-pa.floorWidth/2;
-       exclude = [0;-pa.floorWidth/2]; %x,z coordinate where fixation target is
-       while sum(vecnorm(pa.positions-exclude)<pa.fixationSize+pa.paddleHalfWidth)>0 %at least one position overlaps with fixation
-           idx = find(vecnorm(pa.positions-exclude)<pa.fixationSize+pa.paddleHalfWidth);
-           pa.positions(:,idx) = -pa.floorWidth/2+2*pa.floorWidth/2*rand(2,length(idx));
-       end
-        
+                pa.positions = -pa.floorWidth/2+2*pa.floorWidth/2*rand(3,pa.nball); %uniform random positions across floor, random height within range of y position of moving target
+                pa.positions(3,:) = pa.positions(3,:)-pa.floorWidth/2;
+                pa.positions(2,:) = pa.aboveground*rand(1,pa.nball);
+                exclude = [0; pa.floorHeight;-pa.floorWidth/2]; %x,z coordinate where fixation target is
+                while sum(vecnorm(pa.positions-exclude)<pa.fixationSize+pa.paddleHalfWidth)>0 %at least one position overlaps with fixation
+                    idx = find(vecnorm(pa.positions-exclude)<pa.fixationSize+pa.paddleHalfWidth);
+                    pa.positions(:,idx) = -pa.floorWidth/2+2*pa.floorWidth/2*rand(2,length(idx));
+                end
+                
+      
         pa.timeToPaddle = (pa.paddleOrbitShift-pa.paddleHalfWidth*3.8) ./ sqrt(pa.xSpeed.^2 + pa.zSpeed.^2);
 
                 if pa.timeToPaddle > 2
