@@ -36,7 +36,6 @@ vecnorm(oc.modelViewDataLeft(end-3:end-1,4)-oc.modelViewDataLeft(1:3,4))
 
 figure, scatter(pa.fullFactorial(:,1), pa.fullFactorial(:,2)), axis equal
 
-
 %% screencap
 s = size(screenCap);
 
@@ -48,6 +47,15 @@ for ii = 1:s(3)
     axis equal
     pause(1/10)
 end
+
+%% eye tracking data
+D=dir('Data');
+gaze = readtable('Data\2023-06-29_12-57-00-be33b51d\gaze.csv');
+worldtime = readtable('Data\2023-06-29_12-57-00-be33b51d\world_timestamps.csv');
+x = table2array(gaze(:,9));
+y = table2array(gaze(:,10));
+
+figure, scatter(x,y), axis equal
 
 
 %% response data
@@ -61,3 +69,4 @@ for speed = 1:length(pa.speed)
         pcorrect(speed,direction) = sum(eq(pa.LR(idx), pa.LRresponse(idx)))/pa.nRepeats;
     end
 end
+
