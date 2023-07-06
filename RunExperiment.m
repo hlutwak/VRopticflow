@@ -9,6 +9,7 @@
 % on each trial, feedback options, random/variable lag for lagged condition
 % Dec-Jan-2019 - JF updated code to  work with CV1; minor changes to call of
 % projection matrices, added in  CV1-specific FOV and other parameters
+% Jan 2023 - HL changed to detecting object motion experiment 
 
 %% Important note about coding of angles in Oculus space:
 
@@ -61,10 +62,63 @@ if ~DEBUG_FLAG
     %command window - it's really annoying and can cause all sorts of problems! % CSB: debug
 end
 
+
+%% Run eye tracking
+finishedCalibration = 0;
+readyToBegin = 0; 
+
+while ~finishedCalibration && ~readyToBegin
+       
+    % Camera position when using head tracking + HMD: (according to SuperShapeDemo.m)
+    globalPos = [0, 0, 0]; % x,y,z  % in meters - just put something in here for now, will likely be much larger later for viewing the tv/'real' world - the demos use large values too
+    heading = 0; % yaw
+    ds.globalHeadPose = PsychGetPositionYawMatrix(globalPos, heading); % initialize observer's start position to the default camera position specified above
+    
+    if isempty(ds.hmd) % Oculus not connected
+        % This is already done in SetupDisplay
+        % load DefaultHMDParameters.mat;
+        % oc.defaultState = defaultState;
+        % Some stuff needs to be done here to get a proper initialState
+        % There is something messed up with using both initial and default
+        % state
+        % can we simplify using only one or the other?
+        % oc.initialState = defaultState.initialState;    
+        oc.initialState = oc.defaultState;
+        oc.initialState.modelView{1} = oc.defaultState.modelViewDataLeft;
+        oc.initialState.modelView{2} = oc.defaultState.modelViewDataRight;
+    else % Oculus connected
+        oc.initialState = PsychVRHMD('PrepareRender', ds.hmd, ds.globalHeadPose);  % get the state of the hmd now
+    end
+    
+    for renderPass = 0:1 % loop over eyes
+        ds.renderPass = renderPass;
+        Screen('SelectStereoDrawBuffer',ds.w,ds.renderPass);
+        Screen('BeginOpenGL',ds.w);
+                            
+        % Setup camera position and orientation for this eyes view:
+        glMatrixMode(GL.PROJECTION)
+        glLoadMatrixd(ds.projMatrix{renderPass + 1});
+        
+        modelView = oc.initialState.modelView{ds.renderPass + 1}; % Use per-eye modelView matrices
+        glLoadMatrixd(modelView); 
+        
+        Screen('EndOpenGL', ds.w);
+        Screen('DrawText',ds.w,'Eye Calibration. Press SPACE to end.',(ds.textCoords(1)-200*ds.renderPass)-100,ds.textCoords(2),[1 1 1]);
+
+    end
+    
+    Screen('DrawingFinished', ds.w);
+    ds.vbl = Screen('Flip', ds.w);
+    
+    [kb.keyIsDown, kb.secs, kb.keyCode] = KbCheck(-1); % query the keyboard
+    if kb.keyIsDown && kb.keyCode(kb.spacebarKey)
+        finishedCalibration=1;
+    end 
+end
 %% Start the experiment - opening screen, getting the participant set
  
 readyToBegin = 0; 
-while ~readyToBegin % confirm everything's ready to go
+while ~readyToBegin && finishedCalibration% confirm everything's ready to go
     
     % Camera position when using head tracking + HMD: (according to SuperShapeDemo.m)
     globalPos = [0, 0, 0]; % x,y,z  % in meters - just put something in here for now, will likely be much larger later for viewing the tv/'real' world - the demos use large values too

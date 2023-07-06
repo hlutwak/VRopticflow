@@ -57,7 +57,7 @@ y = table2array(gaze(:,10));
 
 figure, scatter(x,y), axis equal
 
-
+figure, plot(x), hold on, plot(y)
 %% response data
 % 90 is forward, 270 is backward
 pcorrect = NaN(length(pa.speed),length(pa.direction));
