@@ -102,14 +102,13 @@ while ~finishedCalibration && ~readyToBegin
         modelView = oc.initialState.modelView{ds.renderPass + 1}; % Use per-eye modelView matrices
         glLoadMatrixd(modelView); 
 
-        glClearColor(.5,.5,.5,1); % gray background
-        glClear(); % clear the buffers - must be done for every frame
-        glColor3f(1,1,1);
+%         glClearColor(.5,.5,.5,1); % gray background
+%         glClear(); % clear the buffers - must be done for every frame
+%         glColor3f(1,1,1);
        
         
-        glBindTexture(GL.TEXTURE_2D,ds.wall_texid); 
-        glCallList(ds.surroundTexture); % 1/f noise texture surround -  comes from CreateTexturesforSDK2.m
-          
+            glBindTexture(GL.TEXTURE_2D,ds.floor_texid);
+            glCallList(ds.floorTexture);
         
         % Manually disable 3D mode before switching to other eye or to flip:
         Screen('EndOpenGL', ds.w);
