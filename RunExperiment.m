@@ -65,7 +65,7 @@ end
 
 %% Run eye tracking
 finishedCalibration = 0;
-readyToBegin = 0; 
+readyToBegin = 0;   
 
 while ~finishedCalibration && ~readyToBegin
        
@@ -92,19 +92,27 @@ while ~finishedCalibration && ~readyToBegin
     
     for renderPass = 0:1 % loop over eyes
         ds.renderPass = renderPass;
+        % Setup camera position and orientation for this eyes view:
         Screen('SelectStereoDrawBuffer',ds.w,ds.renderPass);
         Screen('BeginOpenGL',ds.w);
-                            
-        % Setup camera position and orientation for this eyes view:
+        
         glMatrixMode(GL.PROJECTION)
         glLoadMatrixd(ds.projMatrix{renderPass + 1});
         
         modelView = oc.initialState.modelView{ds.renderPass + 1}; % Use per-eye modelView matrices
         glLoadMatrixd(modelView); 
-        
-        Screen('EndOpenGL', ds.w);
-        Screen('DrawText',ds.w,'Eye Calibration. Press SPACE to end.',(ds.textCoords(1)-200*ds.renderPass)-100,ds.textCoords(2),[1 1 1]);
 
+        glClearColor(.5,.5,.5,1); % gray background
+        glClear(); % clear the buffers - must be done for every frame
+        glColor3f(1,1,1);
+       
+        
+        glBindTexture(GL.TEXTURE_2D,ds.wall_texid); 
+        glCallList(ds.surroundTexture); % 1/f noise texture surround -  comes from CreateTexturesforSDK2.m
+          
+        
+        % Manually disable 3D mode before switching to other eye or to flip:
+        Screen('EndOpenGL', ds.w);
     end
     
     Screen('DrawingFinished', ds.w);
@@ -116,7 +124,7 @@ while ~finishedCalibration && ~readyToBegin
     end 
 end
 %% Start the experiment - opening screen, getting the participant set
- 
+pause(.5) 
 readyToBegin = 0; 
 while ~readyToBegin && finishedCalibration% confirm everything's ready to go
     
@@ -152,7 +160,7 @@ while ~readyToBegin && finishedCalibration% confirm everything's ready to go
         
         modelView = oc.initialState.modelView{ds.renderPass + 1}; % Use per-eye modelView matrices
         glLoadMatrixd(modelView); 
-        
+                
         Screen('EndOpenGL', ds.w);
         Screen('DrawText',ds.w,'Ready to start the experiment? Press SPACE to confirm.',(ds.textCoords(1)-200*ds.renderPass)-100,ds.textCoords(2),[1 1 1]);
 
@@ -169,6 +177,7 @@ end
 
 
 %% Participant is ready, so let's go
+pause(1);
 ds.tElapsed = 0;
 ds.fCount = 0;
 
