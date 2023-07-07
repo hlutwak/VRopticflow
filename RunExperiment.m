@@ -1,7 +1,7 @@
 % function RunExperiment
 
 % 14-Dec-2015  jf Written. Derived from OculusSDK2PongDemo_Fixed.m
-% 6-Jan-2016  jf Edited to improve lagg      ed condition performance
+% 6-Jan-2016  jf Edited to improve lagged condition performance
 % 14-Jan-2016 jf  Switched over to Windows platform and optimized the code
 % for timing and stimulus presentation - including now measured gamma
 % correction  
@@ -47,7 +47,7 @@ end
 global GL; % GL data structure needed for all OpenGL programs
 InitializeMatlabOpenGL(1);
 PsychDefaultSetup(2); % the input of 2 means: execute the AssertOpenGL command, execute KbName('UnifyKeyNames') routine, AND unifies the color mode and switches from 0-255 to 0.0-1.0 - color part only impacts the current function or script, not ones that are called
-
+ 
 addpath(genpath([pwd filesep() 'Tools'])); % contains 'isodd.m' and 'oneoverf.m' for texture rendering
 
 % Initialize screen, experimental parameters, etc.
@@ -86,32 +86,38 @@ while ~finishedCalibration && ~readyToBegin
         oc.initialState = oc.defaultState;
         oc.initialState.modelView{1} = oc.defaultState.modelViewDataLeft;
         oc.initialState.modelView{2} = oc.defaultState.modelViewDataRight;
+        
     else % Oculus connected
         oc.initialState = PsychVRHMD('PrepareRender', ds.hmd, ds.globalHeadPose);  % get the state of the hmd now
     end
     
     for renderPass = 0:1 % loop over eyes
         ds.renderPass = renderPass;
-        % Setup camera position and orientation for this eyes view:
         Screen('SelectStereoDrawBuffer',ds.w,ds.renderPass);
         Screen('BeginOpenGL',ds.w);
-        
+                            
+        % Setup camera position and orientation for this eyes view:
         glMatrixMode(GL.PROJECTION)
         glLoadMatrixd(ds.projMatrix{renderPass + 1});
         
         modelView = oc.initialState.modelView{ds.renderPass + 1}; % Use per-eye modelView matrices
         glLoadMatrixd(modelView); 
+        
+        glClearColor(.5,.5,.5,1); % gray background
+        glClear(); % clear the buffers - must be done for every frame
+        glColor3f(1,1,1);
+        
+        glPushMatrix;
+        glTranslatef(0,pa.floorHeight+pa.fixationSize,-pa.floorWidth/2);
+        glCallList(ds.highcontrastTarget);
+        glPopMatrix;
+        
+        
+        glBindTexture(GL.TEXTURE_2D, 0);
 
-%         glClearColor(.5,.5,.5,1); % gray background
-%         glClear(); % clear the buffers - must be done for every frame
-%         glColor3f(1,1,1);
-       
-        
-            glBindTexture(GL.TEXTURE_2D,ds.floor_texid);
-            glCallList(ds.floorTexture);
-        
-        % Manually disable 3D mode before switching to other eye or to flip:
         Screen('EndOpenGL', ds.w);
+%         Screen('DrawText',ds.w,'Eye Calibration. Press SPACE to end.',(ds.textCoords(1)-200*ds.renderPass)-100,ds.textCoords(2),[1 1 1]);
+
     end
     
     Screen('DrawingFinished', ds.w);
@@ -144,6 +150,7 @@ while ~readyToBegin && finishedCalibration% confirm everything's ready to go
         oc.initialState = oc.defaultState;
         oc.initialState.modelView{1} = oc.defaultState.modelViewDataLeft;
         oc.initialState.modelView{2} = oc.defaultState.modelViewDataRight;
+        
     else % Oculus connected
         oc.initialState = PsychVRHMD('PrepareRender', ds.hmd, ds.globalHeadPose);  % get the state of the hmd now
     end
