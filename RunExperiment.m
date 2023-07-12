@@ -83,24 +83,33 @@ while ~finishedCalibration && ~readyToBegin
         % state
         % can we simplify using only one or the other?
         % oc.initialState = defaultState.initialState;    
-        oc.initialState = oc.defaultState;
-        oc.initialState.modelView{1} = oc.defaultState.modelViewDataLeft;
-        oc.initialState.modelView{2} = oc.defaultState.modelViewDataRight;
-        
+%         oc.initialState = oc.defaultState;
+%         oc.initialState.modelView{1} = oc.defaultState.modelViewDataLeft;
+%         oc.initialState.modelView{2} = oc.defaultState.modelViewDataRight;
+        state = oc.defaultState; % just set to a default, non-updating viewpoint
+
+        eye.modelView = oc.defaultState.modelViewDataRight;
+        R = [1 0 0; 0 cos(pa.gazeangle) -sin(pa.gazeangle); 0 sin(pa.gazeangle) cos(pa.gazeangle)];
+        eye.modelView = [1 0 0 0; 0 1 0 0; 0 0 1 -ds.viewingDistance; 0 0 0 1];
+        eye.modelView(1:3,1:3) = eye.modelView(1:3,1:3)*R;
+
     else % Oculus connected
         oc.initialState = PsychVRHMD('PrepareRender', ds.hmd, ds.globalHeadPose);  % get the state of the hmd now
     end
     
     for renderPass = 0:1 % loop over eyes
         ds.renderPass = renderPass;
+        [pa, kb, eye] = GetKeyboardHeadmotion(pa, ds, kb, eye);
+  
         Screen('SelectStereoDrawBuffer',ds.w,ds.renderPass);
+        modelView = eye.modelView;
         Screen('BeginOpenGL',ds.w);
                             
         % Setup camera position and orientation for this eyes view:
         glMatrixMode(GL.PROJECTION)
         glLoadMatrixd(ds.projMatrix{renderPass + 1});
         
-        modelView = oc.initialState.modelView{ds.renderPass + 1}; % Use per-eye modelView matrices
+%         modelView = oc.initialState.modelView{ds.renderPass + 1}; % Use per-eye modelView matrices
         glLoadMatrixd(modelView); 
         
         glClearColor(.5,.5,.5,1); % gray background
@@ -108,10 +117,16 @@ while ~finishedCalibration && ~readyToBegin
         glColor3f(1,1,1);
         
         glPushMatrix;
-        glTranslatef(0,pa.floorHeight+pa.fixationSize,-pa.floorWidth/2);
-        glCallList(ds.highcontrastTarget);
+        glTranslatef(0,0, -3);
+        glCallList(ds.incorrect);
         glPopMatrix;
+
         
+        glBindTexture(GL.TEXTURE_2D, ds.floor_texid);
+        glCallList(ds.floorTexture);
+        
+        glBindTexture(GL.TEXTURE_2D, ds.wall_texid);
+        glCallList(ds.surroundTexture);
         
         glBindTexture(GL.TEXTURE_2D, 0);
 
