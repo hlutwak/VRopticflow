@@ -50,14 +50,24 @@ end
 
 %% eye tracking data
 D=dir('Data');
-gaze = readtable('Data\2023-06-29_12-57-00-be33b51d\gaze.csv');
-worldtime = readtable('Data\2023-06-29_12-57-00-be33b51d\world_timestamps.csv');
+gaze = readtable('Data\2023-07-18_15-25-53-e9b61042\gaze.csv');
+worldtime = readtable('Data\2023-07-18_15-25-53-e9b61042\world_timestamps.csv');
+t= table2array(worldtime(:,end));
+timestamps = table2array(gaze(:,3));
 x = table2array(gaze(:,9));
 y = table2array(gaze(:,10));
 
 figure, scatter(x,y), axis equal
 
-figure, plot(x), hold on, plot(y)
+figure, plot(timestamps,x), hold on, plot(y)
+
+trial_interval = [1000:3500];
+x_trials = x(trial_interval);
+y_trials = y(trial_interval);
+
+% have to take data from stimulus with eye simulation
+change_angle = rad2deg(max(track_theta) - min(track_theta));
+
 %% response data
 % 90 is forward, 270 is backward
 pcorrect = NaN(length(pa.speed),length(pa.direction));

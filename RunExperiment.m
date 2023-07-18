@@ -235,7 +235,7 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
                if ~ds.trackingFlag
                    R = [1 0 0; 0 cos(pa.gazeangle) -sin(pa.gazeangle); 0 sin(pa.gazeangle) cos(pa.gazeangle)];
                    eye.modelView = [1 0 0 0; 0 1 0 0; 0 0 1 -ds.viewingDistance; 0 0 0 1];
-                   eye.modelView(1:3,1:3) = eye.modelView(1:3,1:3)*R;
+%                    eye.modelView(1:3,1:3) = eye.modelView(1:3,1:3)*R;
                    originaleye = eye;
                    theta = pa.gazeangle;
                    track_theta = [track_theta,theta];
@@ -344,6 +344,21 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
 %             glTranslatef(0,pa.floorHeight+pa.fixationSize,-pa.floorWidth/2+1);
 %             glCallList(ds.dot);
 %             glPopMatrix;
+
+
+% testing eye calibration
+        diag = .5;
+        dist = -2;
+        coordpos = [0,0,dist; -diag,diag,dist; diag,diag,dist; diag,-diag,dist; -diag,-diag,dist];
+        ncoordpts = size(coordpos,1);
+                for b = 1:ncoordpts
+                    glPushMatrix;
+                    glTranslatef(coordpos(b,1),coordpos(b,2),coordpos(b,3)); 
+                    glCallList(ds.highcontrastTarget);
+                    glPopMatrix;
+                end
+            
+            
             
         end
         
@@ -418,9 +433,10 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
                     track_theta = [track_theta, theta];
                     eye.modelView(2,4) = -pa.translation.*(ds.vbl-pa.trialOnset)*sin(theta); %adjust so translation is strictly foward, absolute world coordinate
             else % just do translation
-                eye.modelView(3,4) =  pa.translation.*(ds.vbl-pa.trialOnset); %eye.modelView(3,4) + %eye.modelView(2,4) - %(ds.vbl-pa.trialOnset)
-                track = [track (ds.vbl-pa.trialOnset)];
-                eye.modelView(2,4) = - pa.translation.*(ds.vbl-pa.trialOnset)*sin(pa.gazeangle); %adjust so translation is strictly foward
+%                 eye.modelView(3,4) =  pa.translation.*(ds.vbl-pa.trialOnset); %eye.modelView(3,4) + %eye.modelView(2,4) - %(ds.vbl-pa.trialOnset)
+%                 track = [track (ds.vbl-pa.trialOnset)];
+%                 eye.modelView(2,4) = - pa.translation.*(ds.vbl-pa.trialOnset)*sin(pa.gazeangle); %adjust so translation is strictly foward
+%             
             end
             
             pa.responseOnset = ds.vbl; % start the timer on the response time
