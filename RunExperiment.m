@@ -347,9 +347,9 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
 
 
 % testing eye calibration
-        diag = .5;
+        w = .5;
         dist = -2;
-        coordpos = [0,0,dist; -diag,diag,dist; diag,diag,dist; diag,-diag,dist; -diag,-diag,dist];
+        coordpos = [0,0,dist; -w,w,dist; w,w,dist; w,-w,dist; -w,-w,dist];
         ncoordpts = size(coordpos,1);
                 for b = 1:ncoordpts
                     glPushMatrix;
