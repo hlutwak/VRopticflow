@@ -62,7 +62,7 @@ figure, scatter(x,y), axis equal
 
 figure, plot(timestamps,x, 'linewidth', 2), hold on, plot(timestamps,y,'linewidth', 2)
 
-trial_interval = [2636:15260];
+trial_interval = [13080:15260];
 x_trials = x(trial_interval);
 y_trials = y(trial_interval);
 
@@ -70,6 +70,7 @@ y_trials = y(trial_interval);
 figure, scatter(x_trials, y_trials)
 interval_duration = (timestamps(trial_interval(end))-timestamps(trial_interval(1)))/1e9
 cov(x_trials, y_trials)
+std(x_trials)
 
 % load behavioral file
 load('Data\HL_pilot-fixed-20230726T160928-0.mat')
@@ -77,8 +78,6 @@ load('Data\HL_pilot-fixed-20230726T160928-0.mat')
 % have to take data from stimulus with eye simulation
 change_angle = rad2deg(max(track_theta) - min(track_theta));
 
-% fixations
-fixations = readtable('Data/2023-07-26_16-09-57-7a8b312d/fixations.csv');
 
 
 %% response data
