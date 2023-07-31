@@ -11,7 +11,7 @@ ds.oculusConnected = 1; %0 % Is the HMD connected
 ds.screenId = max(Screen('Screens')); % Find the screen to use for display:
 ds.multiSample = 16;
 ds.doSeparateEyeRender = 1; % render two eyes' views
-ds.binocular = 1;
+ds.binocular = 0;
 ds.eyesimulation = 0;
 PsychImaging('PrepareConfiguration');
 
