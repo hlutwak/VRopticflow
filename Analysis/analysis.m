@@ -84,12 +84,46 @@ fixations = readtable('Data/2023-07-26_16-09-57-7a8b312d/fixations.csv');
 %% response data
 % 90 is forward, 270 is backward
 pcorrect = NaN(length(pa.speed),length(pa.direction));
+data = NaN(length(pa.speed), 3, length(pa.direction));
 for speed = 1:length(pa.speed)
     idx_speed = find(pa.fullFactorial(:,3) == pa.speed(speed));
     for direction = 1:length(pa.direction)
         idx_dir = find(pa.fullFactorial(:,4) == pa.direction(direction));
         idx = intersect(idx_speed, idx_dir);
         pcorrect(speed,direction) = sum(eq(pa.LR(idx), pa.LRresponse(idx)))/pa.nRepeats;
+        data(speed, :, direction) = [pa.speed(speed), sum(eq(pa.LR(idx), pa.LRresponse(idx))), pa.nRepeats];
     end
+end
+
+%% psignifit 
+addpath('C:\Users\Hope\Documents\MATLAB\psignifit-master');
+%addpath('/Users/hopelutwak/Documents/MATLAB/psignifit')
+% set options for psychometric functions
+options             = struct;   % initialize as an empty struct
+options.sigmoidName = 'weibull';   
+options.expType     = '2AFC';   % choose 2-AFC as the paradigm of the experiment
+                                % this sets the guessing rate to .5 and
+                                % fits the rest of the parameters
+options.fixedPars = NaN(5,1);                                
+options.fixedPars(5) = 0;       % fix eta (dispersion) to zero
+
+figure, hold on
+
+%loop through stim conditions and get threshold and plot curves
+n_conditions = length(pa.direction);
+thresholds = zeros(1,n_conditions);
+CI = zeros(2, n_conditions);
+for ii = 1:n_conditions
+
+    result = psignifit(data(:,:,ii),options);
+    thresholds(ii)= exp(result.Fit(1));
+    CI(:,ii) =exp(result.conf_Intervals(1,:,1))'; %get CI for threshold (first row) at 95% (first layer)
+
+    subplot(1,n_conditions,ii)
+    hold on
+    plotPsych(result);
+    ylim([0 1])
+    title(num2str(pa.direction(ii)))
+%     sgtitle(stim) 
 end
 
