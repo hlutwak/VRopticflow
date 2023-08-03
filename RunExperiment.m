@@ -104,14 +104,17 @@ while ~finishedCalibration && ~readyToBegin
         modelView = [1 0 0 0; 0 1 0 0; 0 0 1 -ds.viewingDistance; 0 0 0 1];
         glLoadMatrixd(modelView); 
         
+
         glClearColor(.5,.5,.5,1); % gray background
+        
+        
         glClear(); % clear the buffers - must be done for every frame
         glColor3f(1,1,1);
         
             % fixation target
             glPushMatrix;
             glTranslatef(0,0, -3);
-            glCallList(ds.paddleList);
+            glCallList(ds.fixation);
             glPopMatrix;
             
             
@@ -327,7 +330,12 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
         glLoadMatrixd(modelView);  
         
 
-        glClearColor(.5,.5,.5,1); % gray background
+        if ds.dotfield
+            glClearColor(0,0,0,1); % gray background
+        else
+            glClearColor(.5,.5,.5,1); % gray background
+        end
+        
         glClear(); % clear the buffers - must be done for every frame
         glColor3f(1,1,1);
         
@@ -385,7 +393,12 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
     %             pa.xPosition = [pa.xPosition, xPosition+.5*(pa.LR(pa.trialNumber))];
     %             pa.zPosition = [pa.zPosition, zPosition-pa.floorWidth/2];
     %             if pa.targetContrast==1
+                if ds.dotfield
+                    glCallList(ds.fixation);
+                else
                     glCallList(ds.paddleList);
+                end
+
                     glPopMatrix;
     %             elseif pa.targetContrast==0.15
     %                 glCallList(ds.midcontrastTarget);
@@ -397,7 +410,11 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
                 % stationary object
                 glPushMatrix;
                 glTranslatef(.5*(-pa.LR(pa.trialNumber)),pa.floorHeight+pa.paddleHalfHeight+pa.aboveground,-pa.floorWidth/2); 
-                glCallList(ds.paddleList);
+                if ds.dotfield
+                    glCallList(ds.fixation);
+                else
+                    glCallList(ds.paddleList);
+                end
                 glPopMatrix;
 
 
@@ -405,8 +422,12 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
                 for b = 1:pa.nball
                     glPushMatrix;
                     glTranslatef(pa.positions(1,b),pa.floorHeight+pa.paddleHalfHeight+pa.positions(2,b),pa.positions(3,b)); 
+                if ds.dotfield
+                    glCallList(ds.fixation);
+                else
                     glCallList(ds.paddleList);
-                    glPopMatrix;
+                end
+                glPopMatrix;
                 end
 
                 % dots in scene
@@ -608,8 +629,12 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
 %         glBindTexture(GL.TEXTURE_2D,ds.ceiling_texid);
 %         glCallList(ds.ceilingTexture);
         if ds.binocular || (~ds.binocular && ds.renderPass)
+            
+        if ~ds.dotfield
             glBindTexture(GL.TEXTURE_2D,ds.floor_texid);
             glCallList(ds.floorTexture);
+        end
+
         
 %         glBindTexture(GL.TEXTURE_2D,ds.wall_texid); 
 %         glCallList(ds.surroundTexture); % 1/f noise texture surround -  comes from CreateTexturesforSDK2.m
