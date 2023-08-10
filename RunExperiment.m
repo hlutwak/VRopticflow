@@ -389,7 +389,10 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
             
             if ds.binocular || (~ds.binocular && ds.renderPass)
                 glPushMatrix;
-                glTranslatef((xPosition+.5)*(pa.LR(pa.trialNumber)),pa.floorHeight+pa.paddleHalfHeight+pa.aboveground,zPosition-pa.floorWidth/2); % shift the target to its position along its trajectory for this frame
+                %x-z plane
+%                 glTranslatef((xPosition+.5)*(pa.LR(pa.trialNumber)),pa.floorHeight+pa.paddleHalfHeight+pa.aboveground,zPosition-pa.floorWidth/2); % shift the target to its position along its trajectory for this frame
+                %x-y plane
+                glTranslatef((xPosition+.5)*(pa.LR(pa.trialNumber)),pa.floorHeight+pa.paddleHalfHeight+pa.aboveground-zPosition,-pa.floorWidth/2); % shift the target to its position along its trajectory for this frame
     %             pa.xPosition = [pa.xPosition, xPosition+.5*(pa.LR(pa.trialNumber))];
     %             pa.zPosition = [pa.zPosition, zPosition-pa.floorWidth/2];
     %             if pa.targetContrast==1
