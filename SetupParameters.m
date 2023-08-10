@@ -89,7 +89,7 @@ pa.trialNumber = 0; % gotta start somewhere
 pa.nRepeats = 20; % each target contrast condition gets pa.nRepeats trials - 75*3 = 225 per block 
 % pa.speed = [0.5, 0.4, 0.3, 0.2,0.1]; %speeds m/s
 % pa.speed = [0.5, 0.15, 0.075,  0.0375]; %speeds m/s
-pa.speed = [1, 0.15]; %speeds m/s
+pa.speed = [0.0375, 0.0375/2]; %speeds m/s
 
 
 pa.direction = deg2rad([0, 225, 270]) ; %(0 is radially out horizontally, 90 is forward/up, 270 is backwards/down x-z/x-y plane)
