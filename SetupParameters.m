@@ -92,7 +92,7 @@ pa.nRepeats = 20; % each target contrast condition gets pa.nRepeats trials - 75*
 pa.speed = [0.0375, 0.0375/2]; %speeds m/s
 
 
-pa.direction = deg2rad([0, 225, 270]) ; %(0 is radially out horizontally, 90 is forward/up, 270 is backwards/down x-z/x-y plane)
+pa.direction = deg2rad([0, 300, 330]) ; %(0 is radially out horizontally, 90 is forward/up, 270 is backwards/down x-z/x-y plane)
 
 % pa.direction = deg2rad([90 230, 260, 290]) ; %(0 is to the right, 90 is forward, 270 is backwards)
 factorial = fullfact([length(pa.speed), length(pa.direction)]); 
