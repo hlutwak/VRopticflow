@@ -34,7 +34,9 @@ vecnorm(oc.modelViewDataLeft(end-3:end-1,4)-oc.modelViewDataLeft(1:3,4))
 
 %% 3D velocities tested
 
-figure, scatter(pa.fullFactorial(:,1), -pa.fullFactorial(:,2)), axis equal
+figure, scatter(pa.fullFactorial(:,1), -pa.fullFactorial(:,2), 'filled'), axis equal
+xlim([-max(pa.speed)*1.2, max(pa.speed)*1.2])
+ylim([-max(pa.speed)*1.2, max(pa.speed)*1.2])
 
 %% screencap
 s = size(screenCap);
