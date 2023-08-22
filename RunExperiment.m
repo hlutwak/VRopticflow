@@ -35,7 +35,7 @@ clear all;
 close all;
 
 global DEBUG_FLAG KEYBOARD_FLAG
-DEBUG_FLAG = 0; %1
+DEBUG_FLAG = 1 ; %1
 KEYBOARD_FLAG = 0; %1 % there is a call to 'keyboard' in SetupDisplay that was breaking the code when using the hmd so I created a flag to turn it on/off - not certain what it is for (JF)
 
 if DEBUG_FLAG
