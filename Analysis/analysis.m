@@ -54,8 +54,8 @@ end
 D=dir('Data');
 % gaze = readtable('Data\2023-07-26_16-09-57-7a8b312d\gaze.csv');
 % worldtime = readtable('Data\2023-07-26_16-09-57-7a8b312d\world_timestamps.csv');
-gaze = readtable('Data/2023-07-26_16-09-57-7a8b312d/gaze.csv');
-t= table2array(worldtime(:,end));
+gaze = readtable('Data/2023-08-23_18-29-19-42958cc9/gaze.csv');
+% t= table2array(worldtime(:,end));
 timestamps = table2array(gaze(:,3));
 x = table2array(gaze(:,9));
 y = table2array(gaze(:,10));
@@ -82,6 +82,9 @@ change_angle = rad2deg(max(track_theta) - min(track_theta));
 % fixations
 fixations = readtable('Data/2023-07-26_16-09-57-7a8b312d/fixations.csv');
 
+% event check
+events = readtable('Data/2023-08-23_18-29-19-42958cc9/events.csv');
+ev_timestamps = table2array(events(:,2));
 
 %% response data
 % 90 is forward, 270 is backward

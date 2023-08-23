@@ -67,6 +67,19 @@ end
 finishedCalibration = 0;
 readyToBegin = 0;   
 
+if ds.eyetracking
+    device = SetupEyetracker();
+    disp(device.phone_name)
+    disp(device.module_serial)
+    
+    if device.module_serial == string(missing) || ~exist('device')
+        error('Neon not connected')
+    end
+    
+    recording_id = device.recording_start();
+    disp(['Started recording with id', string(recording_id)]);
+end
+
 while ~finishedCalibration && ~readyToBegin
        
     % Camera position when using head tracking + HMD: (according to SuperShapeDemo.m)
@@ -116,6 +129,18 @@ while ~finishedCalibration && ~readyToBegin
             glTranslatef(0,0, -3);
             glCallList(ds.fixation);
             glPopMatrix;
+            
+            % testing eye calibration
+%         w = .5;
+%         dist = -2;
+%         coordpos = [0,0,dist; -w,w,dist; w,w,dist; w,-w,dist; -w,-w,dist];
+%         ncoordpts = size(coordpos,1);
+%                 for b = 1:ncoordpts
+%                     glPushMatrix;
+%                     glTranslatef(coordpos(b,1),coordpos(b,2),coordpos(b,3)); 
+%                     glCallList(ds.highcontrastTarget);
+%                     glPopMatrix;
+%                 end
             
             
               
@@ -192,7 +217,7 @@ pause(1);
 ds.tElapsed = 0;
 ds.fCount = 0;
 
-[ds, pa, kb, oc] = SetupNewTrial(ds, pa, kb, oc);
+[ds, pa, kb, oc] = SetupNewTrial(ds, pa, kb, oc,device);
 ds.vbl = pa.trialOnset;
 tStart = ds.vbl;
 pa.experimentOnset = ds.vbl;
@@ -463,6 +488,7 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
             
             end
             
+
             pa.responseOnset = ds.vbl; % start the timer on the response time
             
 
@@ -611,7 +637,7 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
         elseif (kb.responseGiven && pa.feedbackFlag==0) || (kb.responseGiven && pa.feedbackFlag==1 && pa.feedbackGiven==1) || (kb.responseGiven && pa.feedbackFlag==2 && pa.feedbackGiven==1) % done, set up for the next trial (i.e., determine the new random trajectory)
             %                 5, % debugging flag
             
-            [ds, pa, kb, oc] = SetupNewTrial(ds, pa, kb, oc);
+            [ds, pa, kb, oc] = SetupNewTrial(ds, pa, kb, oc, device);
             track_trial = pa.trialNumber-1;
             
         end
@@ -674,6 +700,10 @@ end
 
 pa.dataFile = fullfile(pa.baseDir, 'Data', [pa.subjectName '-' ds.experimentType '-' pa.date '-' num2str(pa.block) '.mat']);
 save(pa.dataFile, 'pa', 'ds', 'kb','oc');
+
+if ds.eyetracking
+    device.recording_stop_and_save()
+end
 
 % Calculate average framerate:
 fps = ds.fCount / (ds.vbl - tStart), % uncomment to print out at end of run

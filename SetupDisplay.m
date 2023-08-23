@@ -14,6 +14,7 @@ ds.doSeparateEyeRender = 1; % render two eyes' views
 ds.binocular = 1;
 ds.eyesimulation = 0;
 ds.dotfield = 0;
+ds.eyetracking = 1;
 PsychImaging('PrepareConfiguration');
 
 % even in the 'fixed' viewing condition, we still want to track the head
