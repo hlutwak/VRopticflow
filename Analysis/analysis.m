@@ -101,8 +101,8 @@ for speed = 1:length(pa.speed)
 end
 
 %% psignifit 
-% addpath('C:\Users\Hope\Documents\MATLAB\psignifit-master');
-addpath('/Users/hopelutwak/Documents/MATLAB/psignifit')
+addpath(genpath('C:\Users\hlutw\OneDrive\Documents\MATLAB\psignifit-master'));
+% addpath('/Users/hopelutwak/Documents/MATLAB/psignifit')
 % set options for psychometric functions
 options             = struct;   % initialize as an empty struct
 options.sigmoidName = 'weibull';   
@@ -143,4 +143,13 @@ C(:,1) = a(:);
 
 % run psignifit
 result = psignifit(C,options);
-figure, plotPsych(result);
+% options.dataColor = repmat([0,0,1], length(C),1);
+% ** will only work of edit psignifit's plotPsych!!
+
+options.dataColor = [255,153,153; 255,51,51; 204,0,0; 153,0,0; 
+                     153,255,153; 0,255,0; 0,204,0; 0,102,0;
+                     153,204,255; 51,153,255; 0,128,255; 0,76,153;
+                     204,153,255; 178,102,255; 153,51,255; 102,0,204]/255;
+ 
+figure, plotPsych(result, options);
+
