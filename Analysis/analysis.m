@@ -34,9 +34,19 @@ vecnorm(oc.modelViewDataLeft(end-3:end-1,4)-oc.modelViewDataLeft(1:3,4))
 
 %% 3D velocities tested
 
-figure, scatter(pa.fullFactorial(:,1), -pa.fullFactorial(:,2), 'filled'), axis equal
+
+c = [255,153,153; 255,51,51; 204,0,0; 153,0,0;
+    153,255,153; 0,255,0; 0,204,0; 0,102,0;
+    153,204,255; 51,153,255; 0,128,255; 0,76,153;
+    204,153,255; 178,102,255; 153,51,255; 102,0,204]/255;
+           
+factorial = fullfact([length(pa.speed), length(pa.direction)]);
+fullfacts = [(pa.speed(factorial(:,1)).*cos(pa.direction(factorial(:,2)))); -(pa.speed(factorial(:,1)).*sin(pa.direction(factorial(:,2))))];
+
+figure, hold on,scatter(fullfacts(1,:), -fullfacts(2,:),'filled'), axis equal
 xlim([-max(pa.speed)*1.2, max(pa.speed)*1.2])
 ylim([-max(pa.speed)*1.2, max(pa.speed)*1.2])
+
 
 %% screencap
 s = size(screenCap);
@@ -138,8 +148,15 @@ C = reshape(C,[],size(data,2),1);
 % relace speed column with distance to constraint variable
 % C(:,1) = [0.005; 0.0026; 0.0103; 0.0051; 0.0092; 00.0046];
 a = [0.0300    0.0792    0.0234    0.0928;  0.0029    0.0153    0.0038    0.0124;  2e-5     0.0069    0.0018    0.0038;  2e-5     0.0033    0.0008    0.0018];
+% a = [0.0044 0.0047; 0.0021 0.0022; 0.0010 0.0011];
 C(:,1) = a(:);
+% 
+% exp2 = data;
+% exp1 = data;
 
+% C2 = C;
+% C1 = C;
+% C = [C1;C2];
 
 % run psignifit
 result = psignifit(C,options);
