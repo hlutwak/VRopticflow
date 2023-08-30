@@ -417,7 +417,7 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
             if ds.binocular || (~ds.binocular && ds.renderPass)
                 glPushMatrix;
                 %x-z plane
-                glTranslatef((xPosition+.5)*(pa.LR(pa.trialNumber)),pa.floorHeight+pa.paddleHalfHeight+pa.aboveground,zPosition-pa.floorWidth/2); % shift the target to its position along its trajectory for this frame
+                glTranslatef((xPosition+.5)*(pa.LR(pa.trialNumber)),pa.floorHeight+pa.paddleHalfHeight+pa.aboveground,zPosition-pa.floorWidth/3); % shift the target to its position along its trajectory for this frame
                 %x-y plane
 %                 glTranslatef((xPosition+.5)*(pa.LR(pa.trialNumber)),pa.floorHeight+pa.paddleHalfHeight+pa.aboveground-zPosition,-pa.floorWidth/2); % shift the target to its position along its trajectory for this frame
     %             pa.xPosition = [pa.xPosition, xPosition+.5*(pa.LR(pa.trialNumber))];
@@ -439,7 +439,7 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
 
                 % stationary object
                 glPushMatrix;
-                glTranslatef(.5*(-pa.LR(pa.trialNumber)),pa.floorHeight+pa.paddleHalfHeight+pa.aboveground,-pa.floorWidth/2); 
+                glTranslatef(.5*(-pa.LR(pa.trialNumber)),pa.floorHeight+pa.paddleHalfHeight+pa.aboveground,-pa.floorWidth/3); 
                 if ds.dotfield
                     glCallList(ds.fixation);
                 else
