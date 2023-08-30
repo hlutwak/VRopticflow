@@ -1,0 +1,27 @@
+recording id,timestamp [ns],name,type
+6bae8328-b3c2-49cb-9ec8-bb01bc870bb1,1693426365789000000,recording.begin,recording
+6bae8328-b3c2-49cb-9ec8-bb01bc870bb1,1693426371068000000,trialStart,recording
+6bae8328-b3c2-49cb-9ec8-bb01bc870bb1,1693426376183000000,trialStart,recording
+6bae8328-b3c2-49cb-9ec8-bb01bc870bb1,1693426380587000000,trialStart,recording
+6bae8328-b3c2-49cb-9ec8-bb01bc870bb1,1693426383453000000,trialStart,recording
+6bae8328-b3c2-49cb-9ec8-bb01bc870bb1,1693426386320000000,trialStart,recording
+6bae8328-b3c2-49cb-9ec8-bb01bc870bb1,1693426388880000000,trialStart,recording
+6bae8328-b3c2-49cb-9ec8-bb01bc870bb1,1693426392876000000,trialStart,recording
+6bae8328-b3c2-49cb-9ec8-bb01bc870bb1,1693426395843000000,trialStart,recording
+6bae8328-b3c2-49cb-9ec8-bb01bc870bb1,1693426398607000000,trialStart,recording
+6bae8328-b3c2-49cb-9ec8-bb01bc870bb1,1693426401273000000,trialStart,recording
+6bae8328-b3c2-49cb-9ec8-bb01bc870bb1,1693426405161000000,trialStart,recording
+6bae8328-b3c2-49cb-9ec8-bb01bc870bb1,1693426407825000000,trialStart,recording
+6bae8328-b3c2-49cb-9ec8-bb01bc870bb1,1693426410588000000,trialStart,recording
+6bae8328-b3c2-49cb-9ec8-bb01bc870bb1,1693426415616000000,trialStart,recording
+6bae8328-b3c2-49cb-9ec8-bb01bc870bb1,1693426417655000000,trialStart,recording
+6bae8328-b3c2-49cb-9ec8-bb01bc870bb1,1693426419706000000,trialStart,recording
+6bae8328-b3c2-49cb-9ec8-bb01bc870bb1,1693426421956000000,trialStart,recording
+6bae8328-b3c2-49cb-9ec8-bb01bc870bb1,1693426425948000000,trialStart,recording
+6bae8328-b3c2-49cb-9ec8-bb01bc870bb1,1693426428534000000,trialStart,recording
+6bae8328-b3c2-49cb-9ec8-bb01bc870bb1,1693426431225000000,trialStart,recording
+6bae8328-b3c2-49cb-9ec8-bb01bc870bb1,1693426437214000000,trialStart,recording
+6bae8328-b3c2-49cb-9ec8-bb01bc870bb1,1693426439670000000,trialStart,recording
+6bae8328-b3c2-49cb-9ec8-bb01bc870bb1,1693426442232000000,trialStart,recording
+6bae8328-b3c2-49cb-9ec8-bb01bc870bb1,1693426447352000000,trialStart,recording
+6bae8328-b3c2-49cb-9ec8-bb01bc870bb1,1693426449402000000,recording.end,recording
