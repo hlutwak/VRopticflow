@@ -110,9 +110,9 @@ else % if it is just the first trial, start right up after the subject presses '
         pa.trialOnset = ds.vbl; % the trial starts....NOW
         oc.trialStart = pa.trialOnset;
         oc.UTCtrialStart = posixtime(datetime('now','TimeZone','local'));
-        if ds.eyetracking
-           device.send_event("trialStart")
-        end
+%         if ds.eyetracking
+%            device.send_event("trialStart")
+%         end
     end
 end
 
