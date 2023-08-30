@@ -112,7 +112,7 @@ end
 
 %% psignifit 
 addpath(genpath('C:\Users\hlutw\OneDrive\Documents\MATLAB\psignifit-master'));
-% addpath('/Users/hopelutwak/Documents/MATLAB/psignifit')
+%  addpath('/Users/hopelutwak/Documents/MATLAB/psignifit')
 % set options for psychometric functions
 options             = struct;   % initialize as an empty struct
 options.sigmoidName = 'weibull';   
@@ -147,7 +147,8 @@ C=permute(data,[1 3 2]);
 C = reshape(C,[],size(data,2),1);
 % relace speed column with distance to constraint variable
 % C(:,1) = [0.005; 0.0026; 0.0103; 0.0051; 0.0092; 00.0046];
-a = [0.0300    0.0792    0.0234    0.0928;  0.0029    0.0153    0.0038    0.0124;  2e-5     0.0069    0.0018    0.0038;  2e-5     0.0033    0.0008    0.0018];
+% a = [0.0300    0.0792    0.0234    0.0928;  0.0029    0.0153    0.0038    0.0124;  2e-5     0.0069    0.0018    0.0038;  2e-5     0.0033    0.0008    0.0018];
+a = [0.0145   0.0495   0.0112   0.0559; 0.0040   0.0120   0.0022   0.0129; 0.0013   0.0053   0.0010   0.0055; 0.0001   0.0021   0.0004   0.0020];
 % a = [0.0044 0.0047; 0.0021 0.0022; 0.0010 0.0011];
 C(:,1) = a(:);
 % 
@@ -163,10 +164,10 @@ result = psignifit(C,options);
 % options.dataColor = repmat([0,0,1], length(C),1);
 % ** will only work of edit psignifit's plotPsych!!
 
-options.dataColor = [255,153,153; 255,51,51; 204,0,0; 153,0,0; 
-                     153,255,153; 0,255,0; 0,204,0; 0,102,0;
-                     153,204,255; 51,153,255; 0,128,255; 0,76,153;
-                     204,153,255; 178,102,255; 153,51,255; 102,0,204]/255;
- 
+% options.dataColor = [255,153,153; 255,51,51; 204,0,0; 153,0,0; 
+%                      153,255,153; 0,255,0; 0,204,0; 0,102,0;
+%                      153,204,255; 51,153,255; 0,128,255; 0,76,153;
+%                      204,153,255; 178,102,255; 153,51,255; 102,0,204]/255;
+%  
 figure, plotPsych(result, options);
 
