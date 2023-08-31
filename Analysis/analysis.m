@@ -73,14 +73,16 @@ y = table2array(gaze(:,5));
 figure, scatter(x,y), axis equal
 
 figure, plot(timestamps,x, 'linewidth', 2), hold on, plot(timestamps,y,'linewidth', 2)
+yl = ylim;
+hold on, line([ev_timestamps'; ev_timestamps'], [yl(1); yl(2)].*ones(size(ev_timestamps')))
+hold on, line([oc.UTCtrialStart; oc.UTCtrialStart]*1e9,[yl(1); yl(2)].*ones(size(oc.UTCtrialStart)), 'color','k') 
 
-trial_interval = [2636:15260];
-x_trials = x(trial_interval);
+
 y_trials = y(trial_interval);
 
 %check variablility of fixation over time
 figure, scatter(x_trials, y_trials)
-interval_duration = (timestamps(trial_interval(end))-timestamps(trial_interval(1)))/1e9
+interval_duration = (timestamps(trial_interval(end))-timestamps(trial_interval(1)))/1e9;
 cov(x_trials, y_trials)
 
 % load behavioral file
@@ -148,11 +150,16 @@ C = reshape(C,[],size(data,2),1);
 % relace speed column with distance to constraint variable
 % C(:,1) = [0.005; 0.0026; 0.0103; 0.0051; 0.0092; 00.0046];
 
-% a = [0.0300    0.0792    0.0234    0.0928;  0.0029    0.0153    0.0038    0.0124;  2e-5     0.0069    0.0018    0.0038;  2e-5     0.0033    0.0008    0.0018];
+% obj 3m, depth range .2
+% a = [ 0.0135     0.0710    0.0167   0.0840; 0.0027     0.0131    0.0027   0.0132; 2e-5       0.0052    0.0012   0.0036;    2e-5  0.0024    0.0004   0.0014];
+
+% obj 3m, depth range .1m
 a = [0.0145   0.0495   0.0112   0.0559; 0.0040   0.0120   0.0022   0.0129; 0.0013   0.0053   0.0010   0.0055; 0.0001   0.0021   0.0004   0.0020];
 
+% obj 2m, depth range .2
 % a = [0.0300    0.0792    0.0234    0.0928;  0.0029    0.0153    0.0038    0.0124;  2e-5     0.0069    0.0018    0.0038;  2e-5     0.0033    0.0008    0.0018];
 
+% obj 3m, depth range .2?
 % a = [0.0044 0.0047; 0.0021 0.0022; 0.0010 0.0011];
 C(:,1) = a(:);
 % 
@@ -168,10 +175,10 @@ result = psignifit(C,options);
 % options.dataColor = repmat([0,0,1], length(C),1);
 % ** will only work of edit psignifit's plotPsych!!
 
-% options.dataColor = [255,153,153; 255,51,51; 204,0,0; 153,0,0; 
-%                      153,255,153; 0,255,0; 0,204,0; 0,102,0;
-%                      153,204,255; 51,153,255; 0,128,255; 0,76,153;
-%                      204,153,255; 178,102,255; 153,51,255; 102,0,204]/255;
-%  
+options.dataColor = [255,153,153; 255,51,51; 204,0,0; 153,0,0; 
+                     153,255,153; 0,255,0; 0,204,0; 0,102,0;
+                     153,204,255; 51,153,255; 0,128,255; 0,76,153;
+                     204,153,255; 178,102,255; 153,51,255; 102,0,204]/255;
+ 
 figure, plotPsych(result, options);
 
