@@ -219,7 +219,7 @@ pause(1);
 ds.tElapsed = 0;
 ds.fCount = 0;
 
-[ds, pa, kb, oc] = SetupNewTrial(ds, pa, kb, oc,device);
+[ds, pa, kb, oc] = SetupNewTrial(ds, pa, kb, oc);
 ds.vbl = pa.trialOnset;
 tStart = ds.vbl;
 pa.experimentOnset = ds.vbl;
@@ -639,7 +639,7 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
         elseif (kb.responseGiven && pa.feedbackFlag==0) || (kb.responseGiven && pa.feedbackFlag==1 && pa.feedbackGiven==1) || (kb.responseGiven && pa.feedbackFlag==2 && pa.feedbackGiven==1) % done, set up for the next trial (i.e., determine the new random trajectory)
             %                 5, % debugging flag
             
-            [ds, pa, kb, oc] = SetupNewTrial(ds, pa, kb, oc, device);
+            [ds, pa, kb, oc] = SetupNewTrial(ds, pa, kb, oc);
             track_trial = pa.trialNumber-1;
             
         end

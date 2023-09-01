@@ -98,6 +98,13 @@ fixations = readtable('Data/2023-07-26_16-09-57-7a8b312d/fixations.csv');
 events = readtable('Data/2023-08-30_16-12-45-6bae8328/events.csv');
 ev_timestamps = table2array(events(:,2));
 
+t_ne = uint64(1582650648869329937);
+NS = 1e9;
+right_over = mod(t_ne, NS);
+left_over = t_ne - right_over;
+d = datetime( double(left_over)/NS, 'convertfrom', 'posixtime', 'Format', 'dd-MMM-uuuu HH:mm:ss.SSSSSSSSS') + seconds(double(right_over)/NS)
+
+
 %% response data
 % 90 is forward, 270 is backward
 pcorrect = NaN(length(pa.speed),length(pa.direction));
