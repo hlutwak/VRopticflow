@@ -64,21 +64,58 @@ end
 D=dir('Data');
 % gaze = readtable('Data\2023-07-26_16-09-57-7a8b312d\gaze.csv');
 % worldtime = readtable('Data\2023-07-26_16-09-57-7a8b312d\world_timestamps.csv');
-gaze = readtable('Data/2023-08-30_16-12-45-6bae8328/gaze.csv');
+gaze = readtable('Data/2023-09-01_15-31-42-b95cd866/gaze.csv');
 % t= table2array(worldtime(:,end));
 timestamps = table2array(gaze(:,3));
-x = table2array(gaze(:,4));
-y = table2array(gaze(:,5));
+x = table2array(gaze(:,9));
+y = table2array(gaze(:,10));
 
 figure, scatter(x,y), axis equal
 
+% in UTC time
 figure, plot(timestamps,x, 'linewidth', 2), hold on, plot(timestamps,y,'linewidth', 2)
 yl = ylim;
-hold on, line([ev_timestamps'; ev_timestamps'], [yl(1); yl(2)].*ones(size(ev_timestamps')))
-hold on, line([oc.UTCtrialStart; oc.UTCtrialStart]*1e9,[yl(1); yl(2)].*ones(size(oc.UTCtrialStart)), 'color','k') 
+exp_timestamps = posixtime(oc.UTCtrialStart)*1e9;
+hold on, line([exp_timestamps; exp_timestamps],[yl(1); yl(2)].*ones(size(oc.UTCtrialStart)), 'color','k') 
+
+% in datetime
+date_time = datetime(timestamps/1e9, 'ConvertFrom', 'posixtime', 'TimeZone','local', 'Format', 'd-MMM-y HH:mm:ss:ms');
+figure, plot(date_time,x, 'linewidth', 2), hold on, plot(date_time,y,'linewidth', 2)
+yl = ylim;
+hold on, line([oc.UTCtrialStart; oc.UTCtrialStart],[yl(1); yl(2)].*ones(size(oc.UTCtrialStart)), 'color','g') 
+hold on, line([oc.UTCtrialStart; oc.UTCtrialStart]+seconds(.5),[yl(1); yl(2)].*ones(size(oc.UTCtrialStart)), 'color','r') 
+
+% get fixation over trial intervals
+stim_intervals = [];
+n_practice = 1;
+for t = n_practice+1:pa.nTrials %cut out practice trials
+    
+    stim_intervals = ;
+end
+
+start_times = timetable(oc.UTCtrialStart', ones(numel(oc.UTCtrialStart),1));
+end_times = timetable([oc.UTCtrialStart+seconds(0.5)]', ones(numel(oc.UTCtrialStart),1));
+
+eyetracking = timetable(date_time, x, y);
+TT = synchronize(start_times, end_times, eyetracking);
+synched = table2array(TT);
+idx_start = find(synched(:,1) == 1);
+idx_end = find(synched(:,2) ==1);
+
+stim_interval_idx = [];
+n_practice = 1;
+for t = n_practice+1:pa.nTrials %pa.nTrials %cut out practice trials
+    stim_interval_idx = [stim_interval_idx idx_start(t)+1:idx_end(t)-1];
+end
+figure, scatter(synched(stim_interval_idx, 3), synched(stim_interval_idx, 4))
+figure, plot(TT.Time(stim_interval_idx), TT.x(stim_interval_idx))
+hold on, plot(TT.Time(stim_interval_idx), TT.y(stim_interval_idx))
+hold on, line([oc.UTCtrialStart; oc.UTCtrialStart],[yl(1); yl(2)].*ones(size(oc.UTCtrialStart)), 'color','g') 
+hold on, line([oc.UTCtrialStart; oc.UTCtrialStart]+seconds(.5),[yl(1); yl(2)].*ones(size(oc.UTCtrialStart)), 'color','r') 
 
 
 y_trials = y(trial_interval);
+
 
 %check variablility of fixation over time
 figure, scatter(x_trials, y_trials)
