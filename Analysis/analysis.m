@@ -86,12 +86,6 @@ hold on, line([oc.UTCtrialStart; oc.UTCtrialStart],[yl(1); yl(2)].*ones(size(oc.
 hold on, line([oc.UTCtrialStart; oc.UTCtrialStart]+seconds(.5),[yl(1); yl(2)].*ones(size(oc.UTCtrialStart)), 'color','r') 
 
 % get fixation over trial intervals
-stim_intervals = [];
-n_practice = 1;
-for t = n_practice+1:pa.nTrials %cut out practice trials
-    
-    stim_intervals = ;
-end
 
 start_times = timetable(oc.UTCtrialStart', ones(numel(oc.UTCtrialStart),1));
 end_times = timetable([oc.UTCtrialStart+seconds(0.5)]', ones(numel(oc.UTCtrialStart),1));
