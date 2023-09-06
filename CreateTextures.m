@@ -581,7 +581,7 @@ nStacks = 32;
 
 ds.highcontrastTarget = glGenLists(1);
 glNewList(ds.highcontrastTarget, GL.COMPILE);
-glColor4f(1,1,1,pa.targetContrast(1));
+glColor4f(1,1,1,1);
 gluSphere(quadratic,pa.fixationSize,nSlices,nStacks);  
 glEndList();
 

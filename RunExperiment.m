@@ -2,7 +2,7 @@
 
 % 14-Dec-2015  jf Written. Derived from OculusSDK2PongDemo_Fixed.m
 % 6-Jan-2016  jf Edited to improve lagged condition performance
-% 14-Jan-2016 jf  Switched over to Windows platform and optimized the code
+% 14-Jan-2016 jf  Switched over to Windows pla tform and optimized the code
 % for timing and stimulus presentation - including now measured gamma
 % correction  
 % 19-Aug-2016 jf Added a few modifications: randomized paddle start angle
@@ -129,7 +129,7 @@ while ~finishedCalibration && ~readyToBegin
             % fixation target
             glPushMatrix;
             glTranslatef(0,0, -3);
-            glCallList(ds.fixation);
+            glCallList(ds.highcontrastTarget);
             glPopMatrix;
             
             % testing eye calibration

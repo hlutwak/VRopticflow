@@ -64,11 +64,11 @@ end
 D=dir('Data');
 % gaze = readtable('Data\2023-07-26_16-09-57-7a8b312d\gaze.csv');
 % worldtime = readtable('Data\2023-07-26_16-09-57-7a8b312d\world_timestamps.csv');
-gaze = readtable('Data/2023-09-01_15-31-42-b95cd866/gaze.csv');
+gaze = readtable('Data/2023-09-06_12-45-44-0c7df807/gaze.csv');
 % t= table2array(worldtime(:,end));
 timestamps = table2array(gaze(:,3));
-x = table2array(gaze(:,9));
-y = table2array(gaze(:,10));
+x = table2array(gaze(:,4));
+y = table2array(gaze(:,5));
 
 figure, scatter(x,y), axis equal
 
@@ -107,16 +107,12 @@ hold on, plot(TT.Time(stim_interval_idx), TT.y(stim_interval_idx))
 hold on, line([oc.UTCtrialStart; oc.UTCtrialStart],[yl(1); yl(2)].*ones(size(oc.UTCtrialStart)), 'color','g') 
 hold on, line([oc.UTCtrialStart; oc.UTCtrialStart]+seconds(.5),[yl(1); yl(2)].*ones(size(oc.UTCtrialStart)), 'color','r') 
 
-
-y_trials = y(trial_interval);
-
-
 %check variablility of fixation over time
-figure, scatter(x_trials, y_trials)
-interval_duration = (timestamps(trial_interval(end))-timestamps(trial_interval(1)))/1e9;
-cov(x_trials, y_trials)
+% figure, scatter(x_trials, y_trials)
+% interval_duration = (timestamps(trial_interval(end))-timestamps(trial_interval(1)))/1e9;
+cov(TT.x(stim_interval_idx), TT.y(stim_interval_idx))
 
-% load behavioral file
+%% load behavioral file
 load('Data\HL_pilot-fixed-20230726T160928-0.mat')
 
 % have to take data from stimulus with eye simulation
@@ -192,7 +188,7 @@ C = reshape(C,[],size(data,2),1);
 % a = [ 0.0135     0.0710    0.0167   0.0840; 0.0027     0.0131    0.0027   0.0132; 2e-5       0.0052    0.0012   0.0036;    2e-5  0.0024    0.0004   0.0014];
 
 % obj 3m, depth range .1m
-a = [0.0145   0.0495   0.0112   0.0559; 0.0040   0.0120   0.0022   0.0129; 0.0013   0.0053   0.0010   0.0055; 0.0001   0.0021   0.0004   0.0020];
+% a = [0.0145   0.0495   0.0112   0.0559; 0.0040   0.0120   0.0022   0.0129; 0.0013   0.0053   0.0010   0.0055; 0.0001   0.0021   0.0004   0.0020];
 
 % obj 3m, depth range .2?
 % a = [0.0044 0.0047; 0.0021 0.0022; 0.0010 0.0011];
@@ -203,7 +199,10 @@ a = [0.0145   0.0495   0.0112   0.0559; 0.0040   0.0120   0.0022   0.0129; 0.001
 % obj 2m, depth range .2, direction  250  270  290  350, speeds 0.1500    0.0750    0.0375    0.0187
 % a = [0.0064    0.0007    0.0102    0.0229; 0.0030   6.2774e-05  0.0031     0.0090;  0.0014     6.3316e-05    0.0015     0.0041; 0.0006     6.3573e-05    0.0007     0.0021];
  % - distance to constraint point
- a = [ 0.0080    0.0160    0.0285  0.0382;  0.0038    0.0080    0.0135  0.0191;  0.0019    0.0041    0.0068  0.0097; 0.0011    0.0022    0.0035  0.0050];
+%  a = [ 0.0080    0.0160    0.0285  0.0382;  0.0038    0.0080    0.0135  0.0191;  0.0019    0.0041    0.0068  0.0097; 0.0011    0.0022    0.0035  0.0050];
+% speeds Speeds 0.5  0.25  .125    0.0625  m/s, .2m depth estimate
+a = [0.0250    0.0292    0.0374    0.0768    0.1020; 0.0102    0.0116    0.0066    0.0265    0.0457; 0.0008    0.0052    0.0002    0.0073    0.0178; 6.4579e-05      0.0025    6.2959e-05     0.0025    0.0072];
+
 
 
 
