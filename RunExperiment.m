@@ -497,13 +497,7 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
         elseif ~kb.responseGiven % show paddle and allow observers to adjust its position - no time constraints - they press the space bar to lock in their response and start a new trial
             %2, % debugging flag
             
-%             glPushMatrix;
-%             % here's where we draw the paddle
-%             glRotatef(pa.paddleAngle(pa.thisTrial),0,-1,0); % position the paddle along the orbit according to the angle specified by the input (observer adjustment)
-%             glTranslatef(pa.paddleOrbitShift-pa.paddleHalfWidth*2,pa.floorHeight+pa.paddleHalfHeight,0); % shift the paddle physically out to the orbit
-%             glCallList(ds.paddleList); % call the pre-compiled list that binds the textures to the paddle faces
-%             glPopMatrix;
-            
+
             pa.modelView = eye.modelView; % CSB: init camera position based on default or previous camera position. June 7th 2018
             [pa, kb] = GetResponse(pa, ds, kb);  % query the keyboard to allow the observer to rotate the paddle and eventually lock in his/her response to initiate a new trial
             eye.modelView = pa.modelView; % CSB: update camera position based on keys pressed. June 7th 2018
@@ -518,88 +512,16 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
             
             pa.feedbackOnset = ds.vbl;
             
-        elseif kb.responseGiven && pa.feedbackFlag==2 && pa.feedbackGiven==0 && ds.vbl < (pa.feedbackOnset + pa.timeToPaddle - pa.targetMotionDuration) % visual feedback
-            
-            %3, % debugging flag
-            
-            % show the feedback (rest of the trajectory)
-            % Draw Paddle
-            glPushMatrix;
-            glRotatef(pa.paddleAngle(pa.thisTrial),0,-1,0); % position the paddle along the orbit according to the angle specified by the input (observer adjustment)
-            glTranslatef(pa.paddleOrbitShift-pa.paddleHalfWidth*2-.5,pa.floorHeight+pa.paddleHalfHeight,0); % shift the paddle physically out to the orbit
-            glCallList(ds.paddleList); % call the pre-compiled list that binds the textures to the paddle faces
-            glPopMatrix;
-            
-            % In this section, we are display both an opaque paddle + a
-            % translucent target (sphere) so we need to do a bit of
-            % openGL work to make the translucent sphere display
-            % properly
-            glDepthMask(GL.FALSE); % disable changes to the depth buffer
-            glBlendFunc(GL.SRC_ALPHA, GL.ONE); % set the alpha to that of the target contrast without influence of the paddle or other scene elements
-            
-            % Target position - we only speed up the feedback if it's
-            % going to take longer than 10 s and we speed it up
-            % incrementally given time
-            xPosition = (pa.speedUpFlag*pa.xSpeed).*(ds.vbl-pa.feedbackOnset+pa.targetMotionDuration);
-            zPosition = (pa.speedUpFlag*pa.zSpeed).*(ds.vbl-pa.feedbackOnset+pa.targetMotionDuration);
-            
-            glTranslatef(xPosition-.5,pa.floorHeight+pa.targetSize,zPosition); % shift the target to its position along its trajectory for this frame
-            
-            if pa.targetContrast==1
-                glCallList(ds.highcontrastTarget);
-            elseif pa.targetContrast==0.15
-                glCallList(ds.midcontrastTarget);
-            elseif pa.targetContrast==0.075
-                glCallList(ds.lowcontrastTarget);
-            end
-            
-            glDepthMask(GL.TRUE); % resume the ability to make changes to the depth buffer for proper rendering of remaining components
-            glBlendFunc(GL.SRC_ALPHA, GL.ONE_MINUS_SRC_ALPHA); % restore the proper blending function
-  
-            
-             
-        elseif (kb.responseGiven && pa.feedbackFlag==1 && pa.feedbackGiven==0) || (kb.responseGiven && pa.feedbackFlag==2 && pa.feedbackGiven==0) % sound feedback only
-            %4, % debugging flag
-            
-            reportedAngle = angle(exp(1i*deg2rad(pa.paddleAngle(pa.thisTrial))));  % converts the paddle angle from 0-360 to -pi - + pi
-            
-            % display appropriate object
-            if ~pa.feedbackGiven
-%                 if pa.LRresponse(pa.trialNumber) == pa.LR(pa.trialNumber)  %does the response match the target side
-%                         glPushMatrix;  
-%                         glTranslatef(0,pa.floorHeight+pa.targetSize,-pa.floorWidth/2-0.5); % display green sphere
-%                         glCallList(ds.correct);
-%                         glPopMatrix;
-%                 else
-%                         glPushMatrix;
-%                         glTranslatef(0,pa.floorHeight+pa.targetSize,-pa.floorWidth/2-0.5); % display red sphere
-%                         glCallList(ds.incorrect);
-%                         glPopMatrix;
-%                 end
-                pa.feedbackGiven = 1;
-                pa.waitTime = ds.vbl;
-                
-                % start any lag now while waiting for subject to initiate new trial
-                if ds.trackingFlag==1 && ds.trackingLagStart>0 % screen will lag in updating with head movements during target motion
-                    ds.trackingLag = randi(39)-1; % lag in frames: random lag between 0 and 500 ms
-                    ds.lagNow = 1;
-                else
-                    ds.trackingLag = 0;
-                    ds.lagNow = 0;
-                end
-                
-            end
-            
-            
-        elseif (kb.responseGiven && pa.feedbackFlag==1 && pa.feedbackGiven==1 && ds.vbl <= pa.waitTime+1) || (kb.responseGiven && pa.feedbackFlag==2 && pa.feedbackGiven==1 && ds.vbl <= pa.waitTime+.5)
-            
+%         elseif kb.responseGiven && pa.feedbackFlag==2 && pa.feedbackGiven==0 && ds.vbl < (pa.feedbackOnset + pa.timeToPaddle - pa.targetMotionDuration) % visual feedback
+%             
+%             %3, % debugging flag
+%             
+%             % show the feedback (rest of the trajectory)
 %             % Draw Paddle
-%             glPushMatrix; 
+%             glPushMatrix;
 %             glRotatef(pa.paddleAngle(pa.thisTrial),0,-1,0); % position the paddle along the orbit according to the angle specified by the input (observer adjustment)
-%             glTranslatef(pa.paddleOrbitShift-pa.paddleHalfWidth*2,0,0); % shift the paddle physically out to the orbit
-%             %                 if renderPass == pa.randeye(pa.trialNumber)
+%             glTranslatef(pa.paddleOrbitShift-pa.paddleHalfWidth*2-.5,pa.floorHeight+pa.paddleHalfHeight,0); % shift the paddle physically out to the orbit
 %             glCallList(ds.paddleList); % call the pre-compiled list that binds the textures to the paddle faces
-%             %                 end
 %             glPopMatrix;
 %             
 %             % In this section, we are display both an opaque paddle + a
@@ -608,20 +530,51 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
 %             % properly
 %             glDepthMask(GL.FALSE); % disable changes to the depth buffer
 %             glBlendFunc(GL.SRC_ALPHA, GL.ONE); % set the alpha to that of the target contrast without influence of the paddle or other scene elements
-%             glTranslatef(xPosition,0,zPosition); % shift the target to its position along its trajectory for this frame
-%             %                 if renderPass == pa.randeye(pa.trialNumber)
-%             if pa.feedbackFlag==2
-%                 if pa.targetContrast==1
-%                     glCallList(ds.highcontrastTarget);
-%                 elseif pa.targetContrast==0.15
-%                     glCallList(ds.midcontrastTarget);
-%                 elseif pa.targetContrast==0.075
-%                     glCallList(ds.lowcontrastTarget);
-%                 end
-%             end
-%             glDepthMask(GL.TRUE); % resume the ability to make changes to the depth buffer for proper rendering of remaining components
-%             glBlendFunc(GL.SRC_ALPHA, GL.ONE_MINUS_SRC_ALPHA); % re-store the proper blending function
 %             
+%             % Target position - we only speed up the feedback if it's
+%             % going to take longer than 10 s and we speed it up
+%             % incrementally given time
+%             xPosition = (pa.speedUpFlag*pa.xSpeed).*(ds.vbl-pa.feedbackOnset+pa.targetMotionDuration);
+%             zPosition = (pa.speedUpFlag*pa.zSpeed).*(ds.vbl-pa.feedbackOnset+pa.targetMotionDuration);
+%             
+%             glTranslatef(xPosition-.5,pa.floorHeight+pa.targetSize,zPosition); % shift the target to its position along its trajectory for this frame
+%             
+%             if pa.targetContrast==1
+%                 glCallList(ds.highcontrastTarget);
+%             elseif pa.targetContrast==0.15
+%                 glCallList(ds.midcontrastTarget);
+%             elseif pa.targetContrast==0.075
+%                 glCallList(ds.lowcontrastTarget);
+%             end
+%             
+%             glDepthMask(GL.TRUE); % resume the ability to make changes to the depth buffer for proper rendering of remaining components
+%             glBlendFunc(GL.SRC_ALPHA, GL.ONE_MINUS_SRC_ALPHA); % restore the proper blending function
+
+%         elseif (kb.responseGiven && pa.feedbackFlag==1 && pa.feedbackGiven==0) || (kb.responseGiven && pa.feedbackFlag==2 && pa.feedbackGiven==0) % sound feedback only
+%             %4, % debugging flag
+%             
+%             reportedAngle = angle(exp(1i*deg2rad(pa.paddleAngle(pa.thisTrial))));  % converts the paddle angle from 0-360 to -pi - + pi
+%             
+%             % display appropriate object
+%             if ~pa.feedbackGiven
+% 
+%                 pa.feedbackGiven = 1;
+%                 pa.waitTime = ds.vbl;
+%                 
+%                 % start any lag now while waiting for subject to initiate new trial
+%                 if ds.trackingFlag==1 && ds.trackingLagStart>0 % screen will lag in updating with head movements during target motion
+%                     ds.trackingLag = randi(39)-1; % lag in frames: random lag between 0 and 500 ms
+%                     ds.lagNow = 1;
+%                 else
+%                     ds.trackingLag = 0;
+%                     ds.lagNow = 0;
+%                 end
+%                 
+%             end
+            
+        elseif (kb.responseGiven && pa.feedbackFlag==1 && pa.feedbackGiven==1 && ds.vbl <= pa.waitTime+0.5) || (kb.responseGiven && pa.feedbackFlag==2 && pa.feedbackGiven==1 && ds.vbl <= pa.waitTime+.5)
+
+
             if ds.binocular || (~ds.binocular && ds.renderPass)
                 if pa.LRresponse(pa.trialNumber) == pa.LR(pa.trialNumber)  %does the response match the target side
                         glPushMatrix;

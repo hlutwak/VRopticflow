@@ -35,15 +35,20 @@ vecnorm(oc.modelViewDataLeft(end-3:end-1,4)-oc.modelViewDataLeft(1:3,4))
 %% 3D velocities tested
 
 
-c = [255,153,153; 255,51,51; 204,0,0; 153,0,0;
-    153,255,153; 0,255,0; 0,204,0; 0,102,0;
-    153,204,255; 51,153,255; 0,128,255; 0,76,153;
-    204,153,255; 178,102,255; 153,51,255; 102,0,204]/255;
+% c = [255,153,153; 255,51,51; 204,0,0; 153,0,0;
+%     153,255,153; 0,255,0; 0,204,0; 0,102,0;
+%     153,204,255; 51,153,255; 0,128,255; 0,76,153;
+%     204,153,255; 178,102,255; 153,51,255; 102,0,204]/255;
+c = [255,153,153; 255,51,51; 204,0,0; 
+                    153,255,153; 0,255,0; 0,204,0;
+                    153,204,255; 51,153,255; 0,128,255; 
+                    204,153,255; 178,102,255; 153,51,255;
+                    255, 204, 153; 255,153,51; 204,102,0]/255;
            
 factorial = fullfact([length(pa.speed), length(pa.direction)]);
 fullfacts = [(pa.speed(factorial(:,1)).*cos(pa.direction(factorial(:,2)))); -(pa.speed(factorial(:,1)).*sin(pa.direction(factorial(:,2))))];
 
-figure, hold on,scatter(fullfacts(1,:), -fullfacts(2,:),'filled'), axis equal
+figure, hold on,scatter(fullfacts(1,:), -fullfacts(2,:),[],c,'filled'), axis equal
 xlim([-max(pa.speed)*1.2, max(pa.speed)*1.2])
 ylim([-max(pa.speed)*1.2, max(pa.speed)*1.2])
 
@@ -64,11 +69,15 @@ end
 D=dir('Data');
 % gaze = readtable('Data\2023-07-26_16-09-57-7a8b312d\gaze.csv');
 % worldtime = readtable('Data\2023-07-26_16-09-57-7a8b312d\world_timestamps.csv');
-gaze = readtable('Data/2023-09-06_12-45-44-0c7df807/gaze.csv');
+gaze = readtable('Data/2023-09-08_14-32-39-3c41290a/gaze.csv');
+blinks = readtable('Data/2023-09-08_14-32-39-3c41290a/blinks.csv');
 % t= table2array(worldtime(:,end));
 timestamps = table2array(gaze(:,3));
-x = table2array(gaze(:,4));
-y = table2array(gaze(:,5));
+blink_start = table2array(blinks(:,4));
+blink_end = table2array(blinks(:,5));
+
+x = table2array(gaze(:,9));
+y = table2array(gaze(:,10));
 
 figure, scatter(x,y), axis equal
 
@@ -80,10 +89,15 @@ hold on, line([exp_timestamps; exp_timestamps],[yl(1); yl(2)].*ones(size(oc.UTCt
 
 % in datetime
 date_time = datetime(timestamps/1e9, 'ConvertFrom', 'posixtime', 'TimeZone','local', 'Format', 'd-MMM-y HH:mm:ss:ms');
+blink_start_time = datetime(blink_start/1e9, 'ConvertFrom', 'posixtime', 'TimeZone','local', 'Format', 'd-MMM-y HH:mm:ss:ms');
+blink_end_time= datetime(blink_end/1e9, 'ConvertFrom', 'posixtime', 'TimeZone','local', 'Format', 'd-MMM-y HH:mm:ss:ms');
+
 figure, plot(date_time,x, 'linewidth', 2), hold on, plot(date_time,y,'linewidth', 2)
 yl = ylim;
 hold on, line([oc.UTCtrialStart; oc.UTCtrialStart],[yl(1); yl(2)].*ones(size(oc.UTCtrialStart)), 'color','g') 
 hold on, line([oc.UTCtrialStart; oc.UTCtrialStart]+seconds(.5),[yl(1); yl(2)].*ones(size(oc.UTCtrialStart)), 'color','r') 
+hold on, line([blink_start_time'; blink_start_time'], [yl(1); yl(2)].*ones(size(blink_start_time')),'color','#77AC30');
+hold on, line([blink_end_time'; blink_end_time'], [yl(1); yl(2)].*ones(size(blink_end_time')),'color','#A2142F');
 
 % get fixation over trial intervals
 
@@ -201,8 +215,29 @@ C = reshape(C,[],size(data,2),1);
  % - distance to constraint point
 %  a = [ 0.0080    0.0160    0.0285  0.0382;  0.0038    0.0080    0.0135  0.0191;  0.0019    0.0041    0.0068  0.0097; 0.0011    0.0022    0.0035  0.0050];
 % speeds Speeds 0.5  0.25  .125    0.0625  m/s, .2m depth estimate
-a = [0.0250    0.0292    0.0374    0.0768    0.1020; 0.0102    0.0116    0.0066    0.0265    0.0457; 0.0008    0.0052    0.0002    0.0073    0.0178; 6.4579e-05      0.0025    6.2959e-05     0.0025    0.0072];
+% a = [0.0250    0.0292    0.0374    0.0768    0.1020; 0.0102    0.0116    0.0066    0.0265    0.0457; 0.0008    0.0052    0.0002    0.0073    0.0178; 6.4579e-05      0.0025    6.2959e-05     0.0025    0.0072];
+%.1 distance
+% a = [    0.0281    0.0315    0.0576    0.0901    0.1100;
+%     0.0141    0.0116    0.0196    0.0401    0.0551;
+%     0.0049    0.0052    0.0048    0.0144    0.0244;
+%     0.0002    0.0025    0.0002    0.0041    0.0097];
+%to constraint
+% a =    [ 0.0315    0.0405    0.0567    0.0883    0.1011;
+%     0.0101    0.0065    0.0090    0.0187    0.0233;
+%     0.0051    0.0032    0.0044    0.0090    0.0112;
+%     0.0024    0.0016    0.0023    0.0046    0.0057];
 
+% a = [    0.0052    0.0026    0.0048    0.0097    0.0144;
+%     0.0025    0.0012    0.0002    0.0021    0.0041;
+%     0.0012    0.0006    0.0001    0.0007    0.0013];
+% distance to constraint
+% a = [    0.0065    0.0090    0.0137    0.0187    0.0233;
+%     0.0032    0.0044    0.0067    0.0090    0.0112;
+%     0.0016    0.0023    0.0034    0.0046    0.0057];
+% distance .2m
+a = [    0.0052    0.0026    0.0002    0.0036    0.0073;
+    0.0025    0.0012    0.0001    0.0013    0.0025;
+    0.0012    0.0006    0.0001    0.0007    0.0013];
 
 
 
@@ -225,6 +260,15 @@ result = psignifit(C,options);
 %                      153,255,153; 0,255,0; 0,204,0; 0,102,0;
 %                      153,204,255; 51,153,255; 0,128,255; 0,76,153;
 %                      204,153,255; 178,102,255; 153,51,255; 102,0,204]/255;
+% colors = []
+% for ii = 1:numel(pa.direction)
+%     c = 
+
+options.dataColor = [255,153,153; 255,51,51; 204,0,0; 
+                    153,255,153; 0,255,0; 0,204,0;
+                    153,204,255; 51,153,255; 0,128,255; 
+                    204,153,255; 178,102,255; 153,51,255;
+                    255, 204, 153; 255,153,51; 204,102,0]/255;
 %  
 figure, plotPsych(result, options);
 

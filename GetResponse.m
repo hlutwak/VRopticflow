@@ -38,6 +38,7 @@ if kb.keyIsDown
         % record response and current parameters
         if pa.trialNumber > 0 && pa.trialNumber <= pa.nTrials % Do not write out data for the first and last dummy, trials
             pa.responseTime = kb.secs - pa.trialOnset;
+            
             pa.currentTime = ds.vbl - pa.experimentOnset;
             pa.response(pa.trialNumber,:) = [pa.trialNumber, pa.xSpeed, pa.zSpeed, pa.targetContrast, pa.paddleAngleInitial, pa.paddleAngle(pa.trialNumber), ds.trackingLag, pa.timeToPaddle, pa.speedUpFlag, pa.responseTime, pa.currentTime];
             %%% trial number, speed of trajectory in x (includes
