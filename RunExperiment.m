@@ -401,8 +401,12 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
           
             
          %% Experiment Logic  
-        if ds.vbl <  pa.trialOnset + pa.targetMotionDuration % if current time < present until time: draw target, 1 s target motion
-
+        if ds.vbl == pa.trialOnset
+                    oc.UTCtrialStart = datetime('now','TimeZone','local','Format','d-MMM-y HH:mm:ss:ms');
+             
+        elseif ds.vbl <  pa.trialOnset + pa.targetMotionDuration % if current time < present until time: draw target, 1 s target motion
+            
+            
             % Target position 
             % make the onset delayed
             delay = 0;
@@ -550,27 +554,27 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
 %             glDepthMask(GL.TRUE); % resume the ability to make changes to the depth buffer for proper rendering of remaining components
 %             glBlendFunc(GL.SRC_ALPHA, GL.ONE_MINUS_SRC_ALPHA); % restore the proper blending function
 
-%         elseif (kb.responseGiven && pa.feedbackFlag==1 && pa.feedbackGiven==0) || (kb.responseGiven && pa.feedbackFlag==2 && pa.feedbackGiven==0) % sound feedback only
-%             %4, % debugging flag
-%             
-%             reportedAngle = angle(exp(1i*deg2rad(pa.paddleAngle(pa.thisTrial))));  % converts the paddle angle from 0-360 to -pi - + pi
-%             
-%             % display appropriate object
-%             if ~pa.feedbackGiven
-% 
-%                 pa.feedbackGiven = 1;
-%                 pa.waitTime = ds.vbl;
-%                 
-%                 % start any lag now while waiting for subject to initiate new trial
-%                 if ds.trackingFlag==1 && ds.trackingLagStart>0 % screen will lag in updating with head movements during target motion
-%                     ds.trackingLag = randi(39)-1; % lag in frames: random lag between 0 and 500 ms
-%                     ds.lagNow = 1;
-%                 else
-%                     ds.trackingLag = 0;
-%                     ds.lagNow = 0;
-%                 end
-%                 
-%             end
+        elseif (kb.responseGiven && pa.feedbackFlag==1 && pa.feedbackGiven==0) || (kb.responseGiven && pa.feedbackFlag==2 && pa.feedbackGiven==0) % sound feedback only
+            %4, % debugging flag
+            
+            reportedAngle = angle(exp(1i*deg2rad(pa.paddleAngle(pa.thisTrial))));  % converts the paddle angle from 0-360 to -pi - + pi
+            
+            % display appropriate object
+            if ~pa.feedbackGiven
+
+                pa.feedbackGiven = 1;
+                pa.waitTime = ds.vbl;
+                
+                % start any lag now while waiting for subject to initiate new trial
+                if ds.trackingFlag==1 && ds.trackingLagStart>0 % screen will lag in updating with head movements during target motion
+                    ds.trackingLag = randi(39)-1; % lag in frames: random lag between 0 and 500 ms
+                    ds.lagNow = 1;
+                else
+                    ds.trackingLag = 0;
+                    ds.lagNow = 0;
+                end
+                
+            end
             
         elseif (kb.responseGiven && pa.feedbackFlag==1 && pa.feedbackGiven==1 && ds.vbl <= pa.waitTime+0.5) || (kb.responseGiven && pa.feedbackFlag==2 && pa.feedbackGiven==1 && ds.vbl <= pa.waitTime+.5)
 
@@ -650,7 +654,6 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
     Screen('Flip', ds.w,[],[],1);%, [], [], 2);%, ds.vbl + (1-0.5) * ds.ifi);
     ds.vbl = GetSecs();
     ds.fCount = ds.fCount + 1;
-    
 end
 
 pa.dataFile = fullfile(pa.baseDir, 'Data', [pa.subjectName '-' ds.experimentType '-' pa.date '-' num2str(pa.block) '.mat']);

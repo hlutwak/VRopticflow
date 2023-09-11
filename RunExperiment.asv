@@ -402,7 +402,8 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
             
          %% Experiment Logic  
         if ds.vbl <  pa.trialOnset + pa.targetMotionDuration % if current time < present until time: draw target, 1 s target motion
-
+            
+            
             % Target position 
             % make the onset delayed
             delay = 0;
@@ -497,7 +498,7 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
         elseif ~kb.responseGiven % show paddle and allow observers to adjust its position - no time constraints - they press the space bar to lock in their response and start a new trial
             %2, % debugging flag
             
-            
+
             pa.modelView = eye.modelView; % CSB: init camera position based on default or previous camera position. June 7th 2018
             [pa, kb] = GetResponse(pa, ds, kb);  % query the keyboard to allow the observer to rotate the paddle and eventually lock in his/her response to initiate a new trial
             eye.modelView = pa.modelView; % CSB: update camera position based on keys pressed. June 7th 2018
@@ -572,7 +573,7 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
 %                 
 %             end
             
-        elseif (kb.responseGiven && pa.feedbackFlag==1 && pa.feedbackGiven==1 && ds.vbl <= pa.waitTime+1) || (kb.responseGiven && pa.feedbackFlag==2 && pa.feedbackGiven==1 && ds.vbl <= pa.waitTime+.5)
+        elseif (kb.responseGiven && pa.feedbackFlag==1 && pa.feedbackGiven==1 && ds.vbl <= pa.waitTime+0.5) || (kb.responseGiven && pa.feedbackFlag==2 && pa.feedbackGiven==1 && ds.vbl <= pa.waitTime+.5)
 
 
             if ds.binocular || (~ds.binocular && ds.renderPass)
@@ -650,7 +651,6 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
     Screen('Flip', ds.w,[],[],1);%, [], [], 2);%, ds.vbl + (1-0.5) * ds.ifi);
     ds.vbl = GetSecs();
     ds.fCount = ds.fCount + 1;
-    
 end
 
 pa.dataFile = fullfile(pa.baseDir, 'Data', [pa.subjectName '-' ds.experimentType '-' pa.date '-' num2str(pa.block) '.mat']);
