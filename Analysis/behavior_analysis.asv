@@ -1,0 +1,48 @@
+%% Analysis code
+% get behavior files, conccatenate same trials, run psignifit
+
+% add psignifit toolbox
+addpath('/Users/hopelutwak/Documents/MATLAB/psignifit')
+
+% assign data folder
+dataFolder = '/Users/hopelutwak/Documents/GitHub/VRopticflow/Data';
+
+% names of files
+S = dir(fullfile(dataFolder,'*.mat'));
+
+% which subjects data to analyze
+subjects = ["IK"]; %"ABC", "HL","MR", "KB", "KZ"
+stims = "pilot";
+
+% loop over all subjects
+figure
+for s  = 1:length(subjects)
+
+
+    %load appropriate files
+    count = 0;
+    data = [];
+    for f = 1:length(S)
+        subj = contains(S(f).name,subjects(s));
+        sti = contains(S(f).name,stims);
+        
+        if subj && sti
+            load(S(f).name);
+            n_conditions = length(pa.speed)*length(pa.direction);
+            conditi
+            for cond = 1:n_conditions
+                idx_speed = find(pa.fullFactorial(:,3) == pa.speed(speed));
+                idx_direction = 
+                for direction = 1:length(pa.direction)
+                    idx_dir = find(pa.fullFactorial(:,4) == pa.direction(direction));
+                    idx = intersect(idx_speed, idx_dir);
+                    data(speed,:) = [pa.speed(speed), pa.direction(direction), sum(eq(pa.LR(idx), pa.LRresponse(idx))), pa.nRepeats];
+                end
+            end
+            
+            count = count+1;
+        end
+    end
+
+    
+end
