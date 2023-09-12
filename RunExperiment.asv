@@ -421,7 +421,7 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
             if ds.binocular || (~ds.binocular && ds.renderPass)
                 glPushMatrix;
                 %x-z plane
-                glTranslatef((xPosition+.5)*(pa.LR(pa.trialNumber)),pa.floorHeight+pa.paddleHalfHeight+pa.aboveground,zPosition-pa.objectdist); % shift the target to its position along its trajectory for this frame
+                glTranslatef((xPosition+.5)*(pa.LR(pa.trialNumber)),pa.floorHeight+pa.paddleHalfHeight+pa.aboveground,zPosition-pa.floorWidth/3); % shift the target to its position along its trajectory for this frame
                 %x-y plane
 %                 glTranslatef((xPosition+.5)*(pa.LR(pa.trialNumber)),pa.floorHeight+pa.paddleHalfHeight+pa.aboveground-zPosition,-pa.floorWidth/2); % shift the target to its position along its trajectory for this frame
     %             pa.xPosition = [pa.xPosition, xPosition+.5*(pa.LR(pa.trialNumber))];
@@ -443,7 +443,7 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
 
                 % stationary object
                 glPushMatrix;
-                glTranslatef(.5*(-pa.LR(pa.trialNumber)),pa.floorHeight+pa.paddleHalfHeight+pa.aboveground,-pa.objectdist); 
+                glTranslatef(.5*(-pa.LR(pa.trialNumber)),pa.floorHeight+pa.paddleHalfHeight+pa.aboveground,-pa.floorWidth/3); 
                 if ds.dotfield
                     glCallList(ds.fixation);
                 else
@@ -480,7 +480,7 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
             if ds.eyesimulation % simulate eye rotation along with translation
                 eye.modelView(3,4) =  pa.translation.*(ds.vbl-pa.trialOnset); %eye.modelView(3,4) + %eye.modelView(2,4) - %(ds.vbl-pa.trialOnset)
                 track = [track (ds.vbl-pa.trialOnset)];
-                    theta = atan(-pa.floorHeight./(pa.fixationdist/2-pa.translation*(ds.vbl-pa.trialOnset))); % update theta for observer fixating at a point at the ground in front of them, fixation m away
+                    theta = atan(-pa.floorHeight./(pa.floorWidth/2-pa.translation*(ds.vbl-pa.trialOnset))); % update theta for observer fixating at a point at the ground in front of them, fixation m away
                     dtheta = theta - track_theta(end);
                     track_dtheta = [track_dtheta, dtheta];
                     R = [1 0 0; 0 cos(dtheta) -sin(dtheta); 0 sin(dtheta) cos(dtheta)]; % viewing angle is changed upon each update, so only rotate the difference in what the angle should be
