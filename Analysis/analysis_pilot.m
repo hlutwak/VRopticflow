@@ -70,15 +70,19 @@ end
 D=dir('Data');
 % gaze = readtable('Data\2023-07-26_16-09-57-7a8b312d\gaze.csv');
 % worldtime = readtable('Data\2023-07-26_16-09-57-7a8b312d\world_timestamps.csv');
-gaze = readtable('Data/2023-09-08_14-32-39-3c41290a/gaze.csv');
-blinks = readtable('Data/2023-09-08_14-32-39-3c41290a/blinks.csv');
+gaze = readtable('Data/2023-09-14_15-29-36-ac260e7b/gaze.csv');
+blinks = readtable('Data/2023-09-14_15-29-36-ac260e7b/blinks.csv');
 % t= table2array(worldtime(:,end));
 timestamps = table2array(gaze(:,3));
 blink_start = table2array(blinks(:,4));
 blink_end = table2array(blinks(:,5));
 
-x = table2array(gaze(:,9));
-y = table2array(gaze(:,10));
+
+% x = table2array(gaze(:,9));
+% y = table2array(gaze(:,10));
+
+x = table2array(gaze(:,4));
+y = table2array(gaze(:,5));
 
 figure, scatter(x,y), axis equal
 
@@ -93,10 +97,14 @@ date_time = datetime(timestamps/1e9, 'ConvertFrom', 'posixtime', 'TimeZone','loc
 blink_start_time = datetime(blink_start/1e9, 'ConvertFrom', 'posixtime', 'TimeZone','local', 'Format', 'd-MMM-y HH:mm:ss:ms');
 blink_end_time= datetime(blink_end/1e9, 'ConvertFrom', 'posixtime', 'TimeZone','local', 'Format', 'd-MMM-y HH:mm:ss:ms');
 
-figure, plot(date_time,x, 'linewidth', 2), hold on, plot(date_time,y,'linewidth', 2)
+figure, plot(date_time,x, 'linewidth', 2), hold on, plot(date_time,-y,'linewidth', 2)
 yl = ylim;
-hold on, line([oc.UTCtrialStart; oc.UTCtrialStart],[yl(1); yl(2)].*ones(size(oc.UTCtrialStart)), 'color','g') 
-hold on, line([oc.UTCtrialStart; oc.UTCtrialStart]+seconds(.5),[yl(1); yl(2)].*ones(size(oc.UTCtrialStart)), 'color','r') 
+% hold on, line([oc.UTCtrialStart; oc.UTCtrialStart],[yl(1); yl(2)].*ones(size(oc.UTCtrialStart)), 'color','g') 
+% hold on, line([oc.UTCtrialStart; oc.UTCtrialStart]+seconds(.5),[yl(1); yl(2)].*ones(size(oc.UTCtrialStart)), 'color','r') 
+
+hold on, line([oc.UTCtrialEnd; oc.UTCtrialEnd]-seconds(.5),[yl(1); yl(2)].*ones(size(oc.UTCtrialEnd)), 'color','g') 
+hold on, line([oc.UTCtrialEnd; oc.UTCtrialEnd],[yl(1); yl(2)].*ones(size(oc.UTCtrialEnd)), 'color','r') 
+
 hold on, line([blink_start_time'; blink_start_time'], [yl(1); yl(2)].*ones(size(blink_start_time')),'color','#77AC30');
 hold on, line([blink_end_time'; blink_end_time'], [yl(1); yl(2)].*ones(size(blink_end_time')),'color','#A2142F');
 
@@ -164,6 +172,7 @@ end
 %% psignifit 
 addpath(genpath('C:\Users\hlutw\OneDrive\Documents\MATLAB\psignifit-master'));
 %  addpath('/Users/hopelutwak/Documents/MATLAB/psignifit')
+addpath(genpath('C:\Users\hlutw\OneDrive\Documents\GitHub\VRopticflow\Analysis'));
 % set options for psychometric functions
 options             = struct;   % initialize as an empty struct
 options.sigmoidName = 'weibull';   
@@ -223,8 +232,8 @@ C = reshape(C,[],size(data,2),1);
 %     0.0049    0.0052    0.0048    0.0144    0.0244;
 %     0.0002    0.0025    0.0002    0.0041    0.0097];
 % corrected height
-[dconst, dsurr] = DistanceToConstraint(ds, pa, .1)
-a = dconst;
+[dconst, dsurr] = DistanceToConstraint(ds, pa, .1);
+a = dsurr;
 %to constraint
 % a =    [ 0.0315    0.0405    0.0567    0.0883    0.1011;
 %     0.0101    0.0065    0.0090    0.0187    0.0233;

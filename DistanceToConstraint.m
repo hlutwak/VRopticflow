@@ -243,8 +243,8 @@ for cond = 1:size(conditions, 1)
     %show target vs surround velocities throughout stim
     radius = 3; %in cm
     center = target_idx; %target_idx vs stationary_idx
-    xlims = [-.01, .08];
-    ylims = [-.025,.025];
+    xlims = [-.1, .1];
+    ylims = [-.1, .1];
     
     
     

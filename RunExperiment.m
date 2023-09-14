@@ -223,6 +223,7 @@ ds.fCount = 0;
 ds.vbl = pa.trialOnset;
 tStart = ds.vbl;
 pa.experimentOnset = ds.vbl;
+oc.UTCtrialEnd =[];
 
 pa.block = 0;
 breakTime = 0;  % participants are running in the task
@@ -401,11 +402,14 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
           
             
          %% Experiment Logic  
-        if ds.vbl == pa.trialOnset
-                    oc.UTCtrialStart = datetime('now','TimeZone','local','Format','d-MMM-y HH:mm:ss:ms');
-             
-        elseif ds.vbl <  pa.trialOnset + pa.targetMotionDuration % if current time < present until time: draw target, 1 s target motion
+        
+
+        if ds.vbl <  pa.trialOnset + pa.targetMotionDuration % if current time < present until time: draw target, 1 s target motion
             
+%             trial_startflag = [1 trial_startflag];
+%             if trial_startflag(1)-trial_startflag(2) == 1
+%                 oc.UTCtrialStart = [oc.UTCtrialStart datetime('now','TimeZone','local','Format','d-MMM-y HH:mm:ss:ms')];
+%             end
             
             % Target position 
             % make the onset delayed
@@ -498,7 +502,12 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
             pa.responseOnset = ds.vbl; % start the timer on the response time
             
 
-        elseif ~kb.responseGiven % show paddle and allow observers to adjust its position - no time constraints - they press the space bar to lock in their response and start a new trial
+        elseif ds.vbl >  pa.trialOnset + pa.targetMotionDuration && ~oc.trialendflag
+            oc.UTCtrialEnd = [oc.UTCtrialEnd datetime('now','TimeZone','local','Format','d-MMM-y HH:mm:ss:ms')];
+
+            oc.trialendflag = 1;
+            
+        elseif ~kb.responseGiven && oc.trialendflag % show paddle and allow observers to adjust its position - no time constraints - they press the space bar to lock in their response and start a new trial
             %2, % debugging flag
             
 
