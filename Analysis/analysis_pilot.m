@@ -232,8 +232,6 @@ C = reshape(C,[],size(data,2),1);
 %     0.0049    0.0052    0.0048    0.0144    0.0244;
 %     0.0002    0.0025    0.0002    0.0041    0.0097];
 % corrected height
-[dconst, dsurr] = DistanceToConstraint(ds, pa, .1);
-a = dsurr;
 %to constraint
 % a =    [ 0.0315    0.0405    0.0567    0.0883    0.1011;
 %     0.0101    0.0065    0.0090    0.0187    0.0233;
@@ -261,22 +259,13 @@ a = dsurr;
 %     0.0052    0.0026    0.0048    0.0097    0.0144;
 %     0.0025    0.0012    0.0002    0.0021    0.0041;
 %     0.0012    0.0006    0.0001    0.0007    0.0013];
-% 
-
-
-
-
+[dconst, dsurr] = DistanceToConstraint(ds, pa, .1);
+a = dconst;
 C(:,1) = a(:);
-% 
-% exp2 = data;
-% exp1 = data;
-
-% C2 = C;
-% C1 = C;
-% C = [C1;C2];
 
 % run psignifit
 result = psignifit(C,options);
+figure, plotPsych(result, options);
 % options.dataColor = repmat([0,0,1], length(C),1);
 % ** will only work of edit psignifit's plotPsych!!
 
@@ -306,5 +295,11 @@ result = psignifit(C,options);
 %            0.1250   0.0625    0.0313
 
 %  
-figure, plotPsych(result, options);
 
+%% random
+% exp2 = data;
+% exp1 = data;
+
+% C2 = C;
+% C1 = C;
+% C = [C1;C2];
