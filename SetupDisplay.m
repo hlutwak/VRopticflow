@@ -13,7 +13,7 @@ ds.multiSample = 16;
 ds.doSeparateEyeRender = 1; % render two eyes' views
 ds.binocular = 1;
 ds.eyesimulation = 0;
-ds.dotfield = 0;
+ds.dotfield = 1;
 ds.eyetracking = 0;
 
 PsychImaging('PrepareConfiguration');

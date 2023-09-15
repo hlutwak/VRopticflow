@@ -29,6 +29,12 @@ if pa.trialNumber>0 % if it's past the first trial, wait for the Up Arrow key to
                     pa.positions(:,idx) = -pa.floorWidth/2+2*pa.floorWidth/2*rand(2,length(idx));
                 end
                 
+                if ds.dotfield
+                    pa.dotpositions = -pa.floorWidth/2+2*pa.floorWidth/2*rand(3,pa.nball*5); %uniform random positions across floor, random height within range of y position of moving target
+                    pa.dotpositions(3,:) = pa.dotpositions(3,:)-pa.floorWidth/2;
+                    pa.dotpositions(2,:) = pa.floorHeight;
+                end
+                
                 pa.xSpeed = pa.fullFactorial(pa.thisTrial,1);
                 pa.zSpeed = pa.fullFactorial(pa.thisTrial,2);
                 
@@ -88,6 +94,12 @@ else % if it is just the first trial, start right up after the subject presses '
                 while sum(vecnorm(pa.positions-exclude)<pa.fixationSize+pa.paddleHalfWidth)>0 %at least one position overlaps with fixation
                     idx = find(vecnorm(pa.positions-exclude)<pa.fixationSize+pa.paddleHalfWidth);
                     pa.positions(:,idx) = -pa.floorWidth/2+2*pa.floorWidth/2*rand(2,length(idx));
+                end
+                
+                if ds.dotfield
+                    pa.dotpositions = -pa.floorWidth/2+2*pa.floorWidth/2*rand(3,pa.nball*5); %uniform random positions across floor, random height within range of y position of moving target
+                    pa.dotpositions(3,:) = pa.dotpositions(3,:)-pa.floorWidth/2;
+                    pa.dotpositions(2,:) = pa.floorHeight;
                 end
                 
       

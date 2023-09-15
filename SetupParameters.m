@@ -8,7 +8,7 @@ function [ds,pa] = SetupParameters(ds)
 
 %% Basic experimental specs 
 
-pa.subjectName = 'HL_pilot_full';
+pa.subjectName = 'HL_dot_test';
 pa.feedbackFlag = 1;  % 0 --> no feedback;  1 --> only sound-based feedback;  2 --> visual + sound-based feedback
 
 pa.criterion = 8*(pi/180);  % this is the criterion for the distance between the mid-point of the paddle and the midpoint of the ball; distances smaller than this are hits - any overlap counts
@@ -91,7 +91,7 @@ pa.trialNumber = 0; % gotta start somewhere
 pa.nRepeats = 20; % each target contrast condition gets pa.nRepeats trials - 75*3 = 225 per block 
 % pa.speed = [0.5, 0.4, 0.3, 0.2,0.1]; %speeds m/s
 % pa.speed = [0.5, 0.15, 0.075,  0.0375]; %speeds m/s
-pa.speed = [.125  0.0625, 0.0313]; %speeds m/s
+pa.speed = [.125  0.0625 0.0313]; %speeds m/s
 
 pa.direction = deg2rad([250,260,270,280,290]) ; %(0 is radially out horizontally, 90 is forward/up, 270 is backwards/down x-z/x-y plane)
 

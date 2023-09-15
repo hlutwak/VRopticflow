@@ -42,7 +42,7 @@ nObjects = 50;
 view_dist = .5; %m how far the screen is from the observer
 viewingdepths = [.01,   5]; % nearest and furthest dots that can show up, m
  
-windowRect = [0           0        2560    1600]; % screen size in pixels (origin, width of screen, height of screen)
+windowRect = [0  0  2560 1600]; % switch with ds.windowRect screen size in pixels (origin, width of screen, height of screen) [0  0  2560 1600]
 pixels = windowRect(3:4); % pixel width and height of screen
 screensize = [.712 .312]; % screen size in m
  
