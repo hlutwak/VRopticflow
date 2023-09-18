@@ -14,71 +14,71 @@ mag_filter = GL_LINEAR; %GL_NEAREST; %_LINEAR;
 min_filter = GL_LINEAR; %GL_NEAREST; %GL_LINEAR_MIPMAP_NEAREST; %_LINEAR
 
 
-% %% create sphere with noise pattern
-% target_texid = glGenTextures(1);
-% 
-% % Apply regular checkerboard pattern as texture:
-% % % 1/f floor
-% floorSize = 1024; % power of 2
-% 
-% [x,~] = meshgrid(-floorSize+1:floorSize,-floorSize+1:floorSize);
-% % temp = zeros(floorSize*floorSize*3, 1);
-% col = 0;
-% 
-% noysSlope = 1; %1.5;
-% noys = 255.*oneoverf(noysSlope, size(x,1), size(x,2)); % oneoverf -> [0:1]
-% noys=repmat(noys,[ 1 1 3 ]);
-% noys=permute(uint8(noys),[ 3 2 1 ]);
-% 
-% nSlices = 64;
-% nStacks = 32;
-% 
-%     glBindTexture(gltextarget, gltex);
-%     glTexEnvfv(GL.TEXTURE_ENV,GL.TEXTURE_ENV_MODE,GL.MODULATE);
-% %     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-% %     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-% %   glTexParameteri(gltextarget, GL.TEXTURE_WRAP_S, GL.REPEAT);
-%     glTexParameteri(gltextarget, GL.TEXTURE_WRAP_S, GL.REPEAT);
-%     glTexParameteri(gltextarget, GL.TEXTURE_WRAP_T, GL.REPEAT);
-%     glTexParameteri(gltextarget, GL.TEXTURE_MIN_FILTER, GL.LINEAR_MIPMAP_LINEAR);
-% 
-% %     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-% %     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, floorSize, floorSize, 0, GL_RGBA, GL_UNSIGNED_BYTE, noys);
-% 
-%         % Need mipmapping for trilinear filtering --> Create mipmaps:
-%     if ~isempty(findstr(glGetString(GL.EXTENSIONS), 'GL_EXT_framebuffer_object'))
-%         % Ask the hardware to generate all depth levels automatically:
-%         glGenerateMipmapEXT(GL.TEXTURE_2D);
-%     else
-%         % No hardware support for auto-mipmap-generation. Do it "manually":
-% 
-%         % Use GLU to compute the image resolution mipmap pyramid and create
-%         % OpenGL textures ouf of it: This is slow, compared to glGenerateMipmapEXT:
-%         r = gluBuild2DMipmaps(gltextarget, GL.LUMINANCE, size(myimg,1), size(myimg,2), GL.LUMINANCE, GL.UNSIGNED_BYTE, uint8(myimg));
-%         if r>0
-%             error('gluBuild2DMipmaps failed for some reason.');
-%         end
-%     end
-%     glTexParameteri(gltextarget, GL.TEXTURE_MAG_FILTER, GL.LINEAR);
-%     
-% 
-%     quadratic=gluNewQuadric();
-%     gluQuadricDrawStyle(quadratic, GLU_FILL);
-%     gluQuadricNormals(quadratic, GLU_SMOOTH);
-%     gluQuadricTexture(quadratic, GL_TRUE);
-%     
-%     ds.fixation = glGenLists(1);
-%     glNewList(ds.fixation, GL.COMPILE);
-%     gluSphere(quadratic, pa.fixationSize,nSlices,nStacks);
-%     glEndList();
-%     
-% 
-% 
-% % ds.fixation = glGenLists(1);
-% % glNewList(ds.fixation, GL.COMPILE);
-% % gluQuadricTexture(quadratic, GL.TRUE); 
-% % gluSphere(quadratic,pa.fixationSize,nSlices,nStacks);  
-% % glEndList();
+%% create sphere with noise pattern
+target_texid = glGenTextures(1);
+
+% Apply regular checkerboard pattern as texture:
+% % 1/f floor
+floorSize = 1024; % power of 2
+
+[x,~] = meshgrid(-floorSize+1:floorSize,-floorSize+1:floorSize);
+% temp = zeros(floorSize*floorSize*3, 1);
+col = 0;
+
+noysSlope = 1; %1.5;
+noys = 255.*oneoverf(noysSlope, size(x,1), size(x,2)); % oneoverf -> [0:1]
+noys=repmat(noys,[ 1 1 3 ]);
+noys=permute(uint8(noys),[ 3 2 1 ]);
+
+nSlices = 64;
+nStacks = 32;
+
+    glBindTexture(gltextarget, gltex);
+    glTexEnvfv(GL.TEXTURE_ENV,GL.TEXTURE_ENV_MODE,GL.MODULATE);
+%     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+%     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+%   glTexParameteri(gltextarget, GL.TEXTURE_WRAP_S, GL.REPEAT);
+    glTexParameteri(gltextarget, GL.TEXTURE_WRAP_S, GL.REPEAT);
+    glTexParameteri(gltextarget, GL.TEXTURE_WRAP_T, GL.REPEAT);
+    glTexParameteri(gltextarget, GL.TEXTURE_MIN_FILTER, GL.LINEAR_MIPMAP_LINEAR);
+
+%     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+%     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, floorSize, floorSize, 0, GL_RGBA, GL_UNSIGNED_BYTE, noys);
+
+        % Need mipmapping for trilinear filtering --> Create mipmaps:
+    if ~isempty(findstr(glGetString(GL.EXTENSIONS), 'GL_EXT_framebuffer_object'))
+        % Ask the hardware to generate all depth levels automatically:
+        glGenerateMipmapEXT(GL.TEXTURE_2D);
+    else
+        % No hardware support for auto-mipmap-generation. Do it "manually":
+
+        % Use GLU to compute the image resolution mipmap pyramid and create
+        % OpenGL textures ouf of it: This is slow, compared to glGenerateMipmapEXT:
+        r = gluBuild2DMipmaps(gltextarget, GL.LUMINANCE, size(myimg,1), size(myimg,2), GL.LUMINANCE, GL.UNSIGNED_BYTE, uint8(myimg));
+        if r>0
+            error('gluBuild2DMipmaps failed for some reason.');
+        end
+    end
+    glTexParameteri(gltextarget, GL.TEXTURE_MAG_FILTER, GL.LINEAR);
+    
+
+    quadratic=gluNewQuadric();
+    gluQuadricDrawStyle(quadratic, GLU_FILL);
+    gluQuadricNormals(quadratic, GLU_SMOOTH);
+    gluQuadricTexture(quadratic, GL_TRUE);
+    
+    ds.fixation = glGenLists(1);
+    glNewList(ds.fixation, GL.COMPILE);
+    gluSphere(quadratic, pa.fixationSize,nSlices,nStacks);
+    glEndList();
+    
+
+
+% ds.fixation = glGenLists(1);
+% glNewList(ds.fixation, GL.COMPILE);
+% gluQuadricTexture(quadratic, GL.TRUE); 
+% gluSphere(quadratic,pa.fixationSize,nSlices,nStacks);  
+% glEndList();
 
 
 %% rest of the textures
@@ -355,10 +355,10 @@ lowcontrast_texid = glGenTextures(1); % this will be the low contrast target
 nSlices = 64;
 nStacks = 32;
 
-quadratic=gluNewQuadric();
-gluQuadricDrawStyle(quadratic, GLU_FILL);
-gluQuadricNormals(quadratic, GLU_SMOOTH);
-gluQuadricTexture(quadratic, GL_FALSE);
+% quadratic=gluNewQuadric();
+% gluQuadricDrawStyle(quadratic, GLU_FILL);
+% gluQuadricNormals(quadratic, GLU_SMOOTH);
+% gluQuadricTexture(quadratic, GL_FALSE);
 
 ds.highcontrastTarget = glGenLists(1);
 glNewList(ds.highcontrastTarget, GL.COMPILE);
@@ -378,18 +378,12 @@ glColor4f(0,1,0,pa.targetContrast(1));
 gluSphere(quadratic,pa.targetSize,nSlices,nStacks);
 glEndList();
 
-% ds.dot = glGenLists(1);
-% glNewList(ds.fixaiton, GL.COMPILE);
-% glBegin(GL_POINTS);
-% glColor4f(1.0, 1.0, 1.0, 1.0);
-% glVertex3f(0.0, 0.0, 0.0);
-% glEnd;
-% glEndList();
-
-ds.fixation = glGenLists(1);
-glNewList(ds.fixation, GL.COMPILE);
-glColor4f(1,1,1,1);
-gluSphere(quadratic,pa.fixationSize,nSlices,nStacks);  
+ds.dot = glGenLists(1);
+glNewList(ds.dot, GL.COMPILE);
+glBegin(GL_POINTS);
+glColor4f(1.0, 1.0, 1.0, 1.0);
+glVertex3f(0.0, 0.0, 0.0);
+glEnd;
 glEndList();
 
 

@@ -11,8 +11,9 @@ dataFolder = '/Users/hopelutwak/Documents/GitHub/VRopticflow/Data';
 S = dir(fullfile(dataFolder,'*.mat'));
 
 % which subjects data to analyze
-subjects = ["IK"]; %"ABC", "HL","MR", "KB", "KZ"
+subjects = ["IK"]; %"HL"
 stims = "pilot";
+depth_range = .1;
 
 % loop over all subjects
 
@@ -29,17 +30,40 @@ for s  = 1:length(subjects)
         if subj && sti
             load(fullfile(dataFolder,S(f).name));
             n_conditions = length(pa.speed)*length(pa.direction);
-            conditions = fullfact([numel(pa.speed), numel(pa.direction)]); 
+            conditions = fullfact([numel(pa.speed), numel(pa.direction)]);
+            data_session = [];
             for cond = 1:n_conditions
                 idx_speed = find(pa.fullFactorial(:,3) == pa.speed(conditions(cond,1)));
                 idx_direction = find(pa.fullFactorial(:,4) == pa.direction(conditions(cond,2)));
                 idx = intersect(idx_speed, idx_direction);
-                data_session(cond,:) = [pa.speed(conditions(cond,1)), rad2deg(pa.direction(conditions(cond,2))), sum(eq(pa.LR(idx), pa.LRresponse(idx))), pa.nRepeats];
+                data_session(cond,:) = [nan(1) nan(1) pa.speed(conditions(cond,1)), rad2deg(pa.direction(conditions(cond,2))), sum(eq(pa.LR(idx), pa.LRresponse(idx))), pa.nRepeats];
             end
+            [dconst, dsurr] = DistanceToConstraint(ds, pa, depth_range);
+            data_session(:,1) = dconst(:);
+            data_session(:,2) = dsurr(:);
             data = [data; data_session];
             count = count+1;
         end
     end
+    data_const = [data(:,1) data(:,end-1:end)];
+    data_surr = [data(:,2) data(:,end-1:end)];
+    
+    options             = struct;   % initialize as an empty struct
+    options.sigmoidName = 'weibull';   
+    options.expType     = '2AFC';   % choose 2-AFC as the paradigm of the experiment
+                                    % this sets the guessing rate to .5 and
+                                    % fits the rest of the parameters
+    options.fixedPars = NaN(5,1);                                
+    options.fixedPars(5) = 0;       % fix eta (dispersion) to zero
+
+    result_const = psignifit(data_const,options);
+    result_surr = psignifit(data_surr, options);
+    figure, plotPsych(result_const, options);
+    title(['distance to constraint, depth range = ', num2str(depth_range)])
+    figure, plotPsych(result_surr, options);
+    title('distance to surround')
+    
+    
 
     
 end

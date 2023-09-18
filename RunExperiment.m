@@ -426,11 +426,7 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
                 glPushMatrix;
                 %x-z plane
                 glTranslatef((xPosition+.5)*(pa.LR(pa.trialNumber)),pa.floorHeight+pa.paddleHalfHeight+pa.aboveground,zPosition-pa.objectdist); % shift the target to its position along its trajectory for this frame
-                %x-y plane
-%                 glTranslatef((xPosition+.5)*(pa.LR(pa.trialNumber)),pa.floorHeight+pa.paddleHalfHeight+pa.aboveground-zPosition,-pa.floorWidth/2); % shift the target to its position along its trajectory for this frame
-    %             pa.xPosition = [pa.xPosition, xPosition+.5*(pa.LR(pa.trialNumber))];
-    %             pa.zPosition = [pa.zPosition, zPosition-pa.floorWidth/2];
-    %             if pa.targetContrast==1
+
                 if ds.dotfield
                     glCallList(ds.fixation);
                 else
@@ -438,12 +434,6 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
                 end
 
                     glPopMatrix;
-    %             elseif pa.targetContrast==0.15
-    %                 glCallList(ds.midcontrastTarget);
-    %             elseif pa.targetContrast==0.075
-    %                 glCallList(ds.lowcontrastTarget); 
-    %             end
-    %              
 
                 % stationary object
                 glPushMatrix;
@@ -478,9 +468,7 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
                 end
             end
             
-                
-%             glBindTexture(GL.TEXTURE_2D,ds.floor_texid);
-%             glCallList(ds.floorTexture);
+              
 
             if ds.eyesimulation % simulate eye rotation along with translation
                 eye.modelView(3,4) =  pa.translation.*(ds.vbl-pa.trialOnset); %eye.modelView(3,4) + %eye.modelView(2,4) - %(ds.vbl-pa.trialOnset)
@@ -526,43 +514,6 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
             
             pa.feedbackOnset = ds.vbl;
             
-%         elseif kb.responseGiven && pa.feedbackFlag==2 && pa.feedbackGiven==0 && ds.vbl < (pa.feedbackOnset + pa.timeToPaddle - pa.targetMotionDuration) % visual feedback
-%             
-%             %3, % debugging flag
-%             
-%             % show the feedback (rest of the trajectory)
-%             % Draw Paddle
-%             glPushMatrix;
-%             glRotatef(pa.paddleAngle(pa.thisTrial),0,-1,0); % position the paddle along the orbit according to the angle specified by the input (observer adjustment)
-%             glTranslatef(pa.paddleOrbitShift-pa.paddleHalfWidth*2-.5,pa.floorHeight+pa.paddleHalfHeight,0); % shift the paddle physically out to the orbit
-%             glCallList(ds.paddleList); % call the pre-compiled list that binds the textures to the paddle faces
-%             glPopMatrix;
-%             
-%             % In this section, we are display both an opaque paddle + a
-%             % translucent target (sphere) so we need to do a bit of
-%             % openGL work to make the translucent sphere display
-%             % properly
-%             glDepthMask(GL.FALSE); % disable changes to the depth buffer
-%             glBlendFunc(GL.SRC_ALPHA, GL.ONE); % set the alpha to that of the target contrast without influence of the paddle or other scene elements
-%             
-%             % Target position - we only speed up the feedback if it's
-%             % going to take longer than 10 s and we speed it up
-%             % incrementally given time
-%             xPosition = (pa.speedUpFlag*pa.xSpeed).*(ds.vbl-pa.feedbackOnset+pa.targetMotionDuration);
-%             zPosition = (pa.speedUpFlag*pa.zSpeed).*(ds.vbl-pa.feedbackOnset+pa.targetMotionDuration);
-%             
-%             glTranslatef(xPosition-.5,pa.floorHeight+pa.targetSize,zPosition); % shift the target to its position along its trajectory for this frame
-%             
-%             if pa.targetContrast==1
-%                 glCallList(ds.highcontrastTarget);
-%             elseif pa.targetContrast==0.15
-%                 glCallList(ds.midcontrastTarget);
-%             elseif pa.targetContrast==0.075
-%                 glCallList(ds.lowcontrastTarget);
-%             end
-%             
-%             glDepthMask(GL.TRUE); % resume the ability to make changes to the depth buffer for proper rendering of remaining components
-%             glBlendFunc(GL.SRC_ALPHA, GL.ONE_MINUS_SRC_ALPHA); % restore the proper blending function
 
         elseif (kb.responseGiven && pa.feedbackFlag==1 && pa.feedbackGiven==0) || (kb.responseGiven && pa.feedbackFlag==2 && pa.feedbackGiven==0) % sound feedback only
             %4, % debugging flag

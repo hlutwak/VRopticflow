@@ -79,7 +79,7 @@ pa.targetMotionDuration = .5; % 1 s
 pa.targetContrast = [1 0.15 0.075]; % fully-visible target, 15% and 7.5% contrast
 pa.targetRadius = .25; % deg  0.25;
 pa.targetSize = 0.025;% m
-pa.fixationSize = pa.targetSize/2;
+pa.fixationSize = pa.targetSize;
 pa.nball = 50; %number of randomly placed objects
 pa.ndots = pa.nball; % number of dots in dot task
 
