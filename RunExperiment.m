@@ -447,9 +447,11 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
 
 
                 % place random stationary objects
+
                 for b = 1:pa.nball
                     glPushMatrix;
                     glTranslatef(pa.positions(1,b),pa.floorHeight+pa.paddleHalfHeight+pa.positions(2,b),pa.positions(3,b)); 
+                    glRotatef(pa.rotations(b,1), pa.rotations(b,2), pa.rotations(b,3), pa.rotations(b,4));
                 if ds.dotfield
                     glCallList(ds.fixation);
                 else
@@ -473,7 +475,7 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
             if ds.eyesimulation % simulate eye rotation along with translation
                 eye.modelView(3,4) =  pa.translation.*(ds.vbl-pa.trialOnset); %eye.modelView(3,4) + %eye.modelView(2,4) - %(ds.vbl-pa.trialOnset)
                 track = [track (ds.vbl-pa.trialOnset)];
-                    theta = atan(-pa.floorHeight./(pa.fixationdist/2-pa.translation*(ds.vbl-pa.trialOnset))); % update theta for observer fixating at a point at the ground in front of them, fixation m away
+                    theta = atan(-pa.floorHeight./(pa.fixationdist-pa.translation*(ds.vbl-pa.trialOnset))); % update theta for observer fixating at a point at the ground in front of them, fixation m away
                     dtheta = theta - track_theta(end);
                     track_dtheta = [track_dtheta, dtheta];
                     R = [1 0 0; 0 cos(dtheta) -sin(dtheta); 0 sin(dtheta) cos(dtheta)]; % viewing angle is changed upon each update, so only rotate the difference in what the angle should be

@@ -54,8 +54,6 @@ pa.floorHeight = -1; % m
 pa.floorWidth = 6;
 pa.ceilingHeight = 1.5; % m 
 
-pa.gazeangle = atan(-pa.floorHeight/(pa.floorWidth/2)); %angle camera is looking towards the ground
-
     
 %% parameters for the adjustable paddle
 
@@ -64,7 +62,7 @@ pa.paddleHalfHeight = 0.075;% m
 pa.paddleHalfDepth = 0.075;% m
 pa.aboveground = 0.15; %0.15;
 pa.objectdist = 2;
-pa.fixationdist = 3;
+pa.fixationdist = 2;
 % pa.paddleHeightFactor = 1;% 0.0057 m 
 pa.paddleAngle = 0; % deg - start at the rightward position
 pa.shiftPaddle = 0.25;
@@ -72,10 +70,11 @@ pa.rotationSpeed = pa.shiftPaddle; % this will update according to the observer'
 pa.acceleratePaddle = 0.008;
 pa.paddleOrbitShift = 0.1185;% m
  
+pa.gazeangle = atan(-pa.floorHeight/pa.fixationdist); %angle camera is looking towards the ground
 
 %% parameters for the target - will establish the speed distributions below
 
-pa.targetMotionDuration = .5; % 1 s
+pa.targetMotionDuration = 1; % 1 s
 pa.targetContrast = [1 0.15 0.075]; % fully-visible target, 15% and 7.5% contrast
 pa.targetRadius = .25; % deg  0.25;
 pa.targetSize = 0.025;% m
@@ -93,7 +92,7 @@ pa.nRepeats = 20; % each target contrast condition gets pa.nRepeats trials - 75*
 % pa.speed = [0.5, 0.15, 0.075,  0.0375]; %speeds m/s
 pa.speed = [.125  0.0625 0.0313]; %speeds m/s
 
-pa.direction = deg2rad([250,260,270,280,290]) ; %(0 is radially out horizontally, 90 is forward/up, 270 is backwards/down x-z/x-y plane)
+pa.direction = deg2rad([0 45 90 180 225 270 315]) ; %(0 is radially out horizontally, 90 is forward/up, 270 is backwards/down x-z/x-y plane)
 
 % pa.direction = deg2rad([90 230, 260, 290]) ; %(0 is to the right, 90 is forward, 270 is backwards)
 factorial = fullfact([length(pa.speed), length(pa.direction)]); 
