@@ -251,6 +251,7 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
        if pa.trialNumber>1
            eye.eyeIndex = 0;
            eye.modelView = oc.modelViewDataRight(1:4,:);
+           eye.modelView = [1 0 0 0; 0 1 0 0; 0 0 1 -ds.viewingDistance; 0 0 0 1];
 
        else
            if isempty(ds.hmd)
@@ -545,12 +546,12 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
             if ds.binocular || (~ds.binocular && ds.renderPass)
                 if pa.LRresponse(pa.trialNumber) == pa.LR(pa.trialNumber)  %does the response match the target side
                         glPushMatrix;
-                        glTranslatef(0,pa.floorHeight+pa.fixationSize,-(pa.floorWidth/2)); % display green sphere
+                        glTranslatef(0,pa.floorHeight+pa.fixationSize,-(pa.fixationdist)); % display green sphere
                         glCallList(ds.correct);
                         glPopMatrix;
                 else
                         glPushMatrix;
-                        glTranslatef(0,pa.floorHeight+pa.fixationSize,-(pa.floorWidth/2)); % display red sphere
+                        glTranslatef(0,pa.floorHeight+pa.fixationSize,-(pa.fixationdist)); % display red sphere
                         glCallList(ds.incorrect);
                         glPopMatrix;
                 end

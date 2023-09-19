@@ -23,11 +23,19 @@ if pa.trialNumber>0 % if it's past the first trial, wait for the Up Arrow key to
                 pa.positions = -pa.floorWidth/2+2*pa.floorWidth/2*rand(3,pa.nball); %uniform random positions across floor, random height within range of y position of moving target
                 pa.positions(3,:) = pa.positions(3,:)-pa.floorWidth/2;
                 pa.positions(2,:) = pa.aboveground*rand(1,pa.nball);
-                exclude = [0; pa.floorHeight;-pa.floorWidth/2]; %x,z coordinate where fixation target is
-                while sum(vecnorm(pa.positions-exclude)<pa.fixationSize+pa.paddleHalfWidth)>0 %at least one position overlaps with fixation
-                    idx = find(vecnorm(pa.positions-exclude)<pa.fixationSize+pa.paddleHalfWidth);
-                    pa.positions(:,idx) = -pa.floorWidth/2+2*pa.floorWidth/2*rand(2,length(idx));
-                end
+                fixposition = [0; pa.floorHeight;-pa.fixationdist]; %x,z coordinate where fixation target is
+                exclude = [0 -.5 0.5; pa.floorHeight pa.floorHeight pa.floorHeight; -pa.fixationdist -pa.objectdist -pa.objectdist];
+% 
+                    for eachpoint = 1:3
+                        withinexclude = sum(vecnorm(pa.positions-exclude(:,eachpoint))<pa.fixationSize+pa.paddleHalfWidth*2);
+    % 
+                        while withinexclude>0 %at least one position overlaps with fixation
+                            idx = find(vecnorm(pa.positions-exclude(:,eachpoint))<pa.fixationSize+pa.paddleHalfWidth);
+                            pa.positions(:,idx) = -pa.floorWidth/2+2*pa.floorWidth/2*rand(2,length(idx));
+                        end
+    %                     
+                    end
+
                 
                 rotangle = [0, 90, 180, 270];
                 axs = [1 0 0; 0 1 0; 0 0 1];
