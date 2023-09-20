@@ -250,8 +250,9 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
        
        if pa.trialNumber>1
            eye.eyeIndex = 0;
-           eye.modelView = oc.modelViewDataRight(1:4,:);
-           eye.modelView = [1 0 0 0; 0 1 0 0; 0 0 1 -ds.viewingDistance; 0 0 0 1];
+%            eye.modelView = oc.modelViewDataRight(1:4,:);
+%            eye.modelView = [1 0 0 0; 0 1 0 0; 0 0 1 -ds.viewingDistance; 0 0 0 1];
+           eye.modelView = originaleye.modelView;
 
        else
            if isempty(ds.hmd)
@@ -486,7 +487,7 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
             else % just do translation
                 eye.modelView(3,4) =  pa.translation.*(ds.vbl-pa.trialOnset); %eye.modelView(3,4) + %eye.modelView(2,4) - %(ds.vbl-pa.trialOnset)
                 track = [track (ds.vbl-pa.trialOnset)];
-                eye.modelView(2,4) = - pa.translation.*(ds.vbl-pa.trialOnset)*sin(pa.gazeangle); %adjust so translation is strictly foward
+                eye.modelView(2,4) = -pa.translation.*(ds.vbl-pa.trialOnset)*sin(pa.gazeangle); %adjust so translation is strictly foward
             
             end
             

@@ -70,8 +70,8 @@ end
 D=dir('Data');
 % gaze = readtable('Data\2023-07-26_16-09-57-7a8b312d\gaze.csv');
 % worldtime = readtable('Data\2023-07-26_16-09-57-7a8b312d\world_timestamps.csv');
-gaze = readtable('Data/2023-09-14_15-29-36-ac260e7b/gaze.csv');
-blinks = readtable('Data/2023-09-14_15-29-36-ac260e7b/blinks.csv');
+gaze = readtable('Data/2023-09-20_17-20-34-29a1140d/gaze.csv');
+blinks = readtable('Data/2023-09-20_17-20-34-29a1140d/blinks.csv');
 % t= table2array(worldtime(:,end));
 timestamps = table2array(gaze(:,3));
 blink_start = table2array(blinks(:,4));
@@ -102,7 +102,7 @@ yl = ylim;
 % hold on, line([oc.UTCtrialStart; oc.UTCtrialStart],[yl(1); yl(2)].*ones(size(oc.UTCtrialStart)), 'color','g') 
 % hold on, line([oc.UTCtrialStart; oc.UTCtrialStart]+seconds(.5),[yl(1); yl(2)].*ones(size(oc.UTCtrialStart)), 'color','r') 
 
-hold on, line([oc.UTCtrialEnd; oc.UTCtrialEnd]-seconds(.5),[yl(1); yl(2)].*ones(size(oc.UTCtrialEnd)), 'color','g') 
+hold on, line([oc.UTCtrialEnd; oc.UTCtrialEnd]-seconds(pa.targetMotionDuration),[yl(1); yl(2)].*ones(size(oc.UTCtrialEnd)), 'color','g') 
 hold on, line([oc.UTCtrialEnd; oc.UTCtrialEnd],[yl(1); yl(2)].*ones(size(oc.UTCtrialEnd)), 'color','r') 
 
 hold on, line([blink_start_time'; blink_start_time'], [yl(1); yl(2)].*ones(size(blink_start_time')),'color','#77AC30');
@@ -259,7 +259,7 @@ C = reshape(C,[],size(data,2),1);
 %     0.0052    0.0026    0.0048    0.0097    0.0144;
 %     0.0025    0.0012    0.0002    0.0021    0.0041;
 %     0.0012    0.0006    0.0001    0.0007    0.0013];
-[dconst, dsurr] = DistanceToConstraint(ds, pa, .1);
+[dconst, dsurr] = DistanceToConstraint(ds, pa, 2);
 a = dconst;
 C(:,1) = a(:);
 

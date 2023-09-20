@@ -19,7 +19,7 @@ directions = pa.direction ;
 conditions = fullfact([numel(speeds), numel(directions)]); 
 
 if ~isfield(pa,'objectdist')
-    object_dist = 2;
+    object_dist = 3;
     fixation = 3;
 else
     object_dist = pa.objectdist;
