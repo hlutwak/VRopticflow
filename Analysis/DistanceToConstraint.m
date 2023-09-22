@@ -3,12 +3,16 @@ function  [dconstraint, dsurround] = DistanceToConstraint(ds, pa, depth_range)
 % simulate VR flow scene to generate distance to constraint for multiple velocities
 % takes saved variables from VR experiment
 % plots center, surround velocities as well as constraint
-
+visualize = 0;
 seed=2;
 rng(seed) % to have random dots that appear in the same "random" place each time
 ns = pa.targetMotionDuration; % number of seconds
 world_speed = pa.translation; % m/s speed of the observer in a straight line
-fps = ds.frameRate; %Screen(screenNumber,'FrameRate'); % should be 144 to match experiment
+if ~isfield(ds,'frameRate')
+    fps = 90;
+else
+    fps = ds.frameRate; %Screen(screenNumber,'FrameRate'); % should be 144 to match experiment
+end
 
  
 height = -pa.floorHeight;
@@ -19,7 +23,7 @@ directions = pa.direction ;
 conditions = fullfact([numel(speeds), numel(directions)]); 
 
 if ~isfield(pa,'objectdist')
-    object_dist = 3;
+    object_dist = 2;
     fixation = 3;
 else
     object_dist = pa.objectdist;
@@ -36,13 +40,13 @@ dim = [pa.floorWidth,0,pa.floorWidth]; % extent of where dots can be in m: X, Y,
 % 5 m across
 nClusters = 1000; % specify number of clusters
 nDotsPerCluster = 1;% number of dots per cluster
-nObjects = 50;
+nObjects = pa.nball;
  
 % *** find these based on oculus display
 view_dist = .5; %m how far the screen is from the observer
 viewingdepths = [.01,   5]; % nearest and furthest dots that can show up, m
  
-windowRect = [0  0  2560 1600]; % switch with ds.windowRect screen size in pixels (origin, width of screen, height of screen) [0  0  2560 1600]
+windowRect =  [0  0  2560 1600]; % [0  0  2560 1600] [0  0  2160 1200 ]switch with ds.windowRect screen size in pixels (origin, width of screen, height of screen) [0  0  2560 1600]
 pixels = windowRect(3:4); % pixel width and height of screen
 screensize = [.712 .312]; % screen size in m
  
@@ -55,6 +59,7 @@ clusters = rand(nClusters,3).*dim - [.5*dim(1), .5*dim(2)-height, 0]; % randomiz
 %object positions
 positions = -dim(1)/2+2*dim(1)/2*rand(nObjects,2); %uniform random positions across floor
 positions(:,2) = positions(:,2)+fixation;
+
  
 dots = repmat(clusters,nDotsPerCluster,1); % ground plane
 % for no floor
@@ -99,17 +104,17 @@ target_idx = (length(dots)+1-dotsperobj):length(dots);
 start_dots = dots;
  
  
-% visualize dots, orient so that Z axis extends from observer to direction
-% of gaze
-% if visualize
-%     figure(1), scatter3(dots(:,3), dots(:,1), -dots(:,2), 'filled')
-%     hold on, scatter3(dots(end-2,3), dots(end-2,1), -dots(end-2,2), 'filled', 'r')
-%  
-%     xlabel('Z')
-%     ylabel('X')
-%     zlabel('Y')
-%     axis equal
-% end
+%visualize dots, orient so that Z axis extends from observer to direction
+%of gaze
+if visualize
+    figure(1), scatter3(dots(:,3), dots(:,1), -dots(:,2), 'filled')
+    hold on, scatter3(dots(end-2,3), dots(end-2,1), -dots(end-2,2), 'filled', 'r')
+ 
+    xlabel('Z')
+    ylabel('X')
+    zlabel('Y')
+    axis equal
+end
  
  
 % Observer trajectory
@@ -127,6 +132,7 @@ trajectory = [zeros(ns*fps+1,1), zeros(ns*fps+1,1),(0:(world_speed/fps):(ns*worl
 dconstraint = NaN(numel(speeds), numel(directions));
 dsurround = NaN(numel(speeds), numel(directions));
 
+figure('Position', [10 10 1200 600])
 
 for cond = 1:size(conditions, 1)
     
@@ -142,13 +148,13 @@ for cond = 1:size(conditions, 1)
     secs = 1/fps:1/fps:ns;
     theta = atan(height./(fixation-world_speed*secs)); % update theta for observer fixating at a point at the ground in front of them, fixation m away
     
-    % visualize observer trajectory within dots
-%     if visualize
-%         figure(1), hold on, plot3(trajectory(:,3), -trajectory(:,1), -trajectory(:,2), 'LineWidth', 3)
-%         hold on, plot3(target_trajectory(:,3), -target_trajectory(:,1), -target_trajectory(:,2), 'LineWidth', 2)
-%         legend('dots', 'trajectory', 'moving object')
-%         title('environment and observer trajectory')
-%     end
+   % visualize observer trajectory within dots
+    if visualize
+        figure(1), hold on, plot3(trajectory(:,3), -trajectory(:,1), -trajectory(:,2), 'LineWidth', 3)
+        hold on, plot3(target_trajectory(:,3), -target_trajectory(:,1), -target_trajectory(:,2), 'LineWidth', 2)
+        legend('dots', 'trajectory', 'moving object')
+        title('environment and observer trajectory')
+    end
     
     % calculate velocity between frames
     v = diff(trajectory);
@@ -215,7 +221,7 @@ for cond = 1:size(conditions, 1)
     rvelocityX = diff(x,1,2);
     rvelocityY = diff(y,1,2);
     
-    % visualize first frame in pixels
+%     %visualize first frame in pixels
 %     if visualize
 %         figure, scatter(x(I(:,1),1)*ppcm(1), -y(I(:,1),1)*ppcm(2), 'filled')
 %         hold on, scatter(x(fixation_idx,1)*ppcm(1), -y(fixation_idx,1)*ppcm(2), 'filled', 'r') %fixation
@@ -291,12 +297,14 @@ for cond = 1:size(conditions, 1)
             
         end
         % plot mean velocity object and surround
+        
         if ii == 1
     
-            figure(1)
+            subplot(numel(directions),numel(speeds),cond)
+
             % set(gcf,'position',[500, 500, 600, 400])
             set(gcf,'color','w');
-            clf
+            
             % plot suround velocities
             surround_idx = onscreen(surround_idx);
             quiver(zeros(size(rvelocityX(surround_idx,ii))),zeros(size(rvelocityX(surround_idx,ii))), rvelocityX(surround_idx,ii), -rvelocityY(surround_idx,ii), 'AutoScale', 'off', 'LineWidth', 2)
@@ -319,7 +327,9 @@ for cond = 1:size(conditions, 1)
             axis equal
             xlim(xlims)
             ylim(ylims)
-    %         pause(1/fps)
+            title(['s = ', num2str(speeds(conditions(cond,1))), ' d = ', num2str(rad2deg(directions(conditions(cond,2))))])
+
+%             pause(1)
             %
         end
     end

@@ -620,6 +620,8 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
     ds.vbl = GetSecs();
     ds.fCount = ds.fCount + 1;
 end
+% Calculate average framerate:
+ds.fps = ds.fCount / (ds.vbl - tStart); % uncomment to print out at end of run
 
 pa.dataFile = fullfile(pa.baseDir, 'Data', [pa.subjectName '-' ds.experimentType '-' pa.date '-' num2str(pa.block) '.mat']);
 save(pa.dataFile, 'pa', 'ds', 'kb','oc');
@@ -629,7 +631,7 @@ if ds.eyetracking
 end
 
 % Calculate average framerate:
-fps = ds.fCount / (ds.vbl - tStart), % uncomment to print out at end of run
+
 % Done (or quit out). Save data (in pa.response) and other relevant parameters/variables, close screen and exit
 PsychVRHMD('SetAutoClose', ds.hmd, 2);
 PsychPortAudio('Close', pa.handleHit);

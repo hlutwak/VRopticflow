@@ -2,17 +2,18 @@
 % get behavior files, conccatenate same trials, run psignifit
 
 % add psignifit toolbox
-addpath('/Users/hopelutwak/Documents/MATLAB/psignifit')
-
+% addpath('/Users/hopelutwak/Documents/MATLAB/psignifit')
+addpath(genpath('C:\Users\hlutw\OneDrive\Documents\MATLAB\psignifit-master'))
 % assign data folder
-dataFolder = '/Users/hopelutwak/Documents/GitHub/VRopticflow/Data';
+% dataFolder = '/Users/hopelutwak/Documents/GitHub/VRopticflow/Data';
+dataFolder = 'C:\Users\hlutw\OneDrive\Documents\GitHub\VRopticflow\Data';
 
 % names of files
 S = dir(fullfile(dataFolder,'*.mat'));
 
 % which subjects data to analyze
-subjects = ["IK"]; %"HL"
-stims = "pilot";
+subjects = ["IK"]; %"HL" "IK"
+stims = "pilot"; %"pilot"
 depth_range = .1;
 
 % loop over all subjects
@@ -42,11 +43,14 @@ for s  = 1:length(subjects)
             data_session(:,1) = dconst(:);
             data_session(:,2) = dsurr(:);
             data = [data; data_session];
+            data_const = [data(:,1) data(:,end-1:end)];
+            data_surr = [data(:,2) data(:,end-1:end)];
             count = count+1;
+            
         end
+
     end
-    data_const = [data(:,1) data(:,end-1:end)];
-    data_surr = [data(:,2) data(:,end-1:end)];
+
     
     options             = struct;   % initialize as an empty struct
     options.sigmoidName = 'weibull';   

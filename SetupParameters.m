@@ -8,7 +8,7 @@ function [ds,pa] = SetupParameters(ds)
 
 %% Basic experimental specs 
 
-pa.subjectName = 'test';
+pa.subjectName = 'HL-test';
 pa.feedbackFlag = 1;  % 0 --> no feedback;  1 --> only sound-based feedback;  2 --> visual + sound-based feedback
 
 pa.criterion = 8*(pi/180);  % this is the criterion for the distance between the mid-point of the paddle and the midpoint of the ball; distances smaller than this are hits - any overlap counts
@@ -60,10 +60,10 @@ pa.ceilingHeight = 1.5; % m
 pa.paddleHalfWidth = 0.075;% m
 pa.paddleHalfHeight = 0.075;% m
 pa.paddleHalfDepth = 0.075;% m
-pa.aboveground = 0.15; %0.15;
+pa.aboveground = .15; %0.15;
 pa.objectdist = 2;
-pa.fixationdist = 2;
-% pa.paddleHeightFactor = 1;% 0.0057 m 
+pa.fixationdist = 3;
+% pa.paddleHeightactor = 1;% 0.0057 m 
 pa.paddleAngle = 0; % deg - start at the rightward position
 pa.shiftPaddle = 0.25;
 pa.rotationSpeed = pa.shiftPaddle; % this will update according to the observer's response
@@ -74,10 +74,10 @@ pa.gazeangle = atan(-pa.floorHeight/pa.fixationdist); %angle camera is looking t
 
 %% parameters for the target - will establish the speed distributions below
 
-pa.targetMotionDuration = 1; % 1 s
+pa.targetMotionDuration = .5; % 1 s
 pa.targetContrast = [1 0.15 0.075]; % fully-visible target, 15% and 7.5% contrast
 pa.targetRadius = .25; % deg  0.25;
-pa.targetSize = 0.025;% m
+pa.targetSize = 0.025;% m .025
 pa.fixationSize = pa.targetSize;
 pa.nball = 50; %number of randomly placed objects
 pa.ndots = pa.nball; % number of dots in dot task
@@ -90,9 +90,9 @@ pa.trialNumber = 0; % gotta start somewhere
 pa.nRepeats = 20; % each target contrast condition gets pa.nRepeats trials - 75*3 = 225 per block 
 % pa.speed = [0.5, 0.4, 0.3, 0.2,0.1]; %speeds m/s
 % pa.speed = [0.5, 0.15, 0.075,  0.0375]; %speeds m/s
-pa.speed = [.125  0.0625 0.0313]; %speeds m/s
+pa.speed = [.5  .5*(2^-1) .5*(2^-3) .5*(2^-4)]; %speeds m/s
 
-pa.direction = deg2rad([0 45 90 180 225 270 315]) ; %(0 is radially out horizontally, 90 is forward/up, 270 is backwards/down x-z/x-y plane)
+pa.direction = deg2rad([75 90 105 255 270 285]); %(0 is radially out horizontally, 90 is forward/up, 270 is backwards/down x-z/x-y plane)
 
 % pa.direction = deg2rad([90 230, 260, 290]) ; %(0 is to the right, 90 is forward, 270 is backwards)
 factorial = fullfact([length(pa.speed), length(pa.direction)]); 

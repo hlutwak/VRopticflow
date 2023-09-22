@@ -78,26 +78,26 @@ blink_start = table2array(blinks(:,4));
 blink_end = table2array(blinks(:,5));
 
 
-% x = table2array(gaze(:,9));
-% y = table2array(gaze(:,10));
+x = table2array(gaze(:,9));
+y = table2array(gaze(:,10));
 
-x = table2array(gaze(:,4));
-y = table2array(gaze(:,5));
+% x = table2array(gaze(:,4));
+% y = table2array(gaze(:,5));
 
 figure, scatter(x,y), axis equal
 
-% in UTC time
-figure, plot(timestamps,x, 'linewidth', 2), hold on, plot(timestamps,y,'linewidth', 2)
-yl = ylim;
-exp_timestamps = posixtime(oc.UTCtrialStart)*1e9;
-hold on, line([exp_timestamps; exp_timestamps],[yl(1); yl(2)].*ones(size(oc.UTCtrialStart)), 'color','k') 
+% % in UTC time
+% figure, plot(timestamps,x, 'linewidth', 2), hold on, plot(timestamps,y,'linewidth', 2)
+% yl = ylim;
+% exp_timestamps = posixtime(oc.UTCtrialStart)*1e9;
+% hold on, line([exp_timestamps; exp_timestamps],[yl(1); yl(2)].*ones(size(oc.UTCtrialStart)), 'color','k') 
 
 % in datetime
 date_time = datetime(timestamps/1e9, 'ConvertFrom', 'posixtime', 'TimeZone','local', 'Format', 'd-MMM-y HH:mm:ss:ms');
 blink_start_time = datetime(blink_start/1e9, 'ConvertFrom', 'posixtime', 'TimeZone','local', 'Format', 'd-MMM-y HH:mm:ss:ms');
 blink_end_time= datetime(blink_end/1e9, 'ConvertFrom', 'posixtime', 'TimeZone','local', 'Format', 'd-MMM-y HH:mm:ss:ms');
 
-figure, plot(date_time,x, 'linewidth', 2), hold on, plot(date_time,-y,'linewidth', 2)
+figure, plot(date_time,x, 'linewidth', 2), hold on, plot(date_time,y,'linewidth', 2)
 yl = ylim;
 % hold on, line([oc.UTCtrialStart; oc.UTCtrialStart],[yl(1); yl(2)].*ones(size(oc.UTCtrialStart)), 'color','g') 
 % hold on, line([oc.UTCtrialStart; oc.UTCtrialStart]+seconds(.5),[yl(1); yl(2)].*ones(size(oc.UTCtrialStart)), 'color','r') 
@@ -259,7 +259,7 @@ C = reshape(C,[],size(data,2),1);
 %     0.0052    0.0026    0.0048    0.0097    0.0144;
 %     0.0025    0.0012    0.0002    0.0021    0.0041;
 %     0.0012    0.0006    0.0001    0.0007    0.0013];
-[dconst, dsurr] = DistanceToConstraint(ds, pa, 2);
+[dconst, dsurr] = DistanceToConstraint(ds, pa, .05);
 a = dconst;
 C(:,1) = a(:);
 
