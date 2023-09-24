@@ -259,7 +259,7 @@ C = reshape(C,[],size(data,2),1);
 %     0.0052    0.0026    0.0048    0.0097    0.0144;
 %     0.0025    0.0012    0.0002    0.0021    0.0041;
 %     0.0012    0.0006    0.0001    0.0007    0.0013];
-[dconst, dsurr] = DistanceToConstraint(ds, pa, .05);
+[dconst, dsurr] = DistanceToConstraint(ds, pa, .1);
 a = dconst;
 C(:,1) = a(:);
 
