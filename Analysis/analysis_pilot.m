@@ -44,7 +44,7 @@ vecnorm(oc.modelViewDataLeft(end-3:end-1,4)-oc.modelViewDataLeft(1:3,4))
 %                     153,204,255; 51,153,255; 0,128,255; 
 %                     204,153,255; 178,102,255; 153,51,255;
 %                     255, 204, 153; 255,153,51; 204,102,0]/255;
-c = 'k';
+c = options.dataColor;
 %            
 factorial = fullfact([length(pa.speed), length(pa.direction)]);
 fullfacts = [(pa.speed(factorial(:,1)).*cos(pa.direction(factorial(:,2)))); -(pa.speed(factorial(:,1)).*sin(pa.direction(factorial(:,2))))];
@@ -70,19 +70,19 @@ end
 D=dir('Data');
 % gaze = readtable('Data\2023-07-26_16-09-57-7a8b312d\gaze.csv');
 % worldtime = readtable('Data\2023-07-26_16-09-57-7a8b312d\world_timestamps.csv');
-gaze = readtable('Data/2023-09-20_17-20-34-29a1140d/gaze.csv');
-blinks = readtable('Data/2023-09-20_17-20-34-29a1140d/blinks.csv');
+gaze = readtable('Data/2023-09-25_15-33-48-e65d5aa7/gaze.csv');
+blinks = readtable('Data/2023-09-25_15-33-48-e65d5aa7/blinks.csv');
 % t= table2array(worldtime(:,end));
 timestamps = table2array(gaze(:,3));
 blink_start = table2array(blinks(:,4));
 blink_end = table2array(blinks(:,5));
 
 
-x = table2array(gaze(:,9));
-y = table2array(gaze(:,10));
+% x = table2array(gaze(:,9));
+% y = table2array(gaze(:,10));
 
-% x = table2array(gaze(:,4));
-% y = table2array(gaze(:,5));
+x = table2array(gaze(:,4));
+y = table2array(gaze(:,5));
 
 figure, scatter(x,y), axis equal
 
@@ -259,13 +259,20 @@ C = reshape(C,[],size(data,2),1);
 %     0.0052    0.0026    0.0048    0.0097    0.0144;
 %     0.0025    0.0012    0.0002    0.0021    0.0041;
 %     0.0012    0.0006    0.0001    0.0007    0.0013];
-[dconst, dsurr] = DistanceToConstraint(ds, pa, .1);
+options.dataColor = [255,153,255; 255,102,255; 255,51,255; 204,0,204;
+                    255,153,153; 255,102,102; 255,51,51; 204,0,0;
+                    255,204,153; 255,178,102; 255, 153, 51; 204,102,0;
+                    204,255,153; 178,255,102; 153,255,51; 102,204,0;
+                    153,255,255; 102,255,255; 51,255,255; 0,204,204;
+                    153,153,255; 102,102,255; 51,51,255; 0,0,204]/255;
+[dconst, dsurr] = DistanceToConstraint(ds, pa, .05);
 a = dconst;
 C(:,1) = a(:);
 
 % run psignifit
 result = psignifit(C,options);
 figure, plotPsych(result, options);
+thresh = exp(result.Fit(1));
 % options.dataColor = repmat([0,0,1], length(C),1);
 % ** will only work of edit psignifit's plotPsych!!
 
@@ -277,6 +284,12 @@ figure, plotPsych(result, options);
 % for ii = 1:numel(pa.direction)
 %     c = 
 % 
+options.dataColor = [255,153,255; 255,102,255; 255,51,255; 204,0,204;
+                    255,153,153; 255,102,102; 255,51,51; 204,0,0;
+                    255,204,153; 255,178,102; 255, 153, 51; 204,102,0;
+                    204,255,153; 178,255,102; 153,255,51; 102,204,0;
+                    153,255,255; 102,255,255; 51,255,255; 0,204,204;
+                    153,153,255; 102,102,255; 51,51,255; 0,0,204]/255;
 % options.dataColor = [224,224,224; 160,160,160; 128,128,128; 64,64,64;
 %                       255,153,153; 255,102,102; 255,51,51; 204,0,0;
 %                       255,255,153; 255,255,51; 204,204,0; 153,153,0;

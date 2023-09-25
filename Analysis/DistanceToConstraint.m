@@ -328,7 +328,7 @@ for cond = 1:size(conditions, 1)
             axis equal
             xlim(xlims)
             ylim(ylims)
-            title(['s = ', num2str(speeds(conditions(cond,1))), ' d = ', num2str(rad2deg(directions(conditions(cond,2))))])
+            title(['s = ', num2str(speeds(conditions(cond,1))), ' m/s,  dir = ', num2str(rad2deg(directions(conditions(cond,2)))), ' deg'])
 
 %             pause(1)
             %
