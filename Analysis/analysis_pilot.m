@@ -70,19 +70,19 @@ end
 D=dir('Data');
 % gaze = readtable('Data\2023-07-26_16-09-57-7a8b312d\gaze.csv');
 % worldtime = readtable('Data\2023-07-26_16-09-57-7a8b312d\world_timestamps.csv');
-gaze = readtable('Data/2023-09-25_15-33-48-e65d5aa7/gaze.csv');
-blinks = readtable('Data/2023-09-25_15-33-48-e65d5aa7/blinks.csv');
+gaze = readtable('Data/2023-09-26_14-55-34-c70c98f7/gaze.csv');
+blinks = readtable('Data/2023-09-26_14-55-34-c70c98f7/blinks.csv');
 % t= table2array(worldtime(:,end));
 timestamps = table2array(gaze(:,3));
 blink_start = table2array(blinks(:,4));
 blink_end = table2array(blinks(:,5));
 
 
-% x = table2array(gaze(:,9));
-% y = table2array(gaze(:,10));
+x = table2array(gaze(:,9));
+y = table2array(gaze(:,10));
 
-x = table2array(gaze(:,4));
-y = table2array(gaze(:,5));
+% x = table2array(gaze(:,4));
+% y = table2array(gaze(:,5));
 
 figure, scatter(x,y), axis equal
 
@@ -108,7 +108,7 @@ hold on, line([oc.UTCtrialEnd; oc.UTCtrialEnd],[yl(1); yl(2)].*ones(size(oc.UTCt
 hold on, line([blink_start_time'; blink_start_time'], [yl(1); yl(2)].*ones(size(blink_start_time')),'color','#77AC30');
 hold on, line([blink_end_time'; blink_end_time'], [yl(1); yl(2)].*ones(size(blink_end_time')),'color','#A2142F');
 
-% get fixation over trial intervals
+%% get fixation over trial intervals
 
 start_times = timetable(oc.UTCtrialStart', ones(numel(oc.UTCtrialStart),1));
 end_times = timetable([oc.UTCtrialStart+seconds(0.5)]', ones(numel(oc.UTCtrialStart),1));
@@ -265,7 +265,7 @@ options.dataColor = [255,153,255; 255,102,255; 255,51,255; 204,0,204;
                     204,255,153; 178,255,102; 153,255,51; 102,204,0;
                     153,255,255; 102,255,255; 51,255,255; 0,204,204;
                     153,153,255; 102,102,255; 51,51,255; 0,0,204]/255;
-[dconst, dsurr] = DistanceToConstraint(ds, pa, .05);
+[dconst, dsurr] = DistanceToConstraint(ds, pa, 1);
 a = dconst;
 C(:,1) = a(:);
 

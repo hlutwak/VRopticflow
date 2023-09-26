@@ -247,7 +247,7 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
     end
 
     if pa.trialNumber>track_trial %dont' update head position during a trial
-       
+%        
        if pa.trialNumber>1
            eye.eyeIndex = 0;
 %            eye.modelView = oc.modelViewDataRight(1:4,:);
