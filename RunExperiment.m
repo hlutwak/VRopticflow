@@ -223,6 +223,7 @@ ds.fCount = 0;
 ds.vbl = pa.trialOnset;
 tStart = ds.vbl;
 pa.experimentOnset = ds.vbl;
+oc.UTCtrialStart=[];
 oc.UTCtrialEnd =[];
 
 pa.block = 0;
@@ -232,6 +233,7 @@ track_trial = 0;
 track = [];
 track_theta = [];
 track_dtheta = [];
+
 while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until all of the trials have been completed or the escape key is pressed to quit out
     
     % Get HMD state
@@ -408,10 +410,10 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
 
         if ds.vbl <  pa.trialOnset + pa.targetMotionDuration % if current time < present until time: draw target, 1 s target motion
             
-%             trial_startflag = [1 trial_startflag];
-%             if trial_startflag(1)-trial_startflag(2) == 1
-%                 oc.UTCtrialStart = [oc.UTCtrialStart datetime('now','TimeZone','local','Format','d-MMM-y HH:mm:ss:ms')];
-%             end
+            oc.trial_startflag = [1 oc.trial_startflag];
+            if oc.trial_startflag(1)-oc.trial_startflag(2) == 1
+                oc.UTCtrialStart = [oc.UTCtrialStart datetime('now','TimeZone','local','Format','d-MMM-y HH:mm:ss:ms')];
+            end
             
             % Target position 
             % make the onset delayed

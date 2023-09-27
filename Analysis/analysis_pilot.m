@@ -70,8 +70,8 @@ end
 D=dir('Data');
 % gaze = readtable('Data\2023-07-26_16-09-57-7a8b312d\gaze.csv');
 % worldtime = readtable('Data\2023-07-26_16-09-57-7a8b312d\world_timestamps.csv');
-gaze = readtable('Data/2023-09-26_14-55-34-c70c98f7/gaze.csv');
-blinks = readtable('Data/2023-09-26_14-55-34-c70c98f7/blinks.csv');
+gaze = readtable('Data/2023-09-27_16-05-46-236cefd1/gaze.csv');
+blinks = readtable('Data/2023-09-27_16-05-46-236cefd1/blinks.csv');
 % t= table2array(worldtime(:,end));
 timestamps = table2array(gaze(:,3));
 blink_start = table2array(blinks(:,4));
@@ -81,8 +81,8 @@ blink_end = table2array(blinks(:,5));
 x = table2array(gaze(:,9));
 y = table2array(gaze(:,10));
 
-% x = table2array(gaze(:,4));
-% y = table2array(gaze(:,5));
+x = table2array(gaze(:,4));
+y = table2array(gaze(:,5));
 
 figure, scatter(x,y), axis equal
 
@@ -97,16 +97,21 @@ date_time = datetime(timestamps/1e9, 'ConvertFrom', 'posixtime', 'TimeZone','loc
 blink_start_time = datetime(blink_start/1e9, 'ConvertFrom', 'posixtime', 'TimeZone','local', 'Format', 'd-MMM-y HH:mm:ss:ms');
 blink_end_time= datetime(blink_end/1e9, 'ConvertFrom', 'posixtime', 'TimeZone','local', 'Format', 'd-MMM-y HH:mm:ss:ms');
 
-figure, plot(date_time,x, 'linewidth', 2), hold on, plot(date_time,y,'linewidth', 2)
+figure, plot(date_time-seconds(.5),x, 'linewidth', 2), hold on, plot(date_time-seconds(.5),y,'linewidth', 2)
 yl = ylim;
 % hold on, line([oc.UTCtrialStart; oc.UTCtrialStart],[yl(1); yl(2)].*ones(size(oc.UTCtrialStart)), 'color','g') 
 % hold on, line([oc.UTCtrialStart; oc.UTCtrialStart]+seconds(.5),[yl(1); yl(2)].*ones(size(oc.UTCtrialStart)), 'color','r') 
 
-hold on, line([oc.UTCtrialEnd; oc.UTCtrialEnd]-seconds(pa.targetMotionDuration),[yl(1); yl(2)].*ones(size(oc.UTCtrialEnd)), 'color','g') 
+% hold on, line([oc.UTCtrialEnd; oc.UTCtrialEnd]-seconds(pa.targetMotionDuration),[yl(1); yl(2)].*ones(size(oc.UTCtrialEnd)), 'color','g') 
 hold on, line([oc.UTCtrialEnd; oc.UTCtrialEnd],[yl(1); yl(2)].*ones(size(oc.UTCtrialEnd)), 'color','r') 
 
-hold on, line([blink_start_time'; blink_start_time'], [yl(1); yl(2)].*ones(size(blink_start_time')),'color','#77AC30');
-hold on, line([blink_end_time'; blink_end_time'], [yl(1); yl(2)].*ones(size(blink_end_time')),'color','#A2142F');
+% hold on, line([blink_start_time'; blink_start_time'], [yl(1); yl(2)].*ones(size(blink_start_time')),'color','#77AC30');
+% hold on, line([blink_end_time'; blink_end_time'], [yl(1); yl(2)].*ones(size(blink_end_time')),'color','#A2142F');
+
+% time in between start and end
+% milliseconds(oc.UTCtrialEnd - oc.UTCtrialStart);
+hold on, line([oc.UTCtrialStart; oc.UTCtrialStart],[yl(1); yl(2)].*ones(size(oc.UTCtrialStart)), 'color','g') 
+
 
 %% get fixation over trial intervals
 

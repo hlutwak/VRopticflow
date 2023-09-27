@@ -77,6 +77,7 @@ if pa.trialNumber>0 % if it's past the first trial, wait for the Up Arrow key to
     
                 pa.trialOnset = ds.vbl; % the trial starts....NOW
                 oc.trialStart = [oc.trialStart ds.vbl];
+                oc.trial_startflag = 0;
                 oc.trialendflag = 0;
 %                 oc.UTCtrialStart = [oc.UTCtrialStart datetime('now','TimeZone','local','Format','d-MMM-y HH:mm:ss:ms')];
 %                 if ds.eyetracking
@@ -142,6 +143,7 @@ else % if it is just the first trial, start right up after the subject presses '
 
         pa.trialOnset = ds.vbl; % the trial starts....NOW
         oc.trialStart = pa.trialOnset;
+        oc.trial_startflag = 0;
         oc.trialendflag = 0;
 %         oc.UTCtrialStart = datetime('now','TimeZone','local','Format','d-MMM-y HH:mm:ss:ms');
 
