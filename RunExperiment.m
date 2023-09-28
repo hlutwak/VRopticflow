@@ -413,6 +413,9 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
             oc.trial_startflag = [1 oc.trial_startflag];
             if oc.trial_startflag(1)-oc.trial_startflag(2) == 1
                 oc.UTCtrialStart = [oc.UTCtrialStart datetime('now','TimeZone','local','Format','d-MMM-y HH:mm:ss:ms')];
+%                 if ds.eyetracking
+%                     device.send_event("trialstart")
+%                 end
             end
             
             % Target position 
