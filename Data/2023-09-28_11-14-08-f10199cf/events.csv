@@ -1,0 +1,10 @@
+recording id,timestamp [ns],name,type
+f10199cf-1afa-4fbe-8b13-5ca13918adde,1695914048296000000,recording.begin,recording
+f10199cf-1afa-4fbe-8b13-5ca13918adde,1695914051661000000,trialstart,recording
+f10199cf-1afa-4fbe-8b13-5ca13918adde,1695914053195000000,trialstart,recording
+f10199cf-1afa-4fbe-8b13-5ca13918adde,1695914055752000000,trialstart,recording
+f10199cf-1afa-4fbe-8b13-5ca13918adde,1695914058004000000,trialstart,recording
+f10199cf-1afa-4fbe-8b13-5ca13918adde,1695914060034000000,trialstart,recording
+f10199cf-1afa-4fbe-8b13-5ca13918adde,1695914062306000000,trialstart,recording
+f10199cf-1afa-4fbe-8b13-5ca13918adde,1695914064557000000,trialstart,recording
+f10199cf-1afa-4fbe-8b13-5ca13918adde,1695914066612000000,recording.end,recording
