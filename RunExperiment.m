@@ -413,9 +413,9 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
             oc.trial_startflag = [1 oc.trial_startflag];
             if oc.trial_startflag(1)-oc.trial_startflag(2) == 1
                 oc.UTCtrialStart = [oc.UTCtrialStart datetime('now','TimeZone','local','Format','d-MMM-y HH:mm:ss:ms')];
-%                 if ds.eyetracking
-%                     device.send_event("trialstart")
-%                 end
+                if ds.eyetracking && pa.trialNumber == 2
+                    device.send_event("trialstart")
+                end
             end
             
             % Target position 
@@ -589,8 +589,13 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
         if ds.binocular || (~ds.binocular && ds.renderPass)
             
         if ~ds.dotfield
-            glBindTexture(GL.TEXTURE_2D,ds.floor_texid);
-            glCallList(ds.floorTexture);
+            if ds.control
+                
+            else
+                glBindTexture(GL.TEXTURE_2D,ds.floor_texid);
+                glCallList(ds.floorTexture);
+            end
+            
         end
 
         

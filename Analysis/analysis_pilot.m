@@ -70,13 +70,14 @@ end
 D=dir('Data');
 % gaze = readtable('Data\2023-07-26_16-09-57-7a8b312d\gaze.csv');
 % worldtime = readtable('Data\2023-07-26_16-09-57-7a8b312d\world_timestamps.csv');
-gaze = readtable('Data/2023-09-28_10-28-12-7af2f54f/gaze.csv');
-blinks = readtable('Data/2023-09-28_10-28-12-7af2f54f/blinks.csv');
+gaze = readtable('Data/2023-09-28_11-14-08-f10199cf/gaze.csv');
+blinks = readtable('Data/2023-09-28_11-14-08-f10199cf/blinks.csv');
+evts = readtable('Data/2023-09-28_11-14-08-f10199cf/events.csv');
 % t= table2array(worldtime(:,end));
 timestamps = table2array(gaze(:,3));
 blink_start = table2array(blinks(:,4));
 blink_end = table2array(blinks(:,5));
-
+evt = table2array(evts(:,2));
 
 x = table2array(gaze(:,9));
 y = table2array(gaze(:,10));
@@ -96,6 +97,8 @@ figure, scatter(x,y), axis equal
 date_time = datetime(timestamps/1e9, 'ConvertFrom', 'posixtime', 'TimeZone','local', 'Format', 'd-MMM-y HH:mm:ss:ms');
 blink_start_time = datetime(blink_start/1e9, 'ConvertFrom', 'posixtime', 'TimeZone','local', 'Format', 'd-MMM-y HH:mm:ss:ms');
 blink_end_time= datetime(blink_end/1e9, 'ConvertFrom', 'posixtime', 'TimeZone','local', 'Format', 'd-MMM-y HH:mm:ss:ms');
+evts_time = datetime(evt/1e9, 'ConvertFrom', 'posixtime', 'TimeZone','local', 'Format', 'd-MMM-y HH:mm:ss:ms');
+
 
 figure, plot(date_time,x, 'linewidth', 2), hold on, plot(date_time,y,'linewidth', 2)
 yl = ylim;
@@ -111,7 +114,7 @@ hold on, line([oc.UTCtrialEnd; oc.UTCtrialEnd],[yl(1); yl(2)].*ones(size(oc.UTCt
 % time in between start and end
 % milliseconds(oc.UTCtrialEnd - oc.UTCtrialStart)
 hold on, line([oc.UTCtrialStart; oc.UTCtrialStart],[yl(1); yl(2)].*ones(size(oc.UTCtrialStart)), 'color','g') 
-
+hold on, line([evts_time'; evts_time'], [yl(1); yl(2)].*ones(size(evts_time')), 'color','k') 
 
 %% get fixation over trial intervals
 
