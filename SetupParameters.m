@@ -62,7 +62,7 @@ pa.paddleHalfHeight = 0.075;% m
 pa.paddleHalfDepth = 0.075;% m
 pa.aboveground = .15; %0.15;
 pa.objectdist = 2;
-pa.fixationdist = 2;
+pa.fixationdist = 3;
 % pa.paddleHeightactor = 1;% 0.0057 m 
 pa.paddleAngle = 0; % deg - start at the rightward position
 pa.shiftPaddle = 0.25;
@@ -74,7 +74,7 @@ pa.gazeangle = atan(-pa.floorHeight/pa.fixationdist); %angle camera is looking t
 
 %% parameters for the target - will establish the speed distributions below
 
-pa.targetMotionDuration = 1; % 1 s
+pa.targetMotionDuration = 2; % 1 s
 pa.targetContrast = [1 0.15 0.075]; % fully-visible target, 15% and 7.5% contrast
 pa.targetRadius = .25; % deg  0.25;
 pa.targetSize = 0.025;% m .025

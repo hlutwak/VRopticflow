@@ -13,8 +13,9 @@ ds.multiSample = 16;
 ds.doSeparateEyeRender = 1; % render two eyes' views
 ds.binocular = 1;
 ds.eyesimulation = 0;
-ds.dotfield = 0;
-ds.eyetracking = 1;
+ds.dotfield = 1;
+ds.eyetracking = 0;
+ds.control = 0;
 
 PsychImaging('PrepareConfiguration');
 
@@ -62,9 +63,9 @@ if ~isempty(ds.hmd) % Oculus connected
     [ds.w, ds.windowRect] = PsychImaging('OpenWindow', ds.screenId, 0, [], [], [], [], ds.multiSample);  % keeps automatically setting the stereo mode to 6 for the oculus - this is because, as indicated in MorphDemo.m: "% Fake some stereomode if HMD is used, to trigger stereo rendering"
 else % Oculus not connected
     if ds.screenId % more than one screen connected, run fullscreen
-        ds.winRect = [0 0 1800 900];
+        ds.winRect = [0 0 1400 700];
     else
-        ds.winRect = [];
+        ds.winRect = [0 0 1400 700];
     end
     stereoMode = 4; % Vertical splitscreen stereo = 4
     [ds.w, ds.windowRect] = PsychImaging('OpenWindow', ds.screenId, 0, ds.winRect, [], [], stereoMode, ds.multiSample);  % CSB. split screen mode; "4" sets this

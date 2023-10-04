@@ -1,4 +1,4 @@
-% function RunExperiment
+     % function RunExperiment
 
 % 14-Dec-2015  jf Written. Derived from OculusSDK2PongDemo_Fixed.m
 % 6-Jan-2016  jf Edited to improve lagged condition performance
@@ -585,10 +585,10 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
 %         glBindTexture(GL.TEXTURE_2D,ds.roomwall_texid); % was suggested to bind textures before/outside of call lists rather than in - doesn't buy us anything from what I can tell though
 %         glCallList(ds.wallTexture);
 %         glBindTexture(GL.TEXTURE_2D,ds.ceiling_texid);
-%         glCallList(ds.ceilingTexture);
-        if ds.binocular || (~ds.binocular && ds.renderPass)
-            
-        if ~ds.dotfield
+%         gl CallList(ds.ceilingTexture);
+         if ds.binocular || (~ds.binocular && ds.renderPass)
+             
+         if ~ds.dotfield
             if ds.control
                 
             else

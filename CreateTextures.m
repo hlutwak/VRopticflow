@@ -390,7 +390,7 @@ glEndList();  % The paddle list is now complete
 % 
 
 % % 1/f floor
-floorSize = 1024; % power of 2
+floorSize = 4096; % power of 2
 
 [x,y] = meshgrid(-floorSize+1:floorSize,-floorSize+1:floorSize);
 % temp = zeros(floorSize*floorSize*3, 1);
@@ -433,6 +433,20 @@ glVertex3f(pa.floorWidth/2,pa.floorHeight,-pa.floorWidth);
 glTexCoord2f(.5,0);
 glVertex3f(pa.floorWidth/2,pa.floorHeight,ds.viewingDistance);
 glEnd;
+
+% glBegin(GL_QUADS);
+% glTexCoord2f(0, 0);
+% glVertex3f(-pa.floorWidth/2,pa.floorHeight,ds.viewingDistance);
+% 
+% glTexCoord2f(0 ,1);
+% glVertex3f(-pa.floorWidth/2,pa.floorHeight,-pa.floorWidth);
+% 
+% glTexCoord2f(1,1);
+% glVertex3f(pa.floorWidth/2,pa.floorHeight,-pa.floorWidth);
+% 
+% glTexCoord2f(1,0);
+% glVertex3f(pa.floorWidth/2,pa.floorHeight,ds.viewingDistance);
+% glEnd;
 
 glEndList(); % done with the floor
 
