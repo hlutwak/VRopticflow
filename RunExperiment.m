@@ -594,12 +594,12 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
 
             if ds.control
                 glPushMatrix;
-                glTranslatef(-.6,pa.floorHeight,-(2.42));
+                glTranslatef(-1.25,pa.floorHeight,-(pa.objectdist+2));
                 glCallList(ds.smallFloor);
                 glPopMatrix;
                 
                 glPushMatrix;
-                glTranslatef(.6,pa.floorHeight,-(2.42));
+                glTranslatef(1.25,pa.floorHeight,-(pa.objectdist+2));
                 glCallList(ds.smallFloor);
                 glPopMatrix;
 
