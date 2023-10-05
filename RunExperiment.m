@@ -128,7 +128,7 @@ while ~finishedCalibration && ~readyToBegin
         
             % fixation target
             glPushMatrix;
-            glTranslatef(0,0, -3);
+            glTranslatef(-.5,0, pa.objectdist);
             glCallList(ds.highcontrastTarget);
             glPopMatrix;
             
@@ -454,19 +454,20 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
 
 
                 % place random stationary objects
-
-                for b = 1:pa.nball
-                    glPushMatrix;
-                    glTranslatef(pa.positions(1,b),pa.floorHeight+pa.paddleHalfHeight+pa.positions(2,b),pa.positions(3,b)); 
-                    glRotatef(pa.rotations(b,1), pa.rotations(b,2), pa.rotations(b,3), pa.rotations(b,4));
-                if ds.dotfield
-                    glCallList(ds.fixation);
-                else
-                    glCallList(ds.paddleList);
+                if ~ds.control
+                    for b = 1:pa.nball
+                        glPushMatrix;
+                        glTranslatef(pa.positions(1,b),pa.floorHeight+pa.paddleHalfHeight+pa.positions(2,b),pa.positions(3,b)); 
+                        glRotatef(pa.rotations(b,1), pa.rotations(b,2), pa.rotations(b,3), pa.rotations(b,4));
+                    if ds.dotfield
+                        glCallList(ds.fixation);
+                    else
+                        glCallList(ds.paddleList);
+                    end
+                    glPopMatrix;
+                    end
                 end
-                glPopMatrix;
-                end
-
+                
                 if ds.dotfield
                     for b = 1:pa.nball*5 %fill in floor with dots
                         glPushMatrix;
@@ -592,8 +593,16 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
             glBindTexture(GL.TEXTURE_2D,ds.floor_texid);
 
             if ds.control
-                glTranslatef(0,0, -3);
-                glCallList(ds.floorTexture);
+                glPushMatrix;
+                glTranslatef(-.6,pa.floorHeight,-(2.42));
+                glCallList(ds.smallFloor);
+                glPopMatrix;
+                
+                glPushMatrix;
+                glTranslatef(.6,pa.floorHeight,-(2.42));
+                glCallList(ds.smallFloor);
+                glPopMatrix;
+
             else
                 glCallList(ds.floorTexture);
             end
