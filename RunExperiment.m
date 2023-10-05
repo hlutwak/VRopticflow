@@ -589,10 +589,12 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
          if ds.binocular || (~ds.binocular && ds.renderPass)
              
          if ~ds.dotfield
+            glBindTexture(GL.TEXTURE_2D,ds.floor_texid);
+
             if ds.control
-                
+                glTranslatef(0,0, -3);
+                glCallList(ds.floorTexture);
             else
-                glBindTexture(GL.TEXTURE_2D,ds.floor_texid);
                 glCallList(ds.floorTexture);
             end
             
