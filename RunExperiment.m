@@ -593,21 +593,24 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
             glBindTexture(GL.TEXTURE_2D,ds.floor_texid);
 
             if ds.control
-                glPushMatrix;
-                glTranslatef(-1.25,pa.floorHeight,-(pa.objectdist+2));
-                glCallList(ds.smallFloor);
-                glPopMatrix;
-                
-                glPushMatrix;
-                glTranslatef(1.25,pa.floorHeight,-(pa.objectdist+2));
-                glCallList(ds.smallFloor);
-                glPopMatrix;
+%                 glPushMatrix;
+%                 glTranslatef(-1.5,pa.floorHeight,-(pa.objectdist+2.25));
+%                 glCallList(ds.smallFloor);
+%                 glPopMatrix;
+%                 
+%                 glPushMatrix;
+%                 glTranslatef(1.5,pa.floorHeight,-(pa.objectdist+2.25));
+%                 glCallList(ds.smallFloor);
+%                 glPopMatrix;
+
+
 
             else
                 glCallList(ds.floorTexture);
             end
             
-        end
+         end
+
 
         
 %         glBindTexture(GL.TEXTURE_2D,ds.wall_texid); 

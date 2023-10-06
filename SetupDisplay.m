@@ -15,7 +15,7 @@ ds.binocular = 1;
 ds.eyesimulation = 0;
 ds.dotfield = 0;
 ds.eyetracking = 0;
-ds.control = 1;
+ds.control = 0;
 
 PsychImaging('PrepareConfiguration');
 
@@ -217,7 +217,7 @@ glMatrixMode(GL.PROJECTION);
 
 % Retrieve and set camera projection matrix for optimal rendering on the HMD:
 if ~isempty(ds.hmd)
-    [ds.projMatrix{1}, ds.projMatrix{2}] = PsychVRHMD('GetStaticRenderParameters', ds.hmd, 0.01, 5);%, 0.01, 5);  % add here the clipping plane distances; they are [clipNear=0.01],[clipFar=10000] by default
+    [ds.projMatrix{1}, ds.projMatrix{2}] = PsychVRHMD('GetStaticRenderParameters', ds.hmd, 0.01, 10);%, 0.01, 5);  % add here the clipping plane distances; they are [clipNear=0.01],[clipFar=10000] by default
 %     if ds.monocular
 %         ipd = ds.projMatrix{2}(1,3)-ds.projMatrix{1}(1,3);
 %         ds.projMatrix{1}(1,3) = ds.projMatrix{1}(1,3)+ipd/2;
