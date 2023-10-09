@@ -593,6 +593,8 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
             glBindTexture(GL.TEXTURE_2D,ds.floor_texid);
 
             if ds.control
+                
+                % bits of ground plane in surround
 %                 glPushMatrix;
 %                 glTranslatef(-1.5,pa.floorHeight,-(pa.objectdist+2.25));
 %                 glCallList(ds.smallFloor);
@@ -603,6 +605,25 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
 %                 glCallList(ds.smallFloor);
 %                 glPopMatrix;
 
+                glClearDepth(1.0)
+%                glClear(GL.COLOR_BUFFER_BIT|GL.DEPTH_BUFFER_BIT)
+            
+                glMatrixMode(GL.PROJECTION)
+                glPushMatrix()
+                glLoadIdentity()
+                glOrtho(0, ds.winRect(3),0, ds.winRect(4), 1,2)
+                glMatrixMode(GL.MODELVIEW)
+                glPushMatrix()
+                glLoadIdentity()
+                
+                glDisable(GL.DEPTH_TEST)
+                glCallList(ds.paddleList);
+                glEnable(GL.DEPTH_TEST)
+                
+                glMatrixMode(GL.PROJECTION)
+                glPopMatrix()
+                glMatrixMode(GL.MODELVIEW)
+                glPopMatrix()
 
 
             else
@@ -610,8 +631,6 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
             end
             
          end
-
-
         
 %         glBindTexture(GL.TEXTURE_2D,ds.wall_texid); 
 %         glCallList(ds.surroundTexture); % 1/f noise texture surround -  comes from CreateTexturesforSDK2.m

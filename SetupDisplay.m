@@ -15,7 +15,7 @@ ds.binocular = 1;
 ds.eyesimulation = 0;
 ds.dotfield = 0;
 ds.eyetracking = 0;
-ds.control = 0;
+ds.control = 1;
 
 PsychImaging('PrepareConfiguration');
 

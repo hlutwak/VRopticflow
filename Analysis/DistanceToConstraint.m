@@ -300,7 +300,7 @@ for cond = 1:size(conditions, 1)
         
         if ii == 1
     
-%             subplot(numel(directions),numel(speeds),cond)
+            subplot(numel(directions),numel(speeds),cond)
             clf
 
             % set(gcf,'position',[500, 500, 600, 400])
