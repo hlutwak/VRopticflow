@@ -67,12 +67,12 @@ for ii = 1:s(3)
 end
 
 %% eye tracking data
-D=dir('Data');
-% gaze = readtable('Data\2023-07-26_16-09-57-7a8b312d\gaze.csv');
-% worldtime = readtable('Data\2023-07-26_16-09-57-7a8b312d\world_timestamps.csv');
-gaze = readtable('Data/2023-09-28_11-14-08-f10199cf/gaze.csv');
-blinks = readtable('Data/2023-09-28_11-14-08-f10199cf/blinks.csv');
-evts = readtable('Data/2023-09-28_11-14-08-f10199cf/events.csv');
+D=dir('Data/');
+filename = '2023-10-11_14-57-35-1e54f077';
+
+gaze = readtable(['Data/', filename, '/gaze.csv']);
+blinks = readtable(['Data/', filename, '/blinks.csv']);
+evts = readtable(['Data/', filename, '/events.csv']);
 % t= table2array(worldtime(:,end));
 timestamps = table2array(gaze(:,3));
 blink_start = table2array(blinks(:,4));
@@ -82,8 +82,11 @@ evt = table2array(evts(:,2));
 x = table2array(gaze(:,9));
 y = table2array(gaze(:,10));
 
-% x = table2array(gaze(:,4));
-% y = table2array(gaze(:,5));
+if sum(y) == 0
+
+    x = table2array(gaze(:,4));
+    y = table2array(gaze(:,5));
+end
 
 figure, scatter(x,y), axis equal
 
@@ -115,6 +118,21 @@ hold on, line([oc.UTCtrialEnd; oc.UTCtrialEnd],[yl(1); yl(2)].*ones(size(oc.UTCt
 % milliseconds(oc.UTCtrialEnd - oc.UTCtrialStart)
 hold on, line([oc.UTCtrialStart; oc.UTCtrialStart],[yl(1); yl(2)].*ones(size(oc.UTCtrialStart)), 'color','g') 
 hold on, line([evts_time'; evts_time'], [yl(1); yl(2)].*ones(size(evts_time')), 'color','k') 
+
+
+%% offset
+offset = milliseconds(evts_time(2) - oc.UTCtrialStart(2));
+
+% subtract offset from eyetracking data
+calibrated = date_time-milliseconds(offset);
+
+figure, plot(calibrated,x, 'linewidth', 2), hold on, plot(calibrated,y,'linewidth', 2)
+yl = ylim;
+hold on, line([oc.UTCtrialEnd; oc.UTCtrialEnd],[yl(1); yl(2)].*ones(size(oc.UTCtrialEnd)), 'color','r') 
+
+hold on, line([oc.UTCtrialStart; oc.UTCtrialStart],[yl(1); yl(2)].*ones(size(oc.UTCtrialStart)), 'color','g') 
+hold on, line([evts_time'; evts_time'], [yl(1); yl(2)].*ones(size(evts_time')), 'color','k') 
+
 
 %% get fixation over trial intervals
 

@@ -8,7 +8,7 @@ function [ds,pa] = SetupParameters(ds)
 
 %% Basic experimental specs 
 
-pa.subjectName = 'tracking_test';
+pa.subjectName = 'test';
 pa.feedbackFlag = 1;  % 0 --> no feedback;  1 --> only sound-based feedback;  2 --> visual + sound-based feedback
 
 pa.criterion = 8*(pi/180);  % this is the criterion for the distance between the mid-point of the paddle and the midpoint of the ball; distances smaller than this are hits - any overlap counts
@@ -62,8 +62,8 @@ pa.paddleHalfHeight = 0.075;% m
 pa.paddleHalfDepth = 0.075;% m
 pa.smallFloorWidth = 1;
 pa.aboveground = .15; %0.15;
-pa.objectdist = 2;
-pa.fixationdist = 3;
+pa.objectdist = 1;
+pa.fixationdist = 2;
 % pa.paddleHeightactor = 1;% 0.0057 m 
 pa.paddleAngle = 0; % deg - start at the rightward position
 pa.shiftPaddle = 0.25;
