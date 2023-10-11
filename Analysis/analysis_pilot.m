@@ -133,6 +133,29 @@ hold on, line([oc.UTCtrialEnd; oc.UTCtrialEnd],[yl(1); yl(2)].*ones(size(oc.UTCt
 hold on, line([oc.UTCtrialStart; oc.UTCtrialStart],[yl(1); yl(2)].*ones(size(oc.UTCtrialStart)), 'color','g') 
 hold on, line([evts_time'; evts_time'], [yl(1); yl(2)].*ones(size(evts_time')), 'color','k') 
 
+%% eye data within intervals
+trial_times = [];
+eyetracking = [];
+gaze_speed = NaN(1, pa.trialNumber-1);
+for t = 2:pa.trialNumber %full set, change to pa.nTrials
+    tf = isbetween(calibrated, oc.UTCtrialStart(t), oc.UTCtrialEnd(t));
+    trial_times = [trial_times; calibrated(tf)];
+    eyetracking = [eyetracking; x(tf), y(tf)];
+    idx = find(tf);
+    gaze_speed(t) = vecnorm([x(idx(1)) y(idx(1))]-[x(idx(end)) y(idx(end))])/.5;
+end
+
+figure, scatter(eyetracking(:,1), eyetracking(:,2))
+
+figure
+xlim([700, 1000])
+ylim([600, 800])
+axis equal
+
+for t = 1:length(eyetracking)-100
+    plot(eyetracking(t:t+100,1), eyetracking(t:t+100,2))
+       pause(.01)
+end
 
 %% get fixation over trial intervals
 
