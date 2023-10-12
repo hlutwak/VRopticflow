@@ -137,12 +137,17 @@ hold on, line([evts_time'; evts_time'], [yl(1); yl(2)].*ones(size(evts_time')), 
 trial_times = [];
 eyetracking = [];
 gaze_speed = NaN(1, pa.trialNumber-1);
+start_position = NaN(2, pa.trialNumber-1);
+end_position = NaN(2, pa.trialNumber-1);
+
 for t = 2:pa.trialNumber %full set, change to pa.nTrials
     tf = isbetween(calibrated, oc.UTCtrialStart(t), oc.UTCtrialEnd(t));
     trial_times = [trial_times; calibrated(tf)];
     eyetracking = [eyetracking; x(tf), y(tf)];
     idx = find(tf);
     gaze_speed(t) = vecnorm([x(idx(1)) y(idx(1))]-[x(idx(end)) y(idx(end))])/.5;
+    start_position(:,t) = [x(idx(1)); y(idx(1))];
+    end_position (:,t) = [x(idx(end)); y(idx(end))];
 end
 
 figure, scatter(eyetracking(:,1), eyetracking(:,2))
@@ -156,6 +161,12 @@ for t = 1:length(eyetracking)-100
     plot(eyetracking(t:t+100,1), eyetracking(t:t+100,2))
        pause(.01)
 end
+
+% average start and end position
+startpos = nanmean(start_position');
+endpos = nanmean(end_position');
+hold on, scatter(startpos(1), startpos(2), 'filled', 'g')
+hold on, scatter(endpos(1), endpos(2), 'filled', 'r')
 
 %% get fixation over trial intervals
 

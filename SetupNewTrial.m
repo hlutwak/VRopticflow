@@ -46,6 +46,13 @@ if pa.trialNumber>0 % if it's past the first trial, wait for the Up Arrow key to
                     pa.dotpositions = -pa.floorWidth/2+2*pa.floorWidth/2*rand(3,pa.nball*5); %uniform random positions across floor, random height within range of y position of moving target
                     pa.dotpositions(3,:) = pa.dotpositions(3,:)-pa.floorWidth/2;
                     pa.dotpositions(2,:) = pa.floorHeight;
+                    
+                    if ds.control
+                        surround = [-1.5, pa.floorHeight, -(pa.objectdist+2.25); 1.5, pa.floorHeight, -(pa.objectdist+2.25)]';
+                        surround_idx = find(vecnorm(pa.dotpositions - surround(:,1))<2 | vecnorm(pa.dotpositions - surround(:,2))<2);
+                        pa.surroundpositions = pa.dotpositions(:,surround_idx);
+                        pa.nball = length(surround_idx);
+                    end
                 end
                 
                 pa.xSpeed = pa.fullFactorial(pa.thisTrial,1);
@@ -122,7 +129,9 @@ else % if it is just the first trial, start right up after the subject presses '
                     
                     if ds.control
                         surround = [-1.5, pa.floorHeight, -(pa.objectdist+2.25); 1.5, pa.floorHeight, -(pa.objectdist+2.25)]';
-                        idxleft = find(vecnorm(pa.dotpositions - surround(:,1))<
+                        surround_idx = find(vecnorm(pa.dotpositions - surround(:,1))<2 | vecnorm(pa.dotpositions - surround(:,2))<2);
+                        pa.surroundpositions = pa.dotpositions(:,surround_idx);
+                        pa.nball = length(surround_idx);
                     end
                 end
                 

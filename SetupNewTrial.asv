@@ -122,7 +122,9 @@ else % if it is just the first trial, start right up after the subject presses '
                     
                     if ds.control
                         surround = [-1.5, pa.floorHeight, -(pa.objectdist+2.25); 1.5, pa.floorHeight, -(pa.objectdist+2.25)]';
-                        idxleft = find(vecnorm(pa.dotpositions - surround(:,1))<
+                        idx = find(vecnorm(pa.dotpositions - surround(:,1))<2 | vecnorm(pa.dotpositions - surround(:,2))<2)
+                        pa.surroundpositions = pa.dotpositions(:,idx);
+                        pa.nball = size(id
                     end
                 end
                 

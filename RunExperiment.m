@@ -469,12 +469,23 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
                 end
                 
                 if ds.dotfield
+                    
+                    if ~ds.control
+                        for b = 1:pa.nball*5 %fill in floor with dots
+                            glPushMatrix;
+                            glTranslatef(pa.dotpositions(1,b),pa.dotpositions(2,b),pa.dotpositions(3,b));
+                            glCallList(ds.fixation);
+                            glPopMatrix;
+                        end
+                    
+                    else
                         
-                    for b = 1:pa.nball*5 %fill in floor with dots
-                        glPushMatrix;
-                        glTranslatef(pa.dotpositions(1,b),pa.dotpositions(2,b),pa.dotpositions(3,b));
-                        glCallList(ds.fixation);
-                        glPopMatrix;
+                        for b = 1:pa.nball %fill in floor with dots
+                            glPushMatrix;
+                            glTranslatef(pa.surroundpositions(1,b),pa.surroundpositions(2,b),pa.surroundpositions(3,b));
+                            glCallList(ds.fixation);
+                            glPopMatrix;
+                        end
                     end
                     
                 end
