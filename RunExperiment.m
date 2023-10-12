@@ -469,12 +469,14 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
                 end
                 
                 if ds.dotfield
+                        
                     for b = 1:pa.nball*5 %fill in floor with dots
                         glPushMatrix;
                         glTranslatef(pa.dotpositions(1,b),pa.dotpositions(2,b),pa.dotpositions(3,b));
                         glCallList(ds.fixation);
                         glPopMatrix;
                     end
+                    
                 end
             end
             
@@ -589,46 +591,10 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
 %         gl CallList(ds.ceilingTexture);
          if ds.binocular || (~ds.binocular && ds.renderPass)
              
-         if ~ds.dotfield
-            glBindTexture(GL.TEXTURE_2D,ds.floor_texid);
-
-            if ds.control
-                
-                % bits of ground plane in surround
-%                 glPushMatrix;
-%                 glTranslatef(-1.5,pa.floorHeight,-(pa.objectdist+2.25));
-%                 glCallList(ds.smallFloor);
-%                 glPopMatrix;
-%                 
-%                 glPushMatrix;
-%                 glTranslatef(1.5,pa.floorHeight,-(pa.objectdist+2.25));
-%                 glCallList(ds.smallFloor);
-%                 glPopMatrix;
-
-                glClearDepth(1.0)
-%                glClear(GL.COLOR_BUFFER_BIT|GL.DEPTH_BUFFER_BIT)
-            
-                glMatrixMode(GL.PROJECTION)
-                glPushMatrix()
-                glLoadIdentity()
-                glOrtho(0, ds.winRect(3),0, ds.winRect(4), 1,2)
-                glMatrixMode(GL.MODELVIEW)
-                glPushMatrix()
-                glLoadIdentity()
-                
-                glDisable(GL.DEPTH_TEST)
-                glCallList(ds.paddleList);
-                glEnable(GL.DEPTH_TEST)
-                
-                glMatrixMode(GL.PROJECTION)
-                glPopMatrix()
-                glMatrixMode(GL.MODELVIEW)
-                glPopMatrix()
-
-
-            else
-                glCallList(ds.floorTexture);
-            end
+             if ~ds.dotfield
+                 glBindTexture(GL.TEXTURE_2D,ds.floor_texid);
+                 glCallList(ds.floorTexture);
+             end
             
          end
         
@@ -636,7 +602,7 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
 %         glCallList(ds.surroundTexture); % 1/f noise texture surround -  comes from CreateTexturesforSDK2.m
 %           
             glBindTexture(GL.TEXTURE_2D, 0);
-        end
+        
         
         % Manually disable 3D mode before switching to other eye or to flip:
         Screen('EndOpenGL', ds.w);
