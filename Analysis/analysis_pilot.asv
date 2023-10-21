@@ -169,10 +169,7 @@ hold on, scatter(startpos(1), startpos(2), 'filled', 'g')
 hold on, scatter(endpos(1), endpos(2), 'filled', 'r')
 
 %% getting trials that are outside degree radius of fixation
-load('track_theta')
-expected_diff = max(rad2deg(track_theta)) - min(rad2deg(track_theta));
-expected_diff - vecnorm(startpos - endpos)
-
+load('track
 
 %% get fixation over trial intervals
 
