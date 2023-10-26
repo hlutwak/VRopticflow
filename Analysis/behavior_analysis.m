@@ -12,9 +12,9 @@ dataFolder = 'C:\Users\hlutw\OneDrive\Documents\GitHub\VRopticflow\Data';
 S = dir(fullfile(dataFolder,'*.mat'));
 
 % which subjects data to analyze
-subjects = ["HL"]; %"HL" "IK"
-stims = "eyesim"; %"pilot"
-depth_range = .1;
+subjects = ["MP"]; %"HL" "IK"
+stims = "pilot"; %"pilot"
+depth_range = .05;
 
 % loop over all subjects
 
@@ -58,7 +58,7 @@ for s  = 1:length(subjects)
                                     % this sets the guessing rate to .5 and
                                     % fits the rest of the parameters
     options.fixedPars = NaN(5,1);                                
-    options.fixedPars(5) = 0;       % fix eta (dispersion) to zero
+%     options.fixedPars(5) = 0;       % fix eta (dispersion) to zero
 
     result_const = psignifit(data_const,options);
     result_surr = psignifit(data_surr, options);

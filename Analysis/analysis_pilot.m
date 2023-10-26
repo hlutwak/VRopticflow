@@ -68,7 +68,8 @@ end
 
 %% eye tracking data
 D=dir('Data/');
-filename = '2023-10-12_12-25-27-004bb3c5';
+% filename = '2023-10-11_14-57-35-1e54f077';
+filename = '2023-10-12_12-25-27-004bb3c5'; % fix/obj dist 2,1.5
 
 gaze = readtable(['Data/', filename, '/gaze.csv']);
 blinks = readtable(['Data/', filename, '/blinks.csv']);
@@ -151,6 +152,7 @@ for t = 1:pa.trialNumber %full set, change to pa.nTrials
 end
 
 figure, scatter(eyetracking(:,1), eyetracking(:,2))
+axis equal
 
 % figure
 % xlim([700, 1000])
@@ -169,9 +171,46 @@ hold on, scatter(startpos(1), startpos(2), 'filled', 'g')
 hold on, scatter(endpos(1), endpos(2), 'filled', 'r')
 
 %% getting trials that are outside degree radius of fixation
-load('track_theta')
-expected_diff = max(rad2deg(track_theta)) - min(rad2deg(track_theta));
-expected_diff - vecnorm(startpos - endpos)
+% load('track_theta')
+% expected_diff = max(rad2deg(track_theta)) - min(rad2deg(track_theta));
+% expected_diff - vecnorm(startpos - endpos)
+% looks reasonable compared to simulation?
+
+% go through each trial again, sample line that goes from average start
+% point and endpoint with as many timepoints as that trial, for each
+% timestamp if eye tracking goes outside of degree radius of the line, flag
+% the trial
+
+trial_times = [];
+eyetracking = [];
+% start_position = NaN(2, pa.trialNumber-1);
+% end_position = NaN(2, pa.trialNumber-1);
+
+bad_trials = [];
+
+for trial =  7:pa.trialNumber %full set, change to pa.nTrials
+    tf = isbetween(calibrated, oc.UTCtrialStart(trial), oc.UTCtrialEnd(trial));
+    trial_times = calibrated(tf);
+    eyetracking = [x(tf), y(tf)];
+    idx = find(tf);
+    averageEyePath=[linspace(startpos(1),endpos(1),length(eyetracking)).' linspace(startpos(2),endpos(2),length(eyetracking)).'];
+    for t = 1:length(eyetracking)
+        d = vecnorm(eyetracking(t,:) - averageEyePath(t,:));
+        if d>1
+            bad_trials = [bad_trials, trial];
+            break
+        end
+    end
+end
+
+
+
+figure, scatter(eyetracking(:,1), eyetracking(:,2)), axis equal
+hold on, scatter(averageEyePath(:,1), averageEyePath(:,2))
+
+hold on, scatter(eyetracking(t,1), eyetracking(t,2))
+hold on, scatter(averageEyePath(t,1), averageEyePath(t,2))
+legend('eyetracking', 'average eye path', 'first break eyetracking', 'first break eye path')
 
 
 %% get fixation over trial intervals
@@ -331,7 +370,7 @@ C = reshape(C,[],size(data,2),1);
 %                     204,255,153; 178,255,102; 153,255,51; 102,204,0;
 %                     153,255,255; 102,255,255; 51,255,255; 0,204,204;
 %                     153,153,255; 102,102,255; 51,51,255; 0,0,204]/255;
-[dconst, dsurr] = DistanceToConstraint(ds, pa, 1);
+[dconst, dsurr] = DistanceToConstraint(ds, pa, .1);
 a = dconst;
 C(:,1) = a(:);
 
