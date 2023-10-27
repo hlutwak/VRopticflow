@@ -148,7 +148,8 @@ while ~finishedCalibration && ~readyToBegin
               
                 
         Screen('EndOpenGL', ds.w);
-        Screen('DrawText',ds.w,'Eye Calibration. Press SPACE to end.',(ds.textCoords(1)-200*ds.renderPass)-100,ds.textCoords(2),[1 1 1]);
+%         Screen('DrawText',ds.w,'Eye Calibration. Press SPACE to end.',(ds.textCoords(1)-200*ds.renderPass)-100,ds.textCoords(2),[1 1 1]);
+        Screen('DrawText',ds.w,'o',ds.xc,ds.yc,[1 1 1]);
 
     end
     
