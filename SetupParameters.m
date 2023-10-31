@@ -8,7 +8,7 @@ function [ds,pa] = SetupParameters(ds)
 
 %% Basic experimental specs 
 
-pa.subjectName = 'test';
+pa.subjectName = 'AS_dots';
 pa.feedbackFlag = 1;  % 0 --> no feedback;  1 --> only sound-based feedback;  2 --> visual + sound-based feedback
 
 pa.criterion = 8*(pi/180);  % this is the criterion for the distance between the mid-point of the paddle and the midpoint of the ball; distances smaller than this are hits - any overlap counts
@@ -62,8 +62,8 @@ pa.paddleHalfHeight = 0.075;% m
 pa.paddleHalfDepth = 0.075;% m
 pa.smallFloorWidth = 1;
 pa.aboveground = .15; %0.15;
-pa.objectdist = 1.5;
-pa.fixationdist = 2;
+pa.objectdist = 2;
+pa.fixationdist = 3;
 % pa.paddleHeightactor = 1;% 0.0057 m 
 pa.paddleAngle = 0; % deg - start at the rightward position
 pa.shiftPaddle = 0.25;
@@ -90,8 +90,8 @@ pa.trialNumber = 0; % gotta start somewhere
 % Set up a full factorial design 
 pa.nRepeats = 20; % each target contrast condition gets pa.nRepeats trials - 75*3 = 225 per block 
 % pa.speed = [0.5, 0.4, 0.3, 0.2,0.1]; %speeds m/s
-% pa.speed = [0.5, 0.15, 0.075,  0.0375]; %speeds m/s
-pa.speed = [.5  .5*(2^-1) .5*(2^-3) .5*(2^-4)]; %speeds m/s
+pa.speed = [0.5, 0.35, 0.2, .1, .05]; %speeds m/s
+% pa.speed = [.5 .5*(2^-1) .5*(2^-3) .5*(2^-4)]; %speeds m/s
 
 pa.direction = deg2rad([75 90 105 255 270 285]); %(0 is radially out horizontally, 90 is forward/up, 270 is backwards/down x-z/x-y plane)
 

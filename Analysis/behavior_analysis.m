@@ -12,8 +12,8 @@ dataFolder = 'C:\Users\hlutw\OneDrive\Documents\GitHub\VRopticflow\Data';
 S = dir(fullfile(dataFolder,'*.mat'));
 
 % which subjects data to analyze
-subjects = ["MP"]; %"HL" "IK"
-stims = "pilot"; %"pilot"
+subjects = ["AS"]; %"HL" "IK"
+stims = "simulation"; %"pilot"
 depth_range = .05;
 
 % loop over all subjects
