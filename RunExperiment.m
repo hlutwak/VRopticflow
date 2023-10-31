@@ -69,7 +69,7 @@ readyToBegin = 0;
 
 if ds.eyetracking
     device = SetupEyetracker();
-    disp(device.phone_name)
+    disp(device.phone_name) 
     disp(device.module_serial)
     
     if device.module_serial == string(missing) || ~exist('device')

@@ -12,7 +12,7 @@ function  device = SetupEyetracker()
 py.nest_asyncio.apply()
 
 import py.pupil_labs.realtime_api.simple.Device
-ip = "10.17.201.214";
+ip = "10.17.225.131";
 device = Device(ip, "8080");
 % companion device name, are the glasses connected to companion
 % disp(device.phone_name)
