@@ -69,8 +69,8 @@ end
 %% eye tracking data
 D=dir('Data/');
 % filename = '2023-10-11_14-57-35-1e54f077';
-filename = '2023-10-12_12-25-27-004bb3c5'; % fix/obj dist 2,1.5
-
+% filename = '2023-10-12_12-25-27-004bb3c5'; % fix/obj dist 2,1.5
+filename = '2023-11-02_14-35-26-21023a71ET';
 gaze = readtable(['Data/', filename, '/gaze.csv']);
 blinks = readtable(['Data/', filename, '/blinks.csv']);
 evts = readtable(['Data/', filename, '/events.csv']);
@@ -141,7 +141,7 @@ gaze_speed = NaN(1, pa.trialNumber-1);
 start_position = NaN(2, pa.trialNumber-1);
 end_position = NaN(2, pa.trialNumber-1);
 
-for t = 1:pa.trialNumber %full set, change to pa.nTrials
+for t = 1:pa.nTrials %pa.trialNumber %full set, change to pa.nTrials
     tf = isbetween(calibrated, oc.UTCtrialStart(t), oc.UTCtrialEnd(t));
     trial_times = [trial_times; calibrated(tf)];
     eyetracking = [eyetracking; x(tf), y(tf)];
@@ -188,7 +188,7 @@ eyetracking = [];
 
 bad_trials = [];
 
-for trial =  7:pa.trialNumber %full set, change to pa.nTrials
+for trial = 15 % 2:pa.nTrials %full set, change to pa.nTrials
     tf = isbetween(calibrated, oc.UTCtrialStart(trial), oc.UTCtrialEnd(trial));
     trial_times = calibrated(tf);
     eyetracking = [x(tf), y(tf)];
@@ -275,9 +275,9 @@ for speed = 1:length(pa.speed)
 end
 
 %% psignifit 
-% addpath(genpath('C:\Users\hlutw\OneDrive\Documents\MATLAB\psignifit-master'));
+addpath(genpath('C:\Users\hlutw\OneDrive\Documents\MATLAB\psignifit-master'));
 %  addpath('/Users/hopelutwak/Documents/MATLAB/psignifit')
-% addpath(genpath('C:\Users\hlutw\OneDrive\Documents\GitHub\VRopticflow\Analysis'));
+addpath(genpath('C:\Users\hlutw\OneDrive\Documents\GitHub\VRopticflow\Analysis'));
 % set options for psychometric functions
 options             = struct;   % initialize as an empty struct
 options.sigmoidName = 'weibull';   
@@ -370,8 +370,8 @@ C = reshape(C,[],size(data,2),1);
 %                     204,255,153; 178,255,102; 153,255,51; 102,204,0;
 %                     153,255,255; 102,255,255; 51,255,255; 0,204,204;
 %                     153,153,255; 102,102,255; 51,51,255; 0,0,204]/255;
-[dconst, dsurr] = DistanceToConstraint(ds, pa, .1);
-a = dconst;
+[dconst, dsurr] = DistanceToConstraint(ds, pa, 0);
+a = dsurr;
 C(:,1) = a(:);
 
 % run psignifit
@@ -398,12 +398,12 @@ options.dataColor = [255,153,255; 255,102,255; 255,51,255; 204,0,204;
                     153,255,255; 102,255,255; 51,255,255; 0,204,204;
                     153,153,255; 102,102,255; 51,51,255; 0,0,204]/255;
  % 5 speeds, 6 directions 
-                options.dataColor = [255,204,255; 255,153,255; 255,102,255; 255,51,255; 204,0,204;
-                    255,204,204; 255,153,153; 255,102,102; 255,51,51; 204,0,0;
-                    255,204,153; 255,204,153; 255,178,102; 255, 153, 51; 204,102,0;
-                    229,255,204; 204,255,153; 178,255,102; 153,255,51; 102,204,0;
-                    205,255,255; 153,255,255; 102,255,255; 51,255,255; 0,204,204;
-                    204,229,255; 153,153,255; 102,102,255; 51,51,255; 0,0,204]/255;
+%                 options.dataColor = [255,204,255; 255,153,255; 255,102,255; 255,51,255; 204,0,204;
+%                     255,204,204; 255,153,153; 255,102,102; 255,51,51; 204,0,0;
+%                     255,204,153; 255,204,153; 255,178,102; 255, 153, 51; 204,102,0;
+%                     229,255,204; 204,255,153; 178,255,102; 153,255,51; 102,204,0;
+%                     205,255,255; 153,255,255; 102,255,255; 51,255,255; 0,204,204;
+%                     204,229,255; 153,153,255; 102,102,255; 51,51,255; 0,0,204]/255;
 % options.dataColor = [224,224,224; 160,160,160; 128,128,128; 64,64,64;
 %                       255,153,153; 255,102,102; 255,51,51; 204,0,0;
 %                       255,255,153; 255,255,51; 204,204,0; 153,153,0;

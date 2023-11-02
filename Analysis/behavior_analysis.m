@@ -12,9 +12,9 @@ dataFolder = 'C:\Users\hlutw\OneDrive\Documents\GitHub\VRopticflow\Data';
 S = dir(fullfile(dataFolder,'*.mat'));
 
 % which subjects data to analyze
-subjects = ["AS"]; %"HL" "IK"
-stims = "simulation"; %"pilot"
-depth_range = .05;
+subjects = ["ET"]; %"HL" "IK"
+stims = "dots"; %"pilot"
+depth_range = .1;
 
 % loop over all subjects
 
@@ -43,7 +43,7 @@ for s  = 1:length(subjects)
             data_session(:,1) = dconst(:);
             data_session(:,2) = dsurr(:);
             data = [data; data_session];
-            data_const = [data(:,1) data(:,end-1:end)];
+            data_const = [data(:,3) data(:,end-1:end)]; % to surround data_const = [data(:,1) data(:,end-1:end)];
             data_surr = [data(:,2) data(:,end-1:end)];
             count = count+1;
             
@@ -59,6 +59,13 @@ for s  = 1:length(subjects)
                                     % fits the rest of the parameters
     options.fixedPars = NaN(5,1);                                
 %     options.fixedPars(5) = 0;       % fix eta (dispersion) to zero
+% 4 speeds, 6 directions
+    options.dataColor = [255,153,255; 255,102,255; 255,51,255; 204,0,204;
+                        255,153,153; 255,102,102; 255,51,51; 204,0,0;
+                        255,204,153; 255,178,102; 255, 153, 51; 204,102,0;
+                        204,255,153; 178,255,102; 153,255,51; 102,204,0;
+                        153,255,255; 102,255,255; 51,255,255; 0,204,204;
+                        153,153,255; 102,102,255; 51,51,255; 0,0,204]/255;
 
     result_const = psignifit(data_const,options);
     result_surr = psignifit(data_surr, options);
