@@ -421,6 +421,13 @@ options.dataColor = [255,153,255; 255,102,255; 255,51,255; 204,0,204;
 %  0.5  0.25  .125    0.0625
 %            0.1250   0.0625    0.0313
 
+%% using psychtoolbox
+
+[alpha,beta,thresh92] = FitWeibTAFC(C(:,1),C(:,2),C(:,3)-C(:,2))
+
+x  = exp(linspace(log(min(result.data(:,1))),log(max(result.data(:,1))),1000));
+y = 1 - exp(-(x./beta)).^alpha;
+
 
 %% random
 % exp2 = data;
