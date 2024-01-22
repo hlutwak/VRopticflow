@@ -2,18 +2,18 @@
 % get behavior files, conccatenate same trials, run psignifit
 
 % add psignifit toolbox
-% addpath('/Users/hopelutwak/Documents/MATLAB/psignifit')
-addpath(genpath('C:\Users\hlutw\OneDrive\Documents\MATLAB\psignifit-master'))
+addpath('/Users/hopelutwak/Documents/MATLAB/psignifit')
+% addpath(genpath('C:\Users\hlutw\OneDrive\Documents\MATLAB\psignifit-master'))
 % assign data folder
-% dataFolder = '/Users/hopelutwak/Documents/GitHub/VRopticflow/Data';
-dataFolder = 'C:\Users\hlutw\OneDrive\Documents\GitHub\VRopticflow\Data';
+dataFolder = '/Users/hopelutwak/Documents/GitHub/VRopticflow/Data';
+% dataFolder = 'C:\Users\hlutw\OneDrive\Documents\GitHub\VRopticflow\Data';
 
 % names of files
 S = dir(fullfile(dataFolder,'*.mat'));
 
 % which subjects data to analyze
-subjects = ["ET"]; %"HL" "IK"
-stims = "dots"; %"pilot"
+subjects = ["HL"]; %"HL" "IK"
+stims = "pilot_full-fixed"; %"pilot"
 depth_range = .1;
 
 % loop over all subjects
