@@ -188,7 +188,7 @@ eyetracking = [];
 
 bad_trials = [];
 
-for trial = 15 % 2:pa.nTrials %full set, change to pa.nTrials
+for trial = 2 % 2:pa.nTrials %full set, change to pa.nTrials
     tf = isbetween(calibrated, oc.UTCtrialStart(trial), oc.UTCtrialEnd(trial));
     trial_times = calibrated(tf);
     eyetracking = [x(tf), y(tf)];
@@ -211,6 +211,8 @@ hold on, scatter(averageEyePath(:,1), averageEyePath(:,2))
 hold on, scatter(eyetracking(t,1), eyetracking(t,2))
 hold on, scatter(averageEyePath(t,1), averageEyePath(t,2))
 legend('eyetracking', 'average eye path', 'first break eyetracking', 'first break eye path')
+
+eye_pos_trial = [x(tf) y(tf)];
 
 
 %% get fixation over trial intervals

@@ -12,8 +12,8 @@ ds.screenId = max(Screen('Screens')); % Find the screen to use for display:
 ds.multiSample = 16;
 ds.doSeparateEyeRender = 1; % render two eyes' views
 ds.binocular = 1;
-ds.eyesimulation = 0;
-ds.dotfield = 1;
+ds.eyesimulation = 1;
+ds.dotfield = 0;
 ds.eyetracking = 0;
 ds.control = 0;
 if ds.control
