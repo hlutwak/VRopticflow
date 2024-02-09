@@ -149,7 +149,10 @@ while ~finishedCalibration && ~readyToBegin
                 
         Screen('EndOpenGL', ds.w);
 %         Screen('DrawText',ds.w,'Eye Calibration. Press SPACE to end.',(ds.textCoords(1)-200*ds.renderPass)-100,ds.textCoords(2),[1 1 1]);
-        Screen('DrawText',ds.w,'o',ds.xc,ds.yc,[1 1 1]);
+          Screen('DrawText',ds.w,'o',(ds.xc-200*ds.renderPass),ds.yc,[1 1 1]);
+          Screen('DrawDots', ds.w,[ds.xc-200*ds.renderPass;ds.yc], 10,[1,1,1]);
+
+%         Screen('DrawText',ds.w,'o',ds.xc,ds.yc,[1 1 1]);
 
     end
     
@@ -201,7 +204,7 @@ while ~readyToBegin && finishedCalibration% confirm everything's ready to go
         glLoadMatrixd(modelView); 
           
         Screen('EndOpenGL', ds.w);
-        Screen('DrawText',ds.w,'Ready to start the experiment? Press SPACE to confirm.',(ds.textCoords(1)-200*ds.renderPass)-100,ds.textCoords(2),[1 1 1]);
+        Screen('DrawText',ds.w,'Ready to start the experiment? Press SPACE to confirm.',(ds.textCoords(1)-200*ds.renderPass),ds.textCoords(2),[1 1 1]);
 
     end
     
@@ -495,7 +498,7 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
               
 
             if ds.eyesimulation % simulate eye rotation along with translation
-                eye.modelView(3,4) =  pa.translation.*(ds.vbl-pa.trialOnset); %eye.modelView(3,4) + %eye.modelView(2,4) - %(ds.vbl-pa.trialOnset)
+%                 eye.modelView(3,4) =  pa.translation.*(ds.vbl-pa.trialOnset); %eye.modelView(3,4) + %eye.modelView(2,4) - %(ds.vbl-pa.trialOnset)
                 track = [track (ds.vbl-pa.trialOnset)];
                     theta = atan(-pa.floorHeight./(pa.fixationdist-pa.translation*(ds.vbl-pa.trialOnset))); % update theta for observer fixating at a point at the ground in front of them, fixation m away
                     dtheta = theta - track_theta(end);
@@ -504,6 +507,8 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
                     eye.modelView(1:3,1:3) = eye.modelView(1:3,1:3)*R;
                     track_theta = [track_theta, theta];
                     eye.modelView(2,4) = -pa.translation.*(ds.vbl-pa.trialOnset)*sin(theta); %adjust so translation is strictly foward, absolute world coordinate
+                    eye.modelView(3,4) =  pa.translation.*(ds.vbl-pa.trialOnset); %eye.modelView(3,4) + %eye.modelView(2,4) - %(ds.vbl-pa.trialOnset)
+
             else % just do translation
                 eye.modelView(3,4) =  pa.translation.*(ds.vbl-pa.trialOnset); %eye.modelView(3,4) + %eye.modelView(2,4) - %(ds.vbl-pa.trialOnset)
                 track = [track (ds.vbl-pa.trialOnset)];
