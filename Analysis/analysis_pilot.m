@@ -125,9 +125,9 @@ hold on, line([evts_time'; evts_time'], [yl(1); yl(2)].*ones(size(evts_time')), 
 offset = milliseconds(evts_time(2) - oc.UTCtrialStart(2));
 
 % subtract offset from eyetracking data
-calibrated = date_time-milliseconds(offset);
+synced = date_time-milliseconds(offset);
 
-figure, plot(calibrated,x, 'linewidth', 2), hold on, plot(calibrated,y,'linewidth', 2)
+figure, plot(synced,x, 'linewidth', 2), hold on, plot(synced,y,'linewidth', 2)
 yl = ylim;
 hold on, line([oc.UTCtrialEnd; oc.UTCtrialEnd],[yl(1); yl(2)].*ones(size(oc.UTCtrialEnd)), 'color','r') 
 
@@ -144,8 +144,8 @@ start_position = NaN(2, pa.trialNumber-1);
 end_position = NaN(2, pa.trialNumber-1);
 
 for t = 1:pa.nTrials %pa.trialNumber %full set, change to pa.nTrials
-    tf = isbetween(calibrated, oc.UTCtrialStart(t), oc.UTCtrialEnd(t));
-    trial_times = [trial_times; calibrated(tf)];
+    tf = isbetween(synced, oc.UTCtrialStart(t), oc.UTCtrialEnd(t));
+    trial_times = [trial_times; synced(tf)];
     eyetracking = [eyetracking; x(tf), y(tf)];
     idx = find(tf);
     gaze_speed(t) = vecnorm([x(idx(1)) y(idx(1))]-[x(idx(end)) y(idx(end))])/.5;
@@ -191,8 +191,8 @@ eyetracking = [];
 bad_trials = [];
 
 for trial = 2 % 2:pa.nTrials %full set, change to pa.nTrials
-    tf = isbetween(calibrated, oc.UTCtrialStart(trial), oc.UTCtrialEnd(trial));
-    trial_times = calibrated(tf);
+    tf = isbetween(synced, oc.UTCtrialStart(trial), oc.UTCtrialEnd(trial));
+    trial_times = synced(tf);
     eyetracking = [x(tf), y(tf)];
     idx = find(tf);
     averageEyePath=[linspace(startpos(1),endpos(1),length(eyetracking)).' linspace(startpos(2),endpos(2),length(eyetracking)).'];

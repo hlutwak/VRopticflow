@@ -149,10 +149,11 @@ while ~finishedCalibration && ~readyToBegin
                 
         Screen('EndOpenGL', ds.w);
 %         Screen('DrawText',ds.w,'Eye Calibration. Press SPACE to end.',(ds.textCoords(1)-200*ds.renderPass)-100,ds.textCoords(2),[1 1 1]);
-          calibx = ds.xc + round([0,ds.pixelsPerDegree*ds.hFOV/4, 0, -ds.pixelsPerDegree*ds.hFOV/4,0])- [200 * ds.renderPass]; %
-          caliby = ds.yc + round([0,0, ds.pixelsPerDegree*ds.vFOV/4, 0, -ds.pixelsPerDegree*ds.vFOV/4])%
-          calibrationGridDeg = round([0,ds.hFOV/4, 0, -ds.hFOV/4,0; 0,0, ds.vFOV/4, 0, -ds.vFOV/4])
-            Screen('DrawDots', ds.w,[calibx; caliby], 10,[1,1,1]);
+          calibx = ds.xc + round([0,ds.pixelsPerDegree*ds.hFOV/4, -ds.pixelsPerDegree*ds.hFOV/4, -ds.pixelsPerDegree*ds.hFOV/4,ds.pixelsPerDegree*ds.hFOV/4])- [200 * ds.renderPass]; %
+          caliby = ds.yc + round([0,ds.pixelsPerDegree*ds.vFOV/4, ds.pixelsPerDegree*ds.vFOV/4, -ds.pixelsPerDegree*ds.vFOV/4,-ds.pixelsPerDegree*ds.vFOV/4]);%
+          calibrationGridDeg = round([0,ds.hFOV/4, ds.hFOV/4, -ds.hFOV/4,-ds.hFOV/4; 0,ds.vFOV/4, ds.vFOV/4, -ds.vFOV/4, -ds.vFOV/4]);
+          Screen('DrawDots', ds.w,[calibx; caliby], 10,[1,1,1]);
+          
 
 %         Screen('DrawText',ds.w,'o',ds.xc,ds.yc,[1 1 1]);
 
@@ -160,12 +161,15 @@ while ~finishedCalibration && ~readyToBegin
     
     Screen('DrawingFinished', ds.w);
     ds.vbl = Screen('Flip', ds.w);
-    
+     
     [kb.keyIsDown, kb.secs, kb.keyCode] = KbCheck(-1); % query the keyboard
     if kb.keyIsDown && kb.keyCode(kb.spacebarKey)
-        finishedCalibration=1;
-        device.send_event("calibrationdone")
-
+        finishedCalibration=1; 
+        if ds.eyetracking && pa.trialNumber == 2 
+            device.send_event("calibrationdone")   
+        end
+        oc.UTCCalibrationEnd = datetime('now','TimeZone','local','Format','d-MMM-y HH:mm:ss:ms');
+    
     end 
 end
 %% Start the experiment - opening screen, getting the participant set
@@ -414,8 +418,7 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
           
             
          %% Experiment Logic  
-        
-
+       
         if ds.vbl <  pa.trialOnset + pa.targetMotionDuration % if current time < present until time: draw target, 1 s target motion
             
             oc.trial_startflag = [1 oc.trial_startflag];
