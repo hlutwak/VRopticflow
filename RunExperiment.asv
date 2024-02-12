@@ -151,7 +151,7 @@ while ~finishedCalibration && ~readyToBegin
 %         Screen('DrawText',ds.w,'Eye Calibration. Press SPACE to end.',(ds.textCoords(1)-200*ds.renderPass)-100,ds.textCoords(2),[1 1 1]);
           calibx = ds.xc + round([0,ds.pixelsPerDegree*ds.hFOV/4, 0, -ds.pixelsPerDegree*ds.hFOV/4,0])- [200 * ds.renderPass]; %
           caliby = ds.yc + round([0,0, ds.pixelsPerDegree*ds.vFOV/4, 0, -ds.pixelsPerDegree*ds.vFOV/4])%
-          calibrationGridDeg = round([0,ds.hFOV/4, 0, -ds.hFOV/4,0; 0,0, ds.vFOV/4, 0, -ds.vFOV/4])
+          calibrationgriddeg = round([0,ds.hFOV/4, 0, -ds.hFOV/4,0; 0,0, ds.vFOV/4, 0, -ds.vFOV/4])
             Screen('DrawDots', ds.w,[calibx; caliby], 10,[1,1,1]);
 
 %         Screen('DrawText',ds.w,'o',ds.xc,ds.yc,[1 1 1]);
@@ -164,8 +164,6 @@ while ~finishedCalibration && ~readyToBegin
     [kb.keyIsDown, kb.secs, kb.keyCode] = KbCheck(-1); % query the keyboard
     if kb.keyIsDown && kb.keyCode(kb.spacebarKey)
         finishedCalibration=1;
-        device.send_event("calibrationdone")
-
     end 
 end
 %% Start the experiment - opening screen, getting the participant set
