@@ -70,7 +70,8 @@ end
 D=dir('Data/');
 % filename = '2023-10-11_14-57-35-1e54f077';
 % filename = '2023-10-12_12-25-27-004bb3c5'; % fix/obj dist 2,1.5
-filename = '2023-11-02_14-35-26-21023a71ET';
+% filename = '2023-11-02_14-35-26-21023a71ET';
+filename = '2024-02-13_17-47-47-d08cbe84HLcali2';
 gaze = readtable(['Data/', filename, '/gaze.csv']);
 blinks = readtable(['Data/', filename, '/blinks.csv']);
 evts = readtable(['Data/', filename, '/events.csv']);
@@ -136,6 +137,7 @@ hold on, line([evts_time'; evts_time'], [yl(1); yl(2)].*ones(size(evts_time')), 
 
 
 % get eyetracking for calibration time
+
 %% eye data within intervals
 trial_times = [];
 eyetracking = [];

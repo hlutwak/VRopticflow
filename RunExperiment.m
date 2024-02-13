@@ -149,10 +149,22 @@ while ~finishedCalibration && ~readyToBegin
                 
         Screen('EndOpenGL', ds.w);
 %         Screen('DrawText',ds.w,'Eye Calibration. Press SPACE to end.',(ds.textCoords(1)-200*ds.renderPass)-100,ds.textCoords(2),[1 1 1]);
-          calibx = ds.xc + round([0,ds.pixelsPerDegree*ds.hFOV/4, -ds.pixelsPerDegree*ds.hFOV/4, -ds.pixelsPerDegree*ds.hFOV/4,ds.pixelsPerDegree*ds.hFOV/4])- [200 * ds.renderPass]; %
-          caliby = ds.yc + round([0,ds.pixelsPerDegree*ds.vFOV/4, ds.pixelsPerDegree*ds.vFOV/4, -ds.pixelsPerDegree*ds.vFOV/4,-ds.pixelsPerDegree*ds.vFOV/4]);%
-          calibrationGridDeg = round([0,ds.hFOV/4, ds.hFOV/4, -ds.hFOV/4,-ds.hFOV/4; 0,ds.vFOV/4, ds.vFOV/4, -ds.vFOV/4, -ds.vFOV/4]);
-          Screen('DrawDots', ds.w,[calibx; caliby], 10,[1,1,1]);
+         %ds.pixelsPerDegree*ds.hFOV/4
+          calibx = ds.xc + round([0,ds.windowRect(4)/6, -ds.windowRect(4)/6, -ds.windowRect(4)/6,ds.windowRect(4)/6])- [200 * ds.renderPass]; %
+          caliby = ds.yc + round([0,ds.windowRect(3)/6, ds.windowRect(3)/6, -ds.windowRect(3)/6,-ds.windowRect(3)/6]);%
+%           calibrationGridDeg = round([0,ds.hFOV/4, ds.hFOV/4, -ds.hFOV/4,-ds.hFOV/4; 0,ds.vFOV/4, ds.vFOV/4, -ds.vFOV/4, -ds.vFOV/4]);
+
+        calibrationGridDeg = [calibx-ds.xc+[200 * ds.renderPass];caliby-ds.yc]/ds.pixelsPerDegree; %ds.pixelsPerDegree
+        
+        Screen('DrawDots', ds.w,[calibx(1); caliby(1)], 10,[1,1,1]);
+        Screen('DrawDots', ds.w,[calibx(2); caliby(2)], 10,[1,0,0]);
+        Screen('DrawDots', ds.w,[calibx(3); caliby(3)], 10,[0,1,0]);
+        Screen('DrawDots', ds.w,[calibx(4); caliby(4)], 10,[0,0,1]);
+        Screen('DrawDots', ds.w,[calibx(5); caliby(5)], 10,[0,0,0]);
+
+
+
+
           
 
 %         Screen('DrawText',ds.w,'o',ds.xc,ds.yc,[1 1 1]);
