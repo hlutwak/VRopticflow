@@ -136,7 +136,24 @@ hold on, line([oc.UTCtrialStart; oc.UTCtrialStart],[yl(1); yl(2)].*ones(size(oc.
 hold on, line([evts_time'; evts_time'], [yl(1); yl(2)].*ones(size(evts_time')), 'color','k') 
 
 
-% get eyetracking for calibration time
+%% get eyetracking for calibration time
+calib = find(synced < oc.UTCCalibrationEnd);
+figure, scatter(x(calib), y(calib));
+axis equal
+
+%% butterworth filter
+[b,a]=butter(4,1/25);
+output_datax=filter(b,a,x);
+output_datay = filter(b,a,y);
+
+figure, plot(synced,output_datax, 'linewidth', 2), hold on, plot(synced,output_datay,'linewidth', 2)
+yl = ylim;
+hold on, line([oc.UTCtrialEnd; oc.UTCtrialEnd],[yl(1); yl(2)].*ones(size(oc.UTCtrialEnd)), 'color','r') 
+
+hold on, line([oc.UTCtrialStart; oc.UTCtrialStart],[yl(1); yl(2)].*ones(size(oc.UTCtrialStart)), 'color','g') 
+hold on, line([evts_time'; evts_time'], [yl(1); yl(2)].*ones(size(evts_time')), 'color','k') 
+
+% get 
 
 %% eye data within intervals
 trial_times = [];
@@ -192,7 +209,7 @@ eyetracking = [];
 
 bad_trials = [];
 
-for trial = 2 % 2:pa.nTrials %full set, change to pa.nTrials
+for trial = 14 % 2:pa.nTrials %full set, change to pa.nTrials
     tf = isbetween(synced, oc.UTCtrialStart(trial), oc.UTCtrialEnd(trial));
     trial_times = synced(tf);
     eyetracking = [x(tf), y(tf)];
@@ -209,7 +226,7 @@ end
 
 
 
-figure, scatter(eyetracking(:,1), eyetracking(:,2)), axis equal
+figure, plot(eyetracking(:,1), eyetracking(:,2)), axis equal
 hold on, scatter(averageEyePath(:,1), averageEyePath(:,2))
 
 hold on, scatter(eyetracking(t,1), eyetracking(t,2))
