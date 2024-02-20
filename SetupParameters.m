@@ -40,7 +40,7 @@ pa.baseDir = pwd;
 
 
 %% parameters for the texture surround and virtual 'room'
-pa.translation = 1; %m/s forward
+pa.translation = 1.5; %m/s forward
 
 
 pa.fixationDiskRadius = 2.5; % deg
