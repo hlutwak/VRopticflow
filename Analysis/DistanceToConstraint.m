@@ -298,7 +298,7 @@ for cond = 1:size(conditions, 1)
         end
         % plot mean velocity object and surround
         
-        if ii == 1
+        if ii == round((ns*fps-1)/2)
     
             subplot(numel(directions),numel(speeds),cond)
             clf

@@ -72,7 +72,8 @@ D=dir('Data/');
 % filename = '2023-10-12_12-25-27-004bb3c5'; % fix/obj dist 2,1.5
 % filename = '2023-11-02_14-35-26-21023a71ET';
 %filename = '2024-02-13_17-47-47-d08cbe84HLcali2';
-filename = '2024-02-20_16-23-14-00503dca';
+% filename = '2024-02-21_12-36-02_hl_fulleyetracking-fixed-15trans-20240221t123559-0-012e0633';
+filename = '2024-02-21_13-15-23_hl_fulleyetrackingdots-fixed-20240221t131520-0-44d050a3';
 gaze = readtable(['Data/', filename, '/gaze.csv']);
 blinks = readtable(['Data/', filename, '/blinks.csv']);
 evts = readtable(['Data/', filename, '/events.csv']);
@@ -139,7 +140,7 @@ hold on, line([evts_time'; evts_time'], [yl(1); yl(2)].*ones(size(evts_time')), 
 
 %% get eyetracking for calibration time
 calib = find(synced < oc.UTCCalibrationEnd);
-figure, scatter(x(calib), y(calib));
+figure, hold on,scatter(x(calib), y(calib));
 axis equal
 
 %% butterworth filter
@@ -163,7 +164,10 @@ gaze_speed = NaN(1, pa.trialNumber-1);
 start_position = NaN(2, pa.trialNumber-1);
 end_position = NaN(2, pa.trialNumber-1);
 
-for t = 1:pa.nTrials %pa.trialNumber %full set, change to pa.nTrials
+x = output_datax;
+y= output_datay;
+
+for t = 2:pa.nTrials %pa.trialNumber %full set, change to pa.nTrials
     tf = isbetween(synced, oc.UTCtrialStart(t), oc.UTCtrialEnd(t));
     trial_times = [trial_times; synced(tf)];
     eyetracking = [eyetracking; x(tf), y(tf)];
@@ -173,7 +177,7 @@ for t = 1:pa.nTrials %pa.trialNumber %full set, change to pa.nTrials
     end_position (:,t) = [x(idx(end)); y(idx(end))];
 end
 
-figure, scatter(eyetracking(:,1), eyetracking(:,2))
+figure, hold on, scatter(eyetracking(:,1), eyetracking(:,2))
 axis equal
 
 % figure
@@ -210,12 +214,16 @@ eyetracking = [];
 
 bad_trials = [];
 
-for trial = 14 % 2:pa.nTrials %full set, change to pa.nTrials
+avg_trials = find(gaze_speed>5 & gaze_speed<6);
+for trial = keep_bad_trials(3) % 2:pa.nTrials %full set, change to pa.nTrials
     tf = isbetween(synced, oc.UTCtrialStart(trial), oc.UTCtrialEnd(trial));
+   
     trial_times = synced(tf);
     eyetracking = [x(tf), y(tf)];
     idx = find(tf);
+    
     averageEyePath=[linspace(startpos(1),endpos(1),length(eyetracking)).' linspace(startpos(2),endpos(2),length(eyetracking)).'];
+
     for t = 1:length(eyetracking)
         d = vecnorm(eyetracking(t,:) - averageEyePath(t,:));
         if d>1
@@ -311,7 +319,13 @@ options.expType     = '2AFC';   % choose 2-AFC as the paradigm of the experiment
                                 % fits the rest of the parameters
 options.fixedPars = NaN(5,1);                                
 options.fixedPars(5) = 0;       % fix eta (dispersion) to zero
-
+options.dataColor = [255,153,255; 255,102,255; 255,51,255; 204,0,204;
+                    255,153,153; 255,102,102; 255,51,51; 204,0,0;
+                    255,204,153; 255,178,102; 255, 153, 51; 204,102,0;
+                    204,255,153; 178,255,102; 153,255,51; 102,204,0;
+                    153,255,255; 102,255,255; 51,255,255; 0,204,204;
+                    153,153,255; 102,102,255; 51,51,255; 0,0,204]/255;
+                
 figure, hold on
 
 %loop through stim conditions and get threshold and plot curves
@@ -395,13 +409,14 @@ C = reshape(C,[],size(data,2),1);
 %                     153,255,255; 102,255,255; 51,255,255; 0,204,204;
 %                     153,153,255; 102,102,255; 51,51,255; 0,0,204]/255;
 [dconst, dsurr] = DistanceToConstraint(ds, pa, 0.05);
-a = dconst;
+a = dsurr;
 C(:,1) = a(:);
 
 % run psignifit
 result = psignifit(C,options);
 figure, plotPsych(result, options);
 thresh = exp(result.Fit(1));
+dev = result.deviance;
 % options.dataColor = repmat([0,0,1], length(C),1);
 % ** will only work of edit psignifit's plotPsych!!
 
