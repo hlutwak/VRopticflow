@@ -138,11 +138,6 @@ hold on, line([oc.UTCtrialStart; oc.UTCtrialStart],[yl(1); yl(2)].*ones(size(oc.
 hold on, line([evts_time'; evts_time'], [yl(1); yl(2)].*ones(size(evts_time')), 'color','k') 
 
 
-%% get eyetracking for calibration time
-calib = find(synced < oc.UTCCalibrationEnd);
-figure, hold on,scatter(x(calib), y(calib));
-axis equal
-
 %% butterworth filter
 [b,a]=butter(4,1/25);
 output_datax=filter(b,a,x);
@@ -166,6 +161,11 @@ end_position = NaN(2, pa.trialNumber-1);
 
 x = output_datax;
 y= output_datay;
+
+% get eyetracking for calibration time
+calib = find(synced < oc.UTCCalibrationEnd);
+figure, hold on,scatter(x(calib), y(calib));
+axis equal
 
 for t = 2:pa.nTrials %pa.trialNumber %full set, change to pa.nTrials
     tf = isbetween(synced, oc.UTCtrialStart(t), oc.UTCtrialEnd(t));
