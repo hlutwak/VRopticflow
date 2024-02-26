@@ -74,6 +74,7 @@ D=dir('Data/');
 %filename = '2024-02-13_17-47-47-d08cbe84HLcali2';
 % filename = '2024-02-21_12-36-02_hl_fulleyetracking-fixed-15trans-20240221t123559-0-012e0633';
 filename = '2024-02-21_13-15-23_hl_fulleyetrackingdots-fixed-20240221t131520-0-44d050a3';
+% filename = '2024-02-21_14-44-58_hl_fulleyetracking_eyesim-fixed-20240221t144454-0-f2d8da04';
 gaze = readtable(['Data/', filename, '/gaze.csv']);
 blinks = readtable(['Data/', filename, '/blinks.csv']);
 evts = readtable(['Data/', filename, '/events.csv']);
@@ -150,7 +151,9 @@ hold on, line([oc.UTCtrialEnd; oc.UTCtrialEnd],[yl(1); yl(2)].*ones(size(oc.UTCt
 hold on, line([oc.UTCtrialStart; oc.UTCtrialStart],[yl(1); yl(2)].*ones(size(oc.UTCtrialStart)), 'color','g') 
 hold on, line([evts_time'; evts_time'], [yl(1); yl(2)].*ones(size(evts_time')), 'color','k') 
 
-% get 
+x = output_datax;
+y= output_datay;
+
 
 %% eye data within intervals
 trial_times = [];
@@ -159,8 +162,6 @@ gaze_speed = NaN(1, pa.trialNumber-1);
 start_position = NaN(2, pa.trialNumber-1);
 end_position = NaN(2, pa.trialNumber-1);
 
-x = output_datax;
-y= output_datay;
 
 % get eyetracking for calibration time
 calib = find(synced < oc.UTCCalibrationEnd);
@@ -175,10 +176,11 @@ for t = 2:pa.nTrials %pa.trialNumber %full set, change to pa.nTrials
     gaze_speed(t) = vecnorm([x(idx(1)) y(idx(1))]-[x(idx(end)) y(idx(end))])/.5;
     start_position(:,t) = [x(idx(1)); y(idx(1))];
     end_position (:,t) = [x(idx(end)); y(idx(end))];
+    hold on, scatter(x(tf), y(tf))
 end
 
-figure, hold on, scatter(eyetracking(:,1), eyetracking(:,2))
-axis equal
+% figure, hold on, scatter(eyetracking(:,1), eyetracking(:,2))
+% axis equal
 
 % figure
 % xlim([700, 1000])
@@ -209,41 +211,48 @@ hold on, scatter(endpos(1), endpos(2), 'filled', 'r')
 
 trial_times = [];
 eyetracking = [];
+dstart = [];
 % start_position = NaN(2, pa.trialNumber-1);
 % end_position = NaN(2, pa.trialNumber-1);
 
 bad_trials = [];
 
-avg_trials = find(gaze_speed>5 & gaze_speed<6);
-for trial = keep_bad_trials(3) % 2:pa.nTrials %full set, change to pa.nTrials
+% avg_trials = find(gaze_speed>5 & gaze_speed<6);
+for trial = 2:pa.nTrials % 2:pa.nTrials %full set, change to pa.nTrials
     tf = isbetween(synced, oc.UTCtrialStart(trial), oc.UTCtrialEnd(trial));
    
     trial_times = synced(tf);
     eyetracking = [x(tf), y(tf)];
     idx = find(tf);
-    
-    averageEyePath=[linspace(startpos(1),endpos(1),length(eyetracking)).' linspace(startpos(2),endpos(2),length(eyetracking)).'];
-
-    for t = 1:length(eyetracking)
-        d = vecnorm(eyetracking(t,:) - averageEyePath(t,:));
-        if d>1
-            bad_trials = [bad_trials, trial];
-            break
-        end
+     
+%     averageEyePath=[linspace(startpos(1),endpos(1),length(eyetracking)).' linspace(startpos(2),endpos(2),length(eyetracking)).'];
+    dstart = [dstart vecnorm(eyetracking(1,:) - startpos)];
+    dend = [dend vecnorm(eyetracking(end,:)-endpos)];
+    if dstart(end) >1 || dend(end) >1
+        bad_trials = [bad_trials, trial];
     end
+    
+%     for t = 1:length(eyetracking)
+%         d = vecnorm(eyetracking(t,:) - averageEyePath(t,:));
+%         if d>1
+%             bad_trials = [bad_trials, trial];
+%             break
+%         end
+%     end
 end
 
 
 
-figure, plot(eyetracking(:,1), eyetracking(:,2)), axis equal
-hold on, scatter(averageEyePath(:,1), averageEyePath(:,2))
+figure, hold on, plot(eyetracking(:,1), eyetracking(:,2)), axis equal
+% hold on, scatter(averageEyePath(:,1), averageEyePath(:,2))
 
-hold on, scatter(eyetracking(t,1), eyetracking(t,2))
-hold on, scatter(averageEyePath(t,1), averageEyePath(t,2))
-legend('eyetracking', 'average eye path', 'first break eyetracking', 'first break eye path')
+% hold on, scatter(eyetracking(t,1), eyetracking(t,2))
+% hold on, scatter(averageEyePath(t,1), averageEyePath(t,2))
+% legend('eyetracking', 'average eye path', 'first break eyetracking', 'first break eye path')
 
 eye_pos_trial = [x(tf) y(tf)];
-
+figure, histogram(dstart, 'BinWidth', .5);
+hold on, histogram(dend, 'BinWidth', .5);
 
 %% get fixation over trial intervals
 

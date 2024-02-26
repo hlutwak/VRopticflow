@@ -14,7 +14,7 @@ ds.doSeparateEyeRender = 1; % render two eyes' views
 ds.binocular = 1;
 ds.eyesimulation = 1;
 ds.dotfield = 0;
-ds.eyetracking = 1;
+ds.eyetracking = 0;
 ds.control = 0;
 if ds.control
     ds.dotfield = 1;

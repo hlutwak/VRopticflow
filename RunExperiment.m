@@ -62,7 +62,6 @@ if ~DEBUG_FLAG
     %command window - it's really annoying and can cause all sorts of problems! % CSB: debug
 end
 
-
 %% Run eye tracking
 finishedCalibration = 0;
 readyToBegin = 0;   
