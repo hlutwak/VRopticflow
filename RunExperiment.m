@@ -177,6 +177,12 @@ while ~finishedCalibration && ~readyToBegin
     ds.vbl = Screen('Flip', ds.w);
      
     [kb.keyIsDown, kb.secs, kb.keyCode] = KbCheck(-1); % query the keyboard
+    
+    if kb.keyIsDown && kb.keyCode(kb.reorientKey) %use up arrow key
+        device.send_event("calibrationpoint") 
+        oc.UTCCalibrationPoint = datetime('now','TimeZone','local','Format','d-MMM-y HH:mm:ss:ms');
+    end
+    
     if kb.keyIsDown && kb.keyCode(kb.spacebarKey)
         finishedCalibration=1; 
         if ds.eyetracking && pa.trialNumber == 2 

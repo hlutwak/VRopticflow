@@ -1,4 +1,0 @@
-recording id,timestamp [ns],name,type
-21023a71-f895-4cab-8ba7-fc489b87c754,1698950126315000000,recording.begin,recording
-21023a71-f895-4cab-8ba7-fc489b87c754,1698950142629000000,trialstart,recording
-21023a71-f895-4cab-8ba7-fc489b87c754,1698950991958000000,recording.end,recording
