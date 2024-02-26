@@ -8,7 +8,7 @@ function [ds,pa] = SetupParameters(ds)
 
 %% Basic experimental specs 
 
-pa.subjectName = 'MP-full';
+pa.subjectName = 'MP-dots';
 pa.block = 1;
 pa.feedbackFlag = 1;  % 0 --> no feedback;  1 --> only sound-based feedback;  2 --> visual + sound-based feedback
 
@@ -89,7 +89,7 @@ pa.ndots = pa.nball; % number of dots in dot task
 pa.trialNumber = 0; % gotta start somewhere
 
 % Set up a full factorial design 
-pa.nRepeats = 25; % each target contrast condition gets pa.nRepeats trials - 75*3 = 225 per block 
+pa.nRepeats = 20; % each target contrast condition gets pa.nRepeats trials - 75*3 = 225 per block 
 % pa.speed = [0.5, 0.4, 0.3, 0.2,0.1]; %speeds m/s
 % pa.speed = [0.5, 0.35, 0.2, .1, .05]; %speeds m/s
 pa.speed = [.5,.3,.1,.05];
