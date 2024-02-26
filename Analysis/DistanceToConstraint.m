@@ -132,7 +132,7 @@ trajectory = [zeros(ns*fps+1,1), zeros(ns*fps+1,1),(0:(world_speed/fps):(ns*worl
 dconstraint = NaN(numel(speeds), numel(directions));
 dsurround = NaN(numel(speeds), numel(directions));
 
-figure('Position', [10 10 1200 600])
+% figure('Position', [10 10 1200 600])
 
 for cond = 1:size(conditions, 1)
     
@@ -300,35 +300,35 @@ for cond = 1:size(conditions, 1)
         
         if ii == round((ns*fps-1)/2)
     
-            subplot(numel(directions),numel(speeds),cond)
-            clf
+%             subplot(numel(directions),numel(speeds),cond)
+%             clf
 
             % set(gcf,'position',[500, 500, 600, 400])
-            set(gcf,'color','w');
+%             set(gcf,'color','w');
             
             % plot suround velocities
             surround_idx = onscreen(surround_idx);
-            quiver(zeros(size(rvelocityX(surround_idx,ii))),zeros(size(rvelocityX(surround_idx,ii))), rvelocityX(surround_idx,ii), -rvelocityY(surround_idx,ii), 'AutoScale', 'off', 'LineWidth', 2)
-            hold on
-            quiver(zeros(size(rvelocityX(center,ii))),zeros(size(rvelocityX(center,ii))), rvelocityX(center,ii), -rvelocityY(center,ii), 'AutoScale', 'off', 'LineWidth', 2)
-    
+%             quiver(zeros(size(rvelocityX(surround_idx,ii))),zeros(size(rvelocityX(surround_idx,ii))), rvelocityX(surround_idx,ii), -rvelocityY(surround_idx,ii), 'AutoScale', 'off', 'LineWidth', 2)
+%             hold on
+%             quiver(zeros(size(rvelocityX(center,ii))),zeros(size(rvelocityX(center,ii))), rvelocityX(center,ii), -rvelocityY(center,ii), 'AutoScale', 'off', 'LineWidth', 2)
+%     
             % plot mean velocity object and surround
-            if dotsperobj>1
-                hold on
-                quiver(0,0, center_mean(1), -center_mean(2), 'r','AutoScale', 'off', 'LineWidth', 5)
-                hold on
-                quiver(0,0,surround_mean(1), -surround_mean(2), 'color',[0,0,0.75],'AutoScale', 'off', 'LineWidth', 5)
-            end
+%             if dotsperobj>1
+%                 hold on
+%                 quiver(0,0, center_mean(1), -center_mean(2), 'r','AutoScale', 'off', 'LineWidth', 5)
+%                 hold on
+%                 quiver(0,0,surround_mean(1), -surround_mean(2), 'color',[0,0,0.75],'AutoScale', 'off', 'LineWidth', 5)
+%             end
     
-            hold on,
-            for jj = 1:length(center)
-                plot([v_constraint_close(1,center(jj), ii) v_constraint_far(1,center(jj), ii)], -[v_constraint_close(2,center(jj),ii) v_constraint_far(2,center(jj),ii)], 'k', 'LineWidth', 2)
-    
-            end
-            axis equal
-            xlim(xlims)
-            ylim(ylims)
-            title(['s = ', num2str(speeds(conditions(cond,1))), ' m/s,  dir = ', num2str(rad2deg(directions(conditions(cond,2)))), ' deg'])
+%             hold on,
+%             for jj = 1:length(center)
+%                 plot([v_constraint_close(1,center(jj), ii) v_constraint_far(1,center(jj), ii)], -[v_constraint_close(2,center(jj),ii) v_constraint_far(2,center(jj),ii)], 'k', 'LineWidth', 2)
+%     
+%             end
+%             axis equal
+%             xlim(xlims)
+%             ylim(ylims)
+%             title(['s = ', num2str(speeds(conditions(cond,1))), ' m/s,  dir = ', num2str(rad2deg(directions(conditions(cond,2)))), ' deg'])
 
 %             pause(1)
             %

@@ -75,6 +75,7 @@ D=dir('Data/');
 % filename = '2024-02-21_12-36-02_hl_fulleyetracking-fixed-15trans-20240221t123559-0-012e0633';
 % filename = '2024-02-21_13-15-23_hl_fulleyetrackingdots-fixed-20240221t131520-0-44d050a3';
 % filename = '2024-02-21_14-44-58_hl_fulleyetracking_eyesim-fixed-20240221t144454-0-f2d8da04';
+filename = '2024-02-26_15-42-57_mpdots1';
 
 gaze = readtable(['Data/', filename, '/gaze.csv']);
 blinks = readtable(['Data/', filename, '/blinks.csv']);
@@ -127,17 +128,20 @@ hold on, line([evts_time'; evts_time'], [yl(1); yl(2)].*ones(size(evts_time')), 
 
 
 %% offset
-offset = milliseconds(evts_time(2) - oc.UTCtrialStart(2));
+idx = find(strcmpi(evts.name, 'trialstart')==1); %find trial start event
+
+offset = milliseconds(evts_time(idx) - oc.UTCtrialStart(2));
 
 % subtract offset from eyetracking data
 synced = date_time-milliseconds(offset);
+synced_evts = evts_time -milliseconds(offset);
 
 figure, plot(synced,x, 'linewidth', 2), hold on, plot(synced,y,'linewidth', 2)
 yl = ylim;
 hold on, line([oc.UTCtrialEnd; oc.UTCtrialEnd],[yl(1); yl(2)].*ones(size(oc.UTCtrialEnd)), 'color','r') 
 
 hold on, line([oc.UTCtrialStart; oc.UTCtrialStart],[yl(1); yl(2)].*ones(size(oc.UTCtrialStart)), 'color','g') 
-hold on, line([evts_time'; evts_time'], [yl(1); yl(2)].*ones(size(evts_time')), 'color','k') 
+hold on, line([synced_evts'; synced_evts'], [yl(1); yl(2)].*ones(size(evts_time')), 'color','k') 
 
 
 %% butterworth filter
@@ -193,9 +197,12 @@ end
 %        pause(.01)
 % end
 
+% remove trials with high gaze speed
+reasonable_speed = find(gaze_speed<10);
+
 % average start and end position
-startpos = nanmean(start_position');
-endpos = nanmean(end_position');
+startpos = nanmean(start_position(:,reasonable_speed)');
+endpos = nanmean(end_position(:,reasonable_speed)');
 hold on, scatter(startpos(1), startpos(2), 'filled', 'g')
 hold on, scatter(endpos(1), endpos(2), 'filled', 'r')
 
@@ -213,6 +220,7 @@ hold on, scatter(endpos(1), endpos(2), 'filled', 'r')
 trial_times = [];
 eyetracking = [];
 dstart = [];
+dend = [];
 % start_position = NaN(2, pa.trialNumber-1);
 % end_position = NaN(2, pa.trialNumber-1);
 
@@ -419,7 +427,7 @@ C = reshape(C,[],size(data,2),1);
 %                     153,255,255; 102,255,255; 51,255,255; 0,204,204;
 %                     153,153,255; 102,102,255; 51,51,255; 0,0,204]/255;
 [dconst, dsurr] = DistanceToConstraint(ds, pa, 0.05);
-a = dsurr;
+a = dconst;
 C(:,1) = a(:);
 
 % run psignifit
@@ -469,6 +477,22 @@ options.dataColor = [255,153,255; 255,102,255; 255,51,255; 204,0,204;
 %     250 260 270 280 290
 %  0.5  0.25  .125    0.0625
 %            0.1250   0.0625    0.0313
+
+%% iterate over different values of distance to const
+distances  = linspace(.025, .1, 5);
+dev = zeros(1,length(distances));
+for d = 1:length(distances)
+    [dconst, dsurr] = DistanceToConstraint(ds, pa, distances(d));
+    a = dconst;
+    C(:,1) = a(:);
+
+    % run psignifit
+    result = psignifit(C,options);
+    figure, plotPsych(result, options);
+%     thresh = exp(result.Fit(1));
+    dev(d) = result.deviance;
+end
+
 
 %% using psychtoolbox
 
