@@ -128,7 +128,7 @@ while ~finishedCalibration && ~readyToBegin
             % fixation target
             glPushMatrix;
             glTranslatef(-.5,0, pa.objectdist);
-            glCallList(ds.highcontrastTarget);
+            glCallList(ds.incorrect);
             glPopMatrix;
             
             % testing eye calibration
@@ -258,7 +258,6 @@ pa.experimentOnset = ds.vbl;
 oc.UTCtrialStart=[];
 oc.UTCtrialEnd =[];
 
-pa.block = 0;
 breakTime = 0;  % participants are running in the task
 kb.nextTrialKey = 0;
 track_trial = 0;
@@ -676,7 +675,7 @@ end
 % Calculate average framerate:
 ds.fps = ds.fCount / (ds.vbl - tStart); % uncomment to print out at end of run
 
-pa.dataFile = fullfile(pa.baseDir, 'Data', [pa.subjectName '-' ds.experimentType '-' pa.date '-' num2str(pa.block) '.mat']);
+pa.dataFile = fullfile(pa.baseDir, 'Data', [pa.subjectName '-' pa.date '-' num2str(pa.block) '.mat']);
 save(pa.dataFile, 'pa', 'ds', 'kb','oc');
 
 if ds.eyetracking

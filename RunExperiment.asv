@@ -128,7 +128,7 @@ while ~finishedCalibration && ~readyToBegin
             % fixation target
             glPushMatrix;
             glTranslatef(-.5,0, pa.objectdist);
-            glCallList(ds.highcontrastTarget);
+            glCallList(ds.incorrect);
             glPopMatrix;
             
             % testing eye calibration
@@ -177,6 +177,12 @@ while ~finishedCalibration && ~readyToBegin
     ds.vbl = Screen('Flip', ds.w);
      
     [kb.keyIsDown, kb.secs, kb.keyCode] = KbCheck(-1); % query the keyboard
+    
+    if kb.keyIsDown && kb.keyCode(kb.reorientKey) %use up arrow key
+        device.send_event("calibrationpoint") 
+        oc.UTCCalibrationPoint = datetime('now','TimeZone','local','Format','d-MMM-y HH:mm:ss:ms');
+    end
+    
     if kb.keyIsDown && kb.keyCode(kb.spacebarKey)
         finishedCalibration=1; 
         if ds.eyetracking && pa.trialNumber == 2 
@@ -252,7 +258,6 @@ pa.experimentOnset = ds.vbl;
 oc.UTCtrialStart=[];
 oc.UTCtrialEnd =[];
 
-pa.block = 0;
 breakTime = 0;  % participants are running in the task
 kb.nextTrialKey = 0;
 track_trial = 0;
@@ -403,8 +408,9 @@ while (pa.trialNumber <= pa.nTrials) && ~kb.keyCode(kb.escapeKey) % wait until a
             % fixation target
             glPushMatrix;
             glTranslatef(0,pa.floorHeight+pa.fixationSize,-pa.fixationdist);
-            glCallList(ds.highcontrastTarget);
+            glCallList(ds.incorrect);
             glPopMatrix;
+            
             
 %             glPushMatrix;
 %             glTranslatef(0,pa.floorHeight+pa.fixationSize,-pa.floorWidth/2+1);
@@ -670,7 +676,7 @@ end
 % Calculate average framerate:
 ds.fps = ds.fCount / (ds.vbl - tStart); % uncomment to print out at end of run
 
-pa.dataFile = fullfile(pa.baseDir, 'Data', [pa.subjectName '-' ds.experimentType '-' pa.date '-' num2str(pa.block) '.mat']);
+pa.dataFile = fullfile(pa.baseDir, 'Data', [pa.subjectName '-' pa.date '-' num2str(pa.block) '.mat']);
 save(pa.dataFile, 'pa', 'ds', 'kb','oc');
 
 if ds.eyetracking

@@ -74,8 +74,8 @@ D=dir('Data/');
 %filename = '2024-02-13_17-47-47-d08cbe84HLcali2';
 % filename = '2024-02-21_12-36-02_hl_fulleyetracking-fixed-15trans-20240221t123559-0-012e0633';
 % filename = '2024-02-21_13-15-23_hl_fulleyetrackingdots-fixed-20240221t131520-0-44d050a3';
-filename = '2024-02-26_13-20-47-0ee45111';
 % filename = '2024-02-21_14-44-58_hl_fulleyetracking_eyesim-fixed-20240221t144454-0-f2d8da04';
+
 gaze = readtable(['Data/', filename, '/gaze.csv']);
 blinks = readtable(['Data/', filename, '/blinks.csv']);
 evts = readtable(['Data/', filename, '/events.csv']);
