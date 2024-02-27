@@ -8,8 +8,8 @@ function [ds,pa] = SetupParameters(ds)
 
 %% Basic experimental specs 
 
-pa.subjectName = 'MP-monocular';
-pa.block = 2;
+pa.subjectName = 'KZ-dots';
+pa.block = 1;
 pa.feedbackFlag = 1;  % 0 --> no feedback;  1 --> only sound-based feedback;  2 --> visual + sound-based feedback
 
 pa.criterion = 8*(pi/180);  % this is the criterion for the distance between the mid-point of the paddle and the midpoint of the ball; distances smaller than this are hits - any overlap counts
@@ -92,7 +92,7 @@ pa.trialNumber = 0; % gotta start somewhere
 pa.nRepeats = 20; % each target contrast condition gets pa.nRepeats trials - 75*3 = 225 per block 
 % pa.speed = [0.5, 0.4, 0.3, 0.2,0.1]; %speeds m/s
 % pa.speed = [0.5, 0.35, 0.2, .1, .05]; %speeds m/s
-pa.speed = [.5,.3,.1,.05];
+pa.speed = [.5,.3,.1,.05]*2;
 % pa.speed = [.5 .5*(2^-1) .5*(2^-3) .5*(2^-4)]; %speeds m/s
 
 pa.direction = deg2rad([75 90 105 255 270 285]); %(0 is radially out horizontally, 90 is forward/up, 270 is backwards/down x-z/x-y plane)

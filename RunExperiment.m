@@ -7,8 +7,8 @@
 % correction  
 % 19-Aug-2016 jf Added a few modifications: randomized paddle start angle
 % on each trial, feedback options, random/variable lag for lagged condition
-% Dec-Jan-2019 - JF updated code to  work with CV1; minor changes to call of
-% projection matrices, added in  CV1-specific FOV and other parameters
+% Dec-Jan-2019 - JF updated code to  work with CV1; minor changes to call
+ % projection matrices, added in  CV1-specific FOV and other parameters
 % Jan 2023 - HL changed to detecting object motion experiment 
 
 %% Important note about coding of angles in Oculus space:
@@ -677,7 +677,7 @@ end
 % Calculate average framerate:
 ds.fps = ds.fCount / (ds.vbl - tStart); % uncomment to print out at end of run
 
-pa.dataFile = fullfile(pa.baseDir, 'Data', [pa.subjectName '-' pa.date '-' num2str(pa.block) '.mat']);
+pa.dataFile = fullfile(pa.baseDir, 'Data', [pa.subjectName '-' num2str(pa.block) '-' pa.date '.mat']);
 save(pa.dataFile, 'pa', 'ds', 'kb','oc');
 
 if ds.eyetracking
