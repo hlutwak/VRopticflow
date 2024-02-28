@@ -90,38 +90,49 @@ pa.trialNumber = 0; % gotta start somewhere
 
 % Set up a full factorial design 
 pa.nRepeats = 20; % each target contrast condition gets pa.nRepeats trials - 75*3 = 225 per block 
-pa.nPractice = 11; %first trial is "junk" trial
 % pa.speed = [0.5, 0.4, 0.3, 0.2,0.1]; %speeds m/s
 % pa.speed = [0.5, 0.35, 0.2, .1, .05]; %speeds m/s
 pa.speed = [.5,.3,.1,.05];
-pa.practice_speed = 1;
+pa.practice+
 % pa.speed = [.5 .5*(2^-1) .5*(2^-3) .5*(2^-4)]; %speeds m/s
 
 pa.direction = deg2rad([75 90 105 255 270 285]); %(0 is radially out horizontally, 90 is forward/up, 270 is backwards/down x-z/x-y plane)
 
 % pa.direction = deg2rad([90 230, 260, 290]) ; %(0 is to the right, 90 is forward, 270 is backwards)
 factorial = fullfact([length(pa.speed), length(pa.direction)]); 
-practice_directions = randsample(factorial(:,2), pa.nPractice);
 factorial = repmat(factorial,pa.nRepeats,1); % repeat the full factorial design nRepeats times
+nTrials = length(factorial);
+factorial = factorial(randperm(nTrials),:); % Randomly permute order of trial presentation
+factorial = [factorial(1:10,:); factorial]; % repeat the first 10 trials in the beginning for practice with high speed
 pa.fullFactorial = NaN(size(factorial));
 
-% create factorial matrix, xspeed, yspeed, speed and direction
+
+% *Gaussian* vx and vz sampling each from a distribution with mean=0 and
+% stdev=0.02m - the 0.061 m/s and -0.061 m/s would then be 3 stdevs from the mean,
+% allowing us to cut off only a small percentage of speeds that come up
+% for rtr=1:pa.nTrials 
+%     % sample the vx and vz independently
+%         inRange = 0;
+%         while inRange==0
+%             pa.xSpeedValues(rtr) = 0.005; %.*randn(1,1); % mean=0, stdev=0.02 
+%             pa.zSpeedValues(rtr) = 0.005; %.*randn(1,1); % mean=0, stdev=0.02
+%             if vecnorm([pa.xSpeedValues(rtr) pa.zSpeedValues(rtr)])<.0075
+%                 inRange = 1;
+%             end
+%         end
+% end
+
+% pa.fullFactorial(:,1) = pa.targetContrast(pa.fullFactorial(:,1)); % instead of having this be indices of the contrast values it instead will have the actual contrast values - much nicer for data analysis
 pa.fullFactorial(:,1) = (pa.speed(factorial(:,1)).*cos(pa.direction(factorial(:,2))));
 pa.fullFactorial(:,2) = -(pa.speed(factorial(:,1)).*sin(pa.direction(factorial(:,2))));
 pa.fullFactorial(:,3) = pa.speed(factorial(:,1)); % keep track in terms of speed and direction, not just vector values
 pa.fullFactorial(:,4) = pa.direction(factorial(:,2));
-nTrials = length(pa.fullFactorial);
-pa.fullFactorial = pa.fullFactorial(randperm(nTrials),:); % Randomly permute order of trial presentation
+pa.fullFactorial = pa.fullFactorial(randperm(pa.nTrials),:); % Randomly permute order of trial presentation
 
 % add 10 practice trials at high speed and randomly chosen of the set
 % directions
-practice = NaN(pa.nPractice, 4);
-practice(:,1) = (pa.practice_speed*ones(pa.nPractice,1).*cos(pa.direction(practice_directions)'));
-practice(:,2) = (pa.practice_speed*ones(pa.nPractice,1).*sin(pa.direction(practice_directions)'));
-practice(:,3) = pa.practice_speed*ones(pa.nPractice,1);
-practice(:,4) = pa.direction(practice_directions);
-
-pa.fullFactorial = [practice; pa.fullFactorial];
+pa.practice_speed = 1; %m/s
+practice = pa.fullFactorial
 
 %pa.fullFactorial(end+1,:) = pa.fullFactorial(1,:); % repeat the first trial because it is effectively a "junk" trial
 pa.nTrials = size(pa.fullFactorial,1);

@@ -63,6 +63,7 @@ if ~DEBUG_FLAG
 end
 
 %% Run eye tracking
+pause(.5) 
 finishedCalibration = 0;
 readyToBegin = 0;   
 
@@ -234,7 +235,7 @@ while ~readyToBegin && finishedCalibration% confirm everything's ready to go
         glLoadMatrixd(modelView); 
           
         Screen('EndOpenGL', ds.w);
-        Screen('DrawText',ds.w,'Ready to start the experiment? Press SPACE to confirm.',(ds.textCoords(1)-200*ds.renderPass),ds.textCoords(2),[1 1 1]);
+        Screen('DrawText',ds.w,'Ready to start the experiment? Press SPACE to confirm.',(ds.textCoords(1)-200*ds.renderPass)-200,ds.yc,[1 1 1]);
 
     end
     
