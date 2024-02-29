@@ -3,6 +3,7 @@
 
 % add psignifit toolbox
 addpath('/Users/hopelutwak/Documents/MATLAB/psignifit')
+addpath('/Users/hopelutwak/Documents/GitHub/VRopticflow/Analysis')
 % addpath(genpath('C:\Users\hlutw\OneDrive\Documents\MATLAB\psignifit-master'))
 % assign data folder
 dataFolder = '/Users/hopelutwak/Documents/GitHub/VRopticflow/Data';
@@ -12,12 +13,11 @@ dataFolder = '/Users/hopelutwak/Documents/GitHub/VRopticflow/Data';
 S = dir(fullfile(dataFolder,'*.mat'));
 
 % which subjects data to analyze
-subjects = ["HL"]; %"HL" "IK"
-stims = "pilot_full-fixed"; %"pilot"
-depth_range = .1;
+subjects = ["MP"]; %"HL" "IK"
+stims = "monocular"; %"pilot"
+depth_range = .05;
 
 % loop over all subjects
-
 
 for s  = 1:length(subjects)
 
@@ -43,7 +43,7 @@ for s  = 1:length(subjects)
             data_session(:,1) = dconst(:);
             data_session(:,2) = dsurr(:);
             data = [data; data_session];
-            data_const = [data(:,3) data(:,end-1:end)]; % to surround data_const = [data(:,1) data(:,end-1:end)];
+            data_const = [data(:,1) data(:,end-1:end)]; % to surround data_const = [data(:,1) data(:,end-1:end)];
             data_surr = [data(:,2) data(:,end-1:end)];
             count = count+1;
             
@@ -73,8 +73,20 @@ for s  = 1:length(subjects)
     title(['distance to constraint, depth range = ', num2str(depth_range)])
     figure, plotPsych(result_surr, options);
     title('distance to surround')
-    
-    
 
     
+end
+
+%% iterate over different values of distance to const
+distances  = linspace(.01, .1, 5);
+dev = zeros(1,length(distances));
+for d = 1:length(distances)
+    [dconst, dsurr] = DistanceToConstraint(ds, pa, distances(d));
+    data_const(:,1) = repmat(dconst(:), count, 1);
+
+    % run psignifit
+    result = psignifit(data_const,options);
+    figure, plotPsych(result, options);
+%     thresh = exp(result.Fit(1));
+    dev(d) = result.deviance;
 end

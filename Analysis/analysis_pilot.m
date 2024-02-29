@@ -75,7 +75,7 @@ D=dir('Data/');
 % filename = '2024-02-21_12-36-02_hl_fulleyetracking-fixed-15trans-20240221t123559-0-012e0633';
 % filename = '2024-02-21_13-15-23_hl_fulleyetrackingdots-fixed-20240221t131520-0-44d050a3';
 % filename = '2024-02-21_14-44-58_hl_fulleyetracking_eyesim-fixed-20240221t144454-0-f2d8da04';
-filename = '2024-02-26_15-42-57_mpdots1';
+filename = '2024-02-26_15-15-38_MPfull1';
 
 gaze = readtable(['Data/', filename, '/gaze.csv']);
 blinks = readtable(['Data/', filename, '/blinks.csv']);
@@ -173,7 +173,12 @@ calib = find(synced < oc.UTCCalibrationEnd);
 figure, hold on,scatter(x(calib), y(calib));
 axis equal
 
-for t = 2:pa.nTrials %pa.trialNumber %full set, change to pa.nTrials
+% get calibration points
+idx = find(strcmpi(evts.name, 'calibrationpoint')==1);
+cali_times = synced_evts(idx);
+
+
+for t = 2 %pa.trialNumber %full set, change to pa.nTrials
     tf = isbetween(synced, oc.UTCtrialStart(t), oc.UTCtrialEnd(t));
     trial_times = [trial_times; synced(tf)];
     eyetracking = [eyetracking; x(tf), y(tf)];
@@ -427,7 +432,7 @@ C = reshape(C,[],size(data,2),1);
 %                     153,255,255; 102,255,255; 51,255,255; 0,204,204;
 %                     153,153,255; 102,102,255; 51,51,255; 0,0,204]/255;
 [dconst, dsurr] = DistanceToConstraint(ds, pa, .1);
-a = dconst;
+a = dsurr;
 C(:,1) = a(:);
 
 % run psignifit
