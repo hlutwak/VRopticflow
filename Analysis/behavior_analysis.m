@@ -90,3 +90,4 @@ for d = 1:length(distances)
 %     thresh = exp(result.Fit(1));
     dev(d) = result.deviance;
 end
+

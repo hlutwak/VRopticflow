@@ -1,4 +1,4 @@
-function  [dconstraint, dsurround] = DistanceToConstraint(ds, pa, depth_range)
+function  [dconstraint, dsurround] = DistanceToConstraint(ds, pa, depth_range, theta, trial)
 
 % simulate VR flow scene to generate distance to constraint for multiple velocities
 % takes saved variables from VR experiment
@@ -20,7 +20,14 @@ height = -pa.floorHeight;
 speeds =  pa.speed;
 directions = pa.direction ; 
 
-conditions = fullfact([numel(speeds), numel(directions)]); 
+
+if nargin < 4 || isempty(trial)
+    theta = [];
+    conditions = fullfact([numel(speeds), numel(directions)]);
+    conditions = [speeds(conditions(:,1)).*cos(directions(conditions(:,2))); speeds(conditions(:,1)).*sin(directions(conditions(:,2)))]';
+else
+    conditions = [pa.fullFactorial(trial,1), pa.fullFactorial(trial,2)];
+end
 
 if ~isfield(pa,'objectdist')
     object_dist = 2;
@@ -129,8 +136,10 @@ end
 trajectory = [zeros(ns*fps+1,1), zeros(ns*fps+1,1),(0:(world_speed/fps):(ns*world_speed))'];
  
 % loop over speeds and directions for object
-dconstraint = NaN(numel(speeds), numel(directions));
-dsurround = NaN(numel(speeds), numel(directions));
+% dconstraint = NaN(numel(speeds), numel(directions));
+% dsurround = NaN(numel(speeds), numel(directions));
+dconstraint = NaN(size(conditions,1),1);
+dsurround = NaN(size(conditions,1),1);
 
 % figure('Position', [10 10 1200 600])
 
@@ -138,17 +147,18 @@ for cond = 1:size(conditions, 1)
     
     % trajectory = [zeros(ns*fps+1,1), 0.2*sin(0:(speed/fps):(ns*speed))', (0:(speed/fps):(ns*speed))'];
     %x-z plane
-    target_trajectory = [sign(stationary_target(2,1))*speeds(conditions(cond,1))*cos(directions(conditions(cond,2)))*(0:1/fps:ns)', zeros(ns*fps+1,1), speeds(conditions(cond,1))*sin(directions(conditions(cond,2)))*(0:1/fps:ns)'];
-    
-    % target_trajectory = [sign(stationary_target(2,1))*speeds(s)*cos(directions(d))*(0:1/fps:ns)', -speeds(s)*sin(directions(d))*(0:1/fps:ns)', zeros(ns*fps+1,1)]; %x-y plane
+    %target_trajectory = [sign(stationary_target(2,1))*speeds(conditions(cond,1))*cos(directions(conditions(cond,2)))*(0:1/fps:ns)', zeros(ns*fps+1,1), speeds(conditions(cond,1))*sin(directions(conditions(cond,2)))*(0:1/fps:ns)'];
+    target_trajectory = [sign(stationary_target(2,1))*conditions(cond,1)*(0:1/fps:ns)', zeros(ns*fps+1,1), conditions(cond,2)*(0:1/fps:ns)'];
     
     target_trajectory = target_trajectory + stationary_target(2,:);
     
     % rotation
     secs = 1/fps:1/fps:ns;
-    theta = atan(height./(fixation-world_speed*secs)); % update theta for observer fixating at a point at the ground in front of them, fixation m away
+    if isempty(theta)
+        theta = atan(height./(fixation-world_speed*secs)); % update theta for observer fixating at a point at the ground in front of them, fixation m away
+    end
     
-   % visualize observer trajectory within dots
+    % visualize observer trajectory within dots
     if visualize
         figure(1), hold on, plot3(trajectory(:,3), -trajectory(:,1), -trajectory(:,2), 'LineWidth', 3)
         hold on, plot3(target_trajectory(:,3), -target_trajectory(:,1), -target_trajectory(:,2), 'LineWidth', 2)
@@ -222,16 +232,16 @@ for cond = 1:size(conditions, 1)
     rvelocityY = diff(y,1,2);
     
 %     %visualize first frame in pixels
-%     if visualize
-%         figure, scatter(x(I(:,1),1)*ppcm(1), -y(I(:,1),1)*ppcm(2), 'filled')
-%         hold on, scatter(x(fixation_idx,1)*ppcm(1), -y(fixation_idx,1)*ppcm(2), 'filled', 'r') %fixation
-%         hold on, scatter(x(stationary_idx,1)*ppcm(1), -y(stationary_idx,1)*ppcm(2), 'filled', 'b') %stationary
-%         hold on, scatter(x(target_idx,1)*ppcm(1), -y(target_idx,1)*ppcm(2), 'filled', 'g') %target
-%         xlim([-windowRect(3)/2, windowRect(3)/2])
-%         ylim([-windowRect(4)/2, windowRect(4)/2])
-%         axis equal
-%         title('first frame')
-%     end
+    if visualize
+        figure, scatter(x(I(:,1),1)*ppcm(1), -y(I(:,1),1)*ppcm(2), 'filled')
+        hold on, scatter(x(fixation_idx,1)*ppcm(1), -y(fixation_idx,1)*ppcm(2), 'filled', 'r') %fixation
+        hold on, scatter(x(stationary_idx,1)*ppcm(1), -y(stationary_idx,1)*ppcm(2), 'filled', 'b') %stationary
+        hold on, scatter(x(target_idx,1)*ppcm(1), -y(target_idx,1)*ppcm(2), 'filled', 'g') %target
+        xlim([-windowRect(3)/2, windowRect(3)/2])
+        ylim([-windowRect(4)/2, windowRect(4)/2])
+        axis equal
+        title('first frame')
+    end
 %     
     
     % surround velocities
@@ -298,45 +308,48 @@ for cond = 1:size(conditions, 1)
         end
         % plot mean velocity object and surround
         
-        if ii == round((ns*fps-1)/2)
+        if ii == 1 %round((ns*fps-1)/2)
     
-%             subplot(numel(directions),numel(speeds),cond)
-%             clf
+            if visualize
+                subplot(numel(directions),numel(speeds),cond)
+                clf
 
-            % set(gcf,'position',[500, 500, 600, 400])
-%             set(gcf,'color','w');
+                set(gcf,'position',[500, 500, 600, 400])
+                set(gcf,'color','w');
+            
             
             % plot suround velocities
             surround_idx = onscreen(surround_idx);
-%             quiver(zeros(size(rvelocityX(surround_idx,ii))),zeros(size(rvelocityX(surround_idx,ii))), rvelocityX(surround_idx,ii), -rvelocityY(surround_idx,ii), 'AutoScale', 'off', 'LineWidth', 2)
-%             hold on
-%             quiver(zeros(size(rvelocityX(center,ii))),zeros(size(rvelocityX(center,ii))), rvelocityX(center,ii), -rvelocityY(center,ii), 'AutoScale', 'off', 'LineWidth', 2)
-%     
-            % plot mean velocity object and surround
-%             if dotsperobj>1
-%                 hold on
-%                 quiver(0,0, center_mean(1), -center_mean(2), 'r','AutoScale', 'off', 'LineWidth', 5)
-%                 hold on
-%                 quiver(0,0,surround_mean(1), -surround_mean(2), 'color',[0,0,0.75],'AutoScale', 'off', 'LineWidth', 5)
-%             end
+            quiver(zeros(size(rvelocityX(surround_idx,ii))),zeros(size(rvelocityX(surround_idx,ii))), rvelocityX(surround_idx,ii), -rvelocityY(surround_idx,ii), 'AutoScale', 'off', 'LineWidth', 2)
+            hold on
+            quiver(zeros(size(rvelocityX(center,ii))),zeros(size(rvelocityX(center,ii))), rvelocityX(center,ii), -rvelocityY(center,ii), 'AutoScale', 'off', 'LineWidth', 2)
     
-%             hold on,
-%             for jj = 1:length(center)
-%                 plot([v_constraint_close(1,center(jj), ii) v_constraint_far(1,center(jj), ii)], -[v_constraint_close(2,center(jj),ii) v_constraint_far(2,center(jj),ii)], 'k', 'LineWidth', 2)
-%     
-%             end
-%             axis equal
-%             xlim(xlims)
-%             ylim(ylims)
+%            plot mean velocity object and surround
+            if dotsperobj>1
+                hold on
+                quiver(0,0, center_mean(1), -center_mean(2), 'r','AutoScale', 'off', 'LineWidth', 5)
+                hold on
+                quiver(0,0,surround_mean(1), -surround_mean(2), 'color',[0,0,0.75],'AutoScale', 'off', 'LineWidth', 5)
+            end
+    
+            hold on,
+            for jj = 1:length(center)
+                plot([v_constraint_close(1,center(jj), ii) v_constraint_far(1,center(jj), ii)], -[v_constraint_close(2,center(jj),ii) v_constraint_far(2,center(jj),ii)], 'k', 'LineWidth', 2)
+    
+            end
+            axis equal
+            xlim(xlims)
+            ylim(ylims)
 %             title(['s = ', num2str(speeds(conditions(cond,1))), ' m/s,  dir = ', num2str(rad2deg(directions(conditions(cond,2)))), ' deg'])
 
-%             pause(1)
+            pause(1)
+            end
             %
         end
     end
     
-    dconstraint(conditions(cond,1), conditions(cond,2)) = nanmean(mean_d(:,1));
-    dsurround(conditions(cond,1), conditions(cond,2)) = nanmean(mean_d(:,2));
+    dconstraint(cond) = nanmean(mean_d(:,1));
+    dsurround(cond) = nanmean(mean_d(:,2));
     
 end
 
