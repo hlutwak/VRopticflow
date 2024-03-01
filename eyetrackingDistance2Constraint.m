@@ -107,7 +107,7 @@ interp_x = interp1(trial_times, eyetracking(:,1), interp_times);
 interp_y = interp1(trial_times, eyetracking(:,2), interp_times);
 
 figure, plot(trial_times,eyetracking(:,1),'o',interp_times,interp_x,':.');
-hold on, plot(trial_times,eyetracking(:,1),'o',interp_times,interp_y,':.');
+hold on, plot(trial_times,eyetracking(:,2),'o',interp_times,interp_y,':.');
 
 startpos = [5,-1.45]; %guess
 endpos = [5,-5];
@@ -130,9 +130,9 @@ tic
 load('theta.mat');
 dconst_overTrials = [];
 dsurr_overTrials = [];
-subsetTrials = 3:302;
+subsetTrials = 3:402;
 for t = subsetTrials %pa.trialNumber %full set, change to pa.nTrials
-    tf = isbetween(synced, oc.UTCtrialStart(t), oc.UTCtrialEnd(t));
+    tf = isbetween(synced, oc.UTCtrialStart(t), oc.UTCtrialEnd(t)+milliseconds(50)); %in case being inbetween trialstart and end cuts off too much eyetracking data
     trial_times = [];
     eyetracking = [];
     theta_thisTrial = [];
@@ -145,12 +145,13 @@ for t = subsetTrials %pa.trialNumber %full set, change to pa.nTrials
 %     hold on, scatter(x(tf), y(tf))
     
     interp_times = trial_times(1):milliseconds(1/ds.frameRate*1000):trial_times(end);
+%         if length(theta)>length(interp_times)
+%             
+%             interp_times = trial_times(1):milliseconds(1/ds.frameRate*1000):trial_times(end)+100*milliseconds(1/ds.frameRate*1000);
+%         end
     interp_x = interp1(trial_times, eyetracking(:,1), interp_times);
     interp_y = interp1(trial_times, eyetracking(:,2), interp_times);
     
-    if length(theta)>length(interp_times)
-        theta = theta(1:length(interp_times));
-    end
 
     theta_thisTrial = theta(1)- deg2rad(interp_y(1:length(theta)));
     trial = t;
