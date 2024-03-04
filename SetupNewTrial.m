@@ -24,10 +24,10 @@ if pa.trialNumber>0 % if it's past the first trial, wait for the Up Arrow key to
                 pa.positions(3,:) = pa.positions(3,:)-pa.floorWidth/2;
                 pa.positions(2,:) = pa.aboveground*rand(1,pa.nball);
                 fixposition = [0; pa.floorHeight;-pa.fixationdist]; %x,z coordinate where fixation target is
-                exclude = [0 -.5 0.5; pa.floorHeight pa.floorHeight pa.floorHeight; -pa.fixationdist -pa.objectdist -pa.objectdist];
+                exclude = [0 -.5 0.5 0; pa.floorHeight pa.floorHeight pa.floorHeight pa.floorHeight; -pa.fixationdist -pa.objectdist -pa.objectdist, -2];
 % 
                     for eachpoint = 1:3
-                        withinexclude = sum(vecnorm(pa.positions-exclude(:,eachpoint))<pa.fixationSize+pa.paddleHalfWidth*2);
+                        withinexclude = sum(vecnorm(pa.positions-exclude(:,eachpoint))<(pa.fixationSize+pa.paddleHalfWidth*2)*2);
     % 
                         while withinexclude>0 %at least one position overlaps with fixation
                             idx = find(vecnorm(pa.positions-exclude(:,eachpoint))<pa.fixationSize+pa.paddleHalfWidth);
