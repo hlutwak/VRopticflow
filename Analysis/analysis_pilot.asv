@@ -232,7 +232,7 @@ dend = [];
 bad_trials = [];
 
 % avg_trials = find(gaze_speed>5 & gaze_speed<6);
-for trial = 2:pa.nTrials % 2:pa.nTrials %full set, change to pa.nTrials
+for trial = 599 %600 % 2:pa.nTrials %full set, change to pa.nTrials
     tf = isbetween(synced, oc.UTCtrialStart(trial), oc.UTCtrialEnd(trial));
    
     trial_times = synced(tf);
@@ -257,7 +257,7 @@ end
 
 
 
-figure, hold on, plot(eyetracking(:,1), eyetracking(:,2)), axis equal
+figure, hold on, plot(eyetracking(:,1), eyetracking(:,2), 'LineWidth', 5), axis equal
 % hold on, scatter(averageEyePath(:,1), averageEyePath(:,2))
 
 % hold on, scatter(eyetracking(t,1), eyetracking(t,2))

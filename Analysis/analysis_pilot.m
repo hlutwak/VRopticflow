@@ -178,13 +178,14 @@ idx = find(strcmpi(evts.name, 'calibrationpoint')==1);
 cali_times = synced_evts(idx);
 
 
-for t = 2 %pa.trialNumber %full set, change to pa.nTrials
+for t = 2:pa.nTrials %pa.trialNumber %full set, change to pa.nTrials
     tf = isbetween(synced, oc.UTCtrialStart(t), oc.UTCtrialEnd(t));
     trial_times = [trial_times; synced(tf)];
     eyetracking = [eyetracking; x(tf), y(tf)];
     idx = find(tf);
     gaze_speed(t) = vecnorm([x(idx(1)) y(idx(1))]-[x(idx(end)) y(idx(end))])/.5;
-    start_position(:,t) = [x(idx(1)); y(idx(1))];
+    [v,ii] = max(y(idx));
+    start_position(:,t) = [x(idx(ii)); y(idx(ii))];
     end_position (:,t) = [x(idx(end)); y(idx(end))];
     hold on, scatter(x(tf), y(tf))
 end
@@ -232,7 +233,7 @@ dend = [];
 bad_trials = [];
 
 % avg_trials = find(gaze_speed>5 & gaze_speed<6);
-for trial = 2:pa.nTrials % 2:pa.nTrials %full set, change to pa.nTrials
+for trial = 2:pa.nTrials %600 % 2:pa.nTrials %full set, change to pa.nTrials
     tf = isbetween(synced, oc.UTCtrialStart(trial), oc.UTCtrialEnd(trial));
    
     trial_times = synced(tf);
@@ -240,7 +241,8 @@ for trial = 2:pa.nTrials % 2:pa.nTrials %full set, change to pa.nTrials
     idx = find(tf);
      
 %     averageEyePath=[linspace(startpos(1),endpos(1),length(eyetracking)).' linspace(startpos(2),endpos(2),length(eyetracking)).'];
-    dstart = [dstart vecnorm(eyetracking(1,:) - startpos)];
+    [peak,ii] = max(eyetracking(:,2));
+    dstart = [dstart vecnorm(eyetracking(ii,:) - startpos)];
     dend = [dend vecnorm(eyetracking(end,:)-endpos)];
     if dstart(end) >1 || dend(end) >1
         bad_trials = [bad_trials, trial];
@@ -257,7 +259,7 @@ end
 
 
 
-figure, hold on, plot(eyetracking(:,1), eyetracking(:,2)), axis equal
+figure, hold on, plot(eyetracking(:,1), eyetracking(:,2), 'LineWidth', 5), axis equal
 % hold on, scatter(averageEyePath(:,1), averageEyePath(:,2))
 
 % hold on, scatter(eyetracking(t,1), eyetracking(t,2))

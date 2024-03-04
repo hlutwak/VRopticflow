@@ -163,6 +163,14 @@ for t = subsetTrials %pa.trialNumber %full set, change to pa.nTrials
 end
 toc
 
+
+%% figure out how to save extra field to pa with dconst/surr values
+% MPdata = load(pa.dataFile);
+% pa.dconst = dconst_overTrials;
+% pa.dsurr = dsurr_overTrials;
+% 
+% save(pa.dataFile, '-struct', 'MPdata');
+
 %% psignifit with new dconst
 
 % matrix of results

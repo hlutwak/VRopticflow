@@ -14,7 +14,7 @@ S = dir(fullfile(dataFolder,'*.mat'));
 
 % which subjects data to analyze
 subjects = ["MP"]; %"HL" "IK"
-stims = "monocular"; %"pilot"
+stims = "full"; %"pilot"
 depth_range = .05;
 
 % loop over all subjects

@@ -132,7 +132,7 @@ dconst_overTrials = [];
 dsurr_overTrials = [];
 subsetTrials = 3:402;
 for t = subsetTrials %pa.trialNumber %full set, change to pa.nTrials
-    tf = isbetween(synced, oc.UTCtrialStart(t), oc.UTCtrialEnd(t));
+    tf = isbetween(synced, oc.UTCtrialStart(t), oc.UTCtrialEnd(t)+milliseconds(50)); %in case being inbetween trialstart and end cuts off too much eyetracking data
     trial_times = [];
     eyetracking = [];
     theta_thisTrial = [];
@@ -145,10 +145,10 @@ for t = subsetTrials %pa.trialNumber %full set, change to pa.nTrials
 %     hold on, scatter(x(tf), y(tf))
     
     interp_times = trial_times(1):milliseconds(1/ds.frameRate*1000):trial_times(end);
-        if length(theta)>length(interp_times)
-            
-            interp_times = trial_times(1):milliseconds(1/ds.frameRate*1000):trial_times(end)+3*milliseconds(1/ds.frameRate*1000);
-        end
+%         if length(theta)>length(interp_times)
+%             
+%             interp_times = trial_times(1):milliseconds(1/ds.frameRate*1000):trial_times(end)+100*milliseconds(1/ds.frameRate*1000);
+%         end
     interp_x = interp1(trial_times, eyetracking(:,1), interp_times);
     interp_y = interp1(trial_times, eyetracking(:,2), interp_times);
     
@@ -162,6 +162,14 @@ for t = subsetTrials %pa.trialNumber %full set, change to pa.nTrials
 
 end
 toc
+
+
+%% figure out how to save extra field to pa with dconst/surr values
+% MPdata = load(pa.dataFile);
+% pa.dconst = dconst_overTrials;
+% pa.dsurr = dsurr_overTrials;
+% 
+% save(pa.dataFile, '-struct', 'MPdata');
 
 %% psignifit with new dconst
 

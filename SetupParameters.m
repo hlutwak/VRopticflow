@@ -90,7 +90,12 @@ pa.trialNumber = 0; % gotta start somewhere
 
 % Set up a full factorial design 
 pa.nRepeats = 20; % each target contrast condition gets pa.nRepeats trials - 75*3 = 225 per block 
-pa.nPractice = 11; %first trial is "junk" trial
+
+if pa.block == 1
+    pa.nPractice = 11; %first trial is "junk" trial
+else
+    pa.nPractice = 6;
+end
 % pa.speed = [0.5, 0.4, 0.3, 0.2,0.1]; %speeds m/s
 % pa.speed = [0.5, 0.35, 0.2, .1, .05]; %speeds m/s
 pa.speed = [.5,.3,.1,.05];
