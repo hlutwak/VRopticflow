@@ -678,7 +678,7 @@ end
 % Calculate average framerate:
 ds.fps = ds.fCount / (ds.vbl - tStart); % uncomment to print out at end of run
 
-pa.dataFile = fullfile(pa.baseDir, 'Data', [pa.subjectName '-' num2str(pa.block) '-' pa.date '.mat']);
+pa.dataFile = fullfile(  pa.baseDir, 'Data', [pa.subjectName '-' num2str(pa.block) '-' pa.date '.mat']);
 save(pa.dataFile, 'pa', 'ds', 'kb','oc');
 
 if ds.eyetracking
