@@ -9,7 +9,7 @@
 % on each trial, feedback options, random/variable lag for lagged condition
 % Dec-Jan-2019 - JF updated code to  work with CV1; minor changes to call
  % projection matrices, added in  CV1-specific FOV and other parameters
-% Jan 2023 - HL changed to detecting object motion experiment   
+% Jan 2023 - HL changed to detecting object motion experiment
 %% Important note about coding of angles in Oculus space:
 
 % In the Oculus, angles are coded ccw - so, straight right = 0 deg,

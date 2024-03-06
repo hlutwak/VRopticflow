@@ -89,7 +89,7 @@ pa.ndots = pa.nball; % number of dots in dot task
 pa.trialNumber = 0; % gotta start somewhere
 
 % Set up a full factorial design 
-pa.nRepeats = 15; % each target contrast condition gets pa.nRepeats trials - 75*3 = 225 per block 
+pa.nRepeats = 20; % each target contrast condition gets pa.nRepeats trials - 75*3 = 225 per block 
 
 if pa.block == 1
     pa.nPractice = 11; %first trial is "junk" trial

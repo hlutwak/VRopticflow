@@ -434,7 +434,7 @@ C = reshape(C,[],size(data,2),1);
 %                     153,255,255; 102,255,255; 51,255,255; 0,204,204;
 %                     153,153,255; 102,102,255; 51,51,255; 0,0,204]/255;
 [dconst, dsurr] = DistanceToConstraint(ds, pa, .05);
-a = dsurr;
+a = dconst;
 C(:,1) = a(:);
 
 % run psignifit
