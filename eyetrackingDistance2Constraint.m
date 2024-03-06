@@ -3,7 +3,7 @@
 %% get eye tracking interval
 
 D=dir('Data/');
-filename = '2024-03-06_11-52-42_MG-full-1';
+filename = '2024-03-06_12-17-14_MG-monocular-1';
 
 gaze = readtable(['Data/', filename, '/gaze.csv']);
 blinks = readtable(['Data/', filename, '/blinks.csv']);
@@ -90,7 +90,7 @@ idx = find(strcmpi(evts.name, 'calibrationpoint')==1);
 cali_times = synced_evts(idx);
 
 
-for t = 2:300 %pa.trialNumber %full set, change to pa.nTrials
+for t = 4 %pa.trialNumber %full set, change to pa.nTrials
     tf = isbetween(synced, oc.UTCtrialStart(t), oc.UTCtrialEnd(t));
     trial_times = [trial_times; synced(tf)];
     eyetracking = [eyetracking; x(tf), y(tf)];
