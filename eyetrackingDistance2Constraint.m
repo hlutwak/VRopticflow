@@ -3,7 +3,7 @@
 %% get eye tracking interval
 
 D=dir('Data/');
-filename = '2024-03-04_13-39-08_DL-full-1';
+filename = '2024-03-06_11-18-39_MG-dots-1';
 
 gaze = readtable(['Data/', filename, '/gaze.csv']);
 blinks = readtable(['Data/', filename, '/blinks.csv']);
@@ -90,7 +90,7 @@ idx = find(strcmpi(evts.name, 'calibrationpoint')==1);
 cali_times = synced_evts(idx);
 
 
-for t = 4:pa.nTrials %pa.trialNumber %full set, change to pa.nTrials
+for t = 2:10 %pa.trialNumber %full set, change to pa.nTrials
     tf = isbetween(synced, oc.UTCtrialStart(t), oc.UTCtrialEnd(t));
     trial_times = [trial_times; synced(tf)];
     eyetracking = [eyetracking; x(tf), y(tf)];
@@ -109,8 +109,8 @@ interp_y = interp1(trial_times, eyetracking(:,2), interp_times);
 figure, plot(trial_times,eyetracking(:,1),'o',interp_times,interp_x,':.');
 hold on, plot(trial_times,eyetracking(:,2),'o',interp_times,interp_y,':.');
 
-startpos = [6,14]; %guess MP [5,-1.45];
-endpos = [5,11];
+startpos = [6,14]; %guess MP [5,-1.45]; DL [6,14],
+endpos = [5,11]; % DL [5,11]
 
 % subtract off what start and end positions are
 interp_x = interp_x - startpos(1);
