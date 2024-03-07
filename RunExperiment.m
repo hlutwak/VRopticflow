@@ -29,6 +29,7 @@
 % to properly interact with/recognize the Oculus DK2, otherwise, use the
 % latest version of the runtime for the CV1 (note: cannot have 2 versions
 % on one machine)
+% addpath(genpath('C:\Users\hlutw\Documents\MATLAB\Psychtoolbox-3-master\Psychtoolbox\PsychOpenGL\MOGL\wrap'));
 
 clear all;
 close all;

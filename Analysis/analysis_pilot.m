@@ -332,10 +332,10 @@ for speed = 1:length(pa.speed)
 end
 
 %% psignifit 
-% addpath(genpath('C:\Users\hlutw\Documents\MATLAB\psignifit-master'));
- addpath('/Users/hopelutwak/Documents/MATLAB/psignifit')
-addpath(genpath('/Users/hopelutwak/Documents/GitHub/VRopticflow/Analysis'));
-% addpath(genpath('C:\Users\hlutw\Documents\GitHub\VRopticflow\Analysis'));
+addpath(genpath('C:\Users\hlutw\Documents\MATLAB\psignifit-master'));
+%  addpath('/Users/hopelutwak/Documents/MATLAB/psignifit')
+% addpath(genpath('/Users/hopelutwak/Documents/GitHub/VRopticflow/Analysis'));
+addpath(genpath('C:\Users\hlutw\Documents\GitHub\VRopticflow\Analysis'));
 % set options for psychometric functions
 options             = struct;   % initialize as an empty struct
 options.sigmoidName = 'weibull';   

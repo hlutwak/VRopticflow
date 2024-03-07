@@ -35,10 +35,11 @@ if ds.oculusConnected==1
     % as of the PTB release for the CV1, there is built-in gamma correction
     % in Psychtoolbox for the devices
     
-    %     load OculusDK2Gamma.mat; % load the oculus gamma table
-    % for gamma correction
-    %     ds.gammaVals = [GammaValue GammaValue GammaValue];
-    %     PsychImaging('AddTask', 'FinalFormatting', 'DisplayColorCorrection', 'SimpleGamma'); % gamma correction
+%         load OculusDK2Gamma.mat; % load the oculus gamma table
+%     for gamma correction
+%         ds.gammaVals = [GammaValue GammaValue GammaValue];
+%         PsychImaging('AddTask', 'FinalFormatting', 'DisplayColorCorrection', 'SimpleGamma'); % gamma correction
+
 else % oculus not connected
     ds.hmd = [];
     fprintf('No VR-HMD available, using default values.\n');
