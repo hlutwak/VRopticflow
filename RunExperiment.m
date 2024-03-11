@@ -1,18 +1,18 @@
        % function RunExperiment
 
-% 14-Dec-2015  jf Written. Derived from OculusSDK2PongDemo_Fixed.m
-% 6-Jan-2016  jf Edited to improve lagged condition performance   
+ %  14-Dec-2015  jf Written. Derived from OculusSDK2PongDemo_Fixed.m
+%  6-Jan-2016  jf Edited to improve lagged condition performance   
 % 14-Jan-2016 jf  Switched over to Windows pla tform and optimized the code
-% for timing and stimulus presentation - including now measured gamma
-% correction  
-% 19-Aug-2016 jf Added a few modifications: randomized paddle start angle
+ % for timing and stimulus presentation - including now measured gamma
+ % correction  
+ % 19-Aug-2016 jf Added a few modifications: randomized padd le start angle
 % on each trial, feedback options, random/variable lag for lagged condition
-% Dec-Jan-2019 - JF updated code to  work with CV1; minor changes to call
- % projection matrices, added in  CV1-specific FOV and other parameters
-% Jan 2023 - HL changed to detecting object motion experiment
-%% Important note about coding of angles in Oculus space:
+% Dec-Jan-2019 - JF updated code to  work with CV1; minor  changes to call
+ % projection matrices, added in  CV1-specific FOV and ot her parameters
+% Jan 2023 - HL changed to detecting object motion experi ment
+%% Important note about coding of angles in Oculus space: 
 
-% In the Oculus, angles are coded ccw - so, straight right = 0 deg,
+% In the Oculus, angles are coded ccw - so, straight righ 1t = 0 deg,
 % directly in front of fix ation = 90 deg, straight left = 180 deg, directly
 % behind fixation = 270 deg        
 
