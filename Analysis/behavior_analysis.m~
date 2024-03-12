@@ -57,8 +57,7 @@ for s  = 1:length(subjects)
     options.expType     = '2AFC';   % choose 2-AFC as the paradigm of the experiment
                                     % this sets the guessing rate to .5 and
                                     % fits the rest of the parameters
-    options.fixedPars = NaN(5,1);   
-%     options.fixedPars(3) = .01; % fix lapse rate at 1%
+    options.fixedPars = NaN(5,1);                                
 %     options.fixedPars(5) = 0;       % fix eta (dispersion) to zero
 % 4 speeds, 6 directions
     options.dataColor = [255,153,255; 255,102,255; 255,51,255; 204,0,204;
@@ -81,7 +80,6 @@ end
 %% iterate over different values of distance to const
 distances  = linspace(.01, .1, 5);
 dev = zeros(1,length(distances));
-
 for d = 1:length(distances)
     [dconst, dsurr] = DistanceToConstraint(ds, pa, distances(d));
     data_const(:,1) = repmat(dconst(:), count, 1);
