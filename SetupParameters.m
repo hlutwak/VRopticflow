@@ -8,7 +8,7 @@ function [ds,pa] = SetupParameters(ds)
 
 %% Basic experimental specs 
 
-pa.subjectName = 'JO-monocular';
+pa.subjectName = 'JO-dots';
 pa.block = 1;
 pa.feedbackFlag = 1;  % 0 --> no feedback;  1 --> only sound-based feedback;  2 --> visual + sound-based feedback
 
