@@ -1,9 +1,11 @@
 %% incorporating eye movement from eye tracking into distance to constraint calculation
 
 %% get eye tracking interval
+addpath('/Users/hopelutwak/Documents/MATLAB/psignifit')
+addpath(genpath('/Users/hopelutwak/Documents/GitHub/VRopticflow/Analysis'))
 
 D=dir('Data/');
-filename = '2024-03-06_12-17-14_MG-monocular-1';
+filename = '2024-03-06_11-52-42_MG-full-1';
 
 gaze = readtable(['Data/', filename, '/gaze.csv']);
 blinks = readtable(['Data/', filename, '/blinks.csv']);
@@ -90,7 +92,7 @@ idx = find(strcmpi(evts.name, 'calibrationpoint')==1);
 cali_times = synced_evts(idx);
 
 
-for t = 4 %pa.trialNumber %full set, change to pa.nTrials
+for t = 3 %pa.trialNumber %full set, change to pa.nTrials
     tf = isbetween(synced, oc.UTCtrialStart(t), oc.UTCtrialEnd(t));
     trial_times = [trial_times; synced(tf)];
     eyetracking = [eyetracking; x(tf), y(tf)];
@@ -109,8 +111,8 @@ interp_y = interp1(trial_times, eyetracking(:,2), interp_times);
 figure, plot(trial_times,eyetracking(:,1),'o',interp_times,interp_x,':.');
 hold on, plot(trial_times,eyetracking(:,2),'o',interp_times,interp_y,':.');
 
-startpos = [6,14]; %guess MP [5,-1.45]; DL [6,14],
-endpos = [5,11]; % DL [5,11]
+startpos = [5.4, 15.4]; %guess MP [5,-1.45]; DL [6,14], MG [5.4, 15.4]
+endpos = [5.2, 11.2]; % DL [5,11], MG [5.2, 11.2]
 
 % subtract off what start and end positions are
 interp_x = interp_x - startpos(1);
@@ -119,6 +121,7 @@ interp_y = interp_y - startpos(2);
 % for now try just changing theta for y
 load('theta.mat')
 theta = theta(1)- deg2rad(interp_y(1:length(theta)));
+
 trial = 4;
 
 % calculate for this trial
@@ -130,7 +133,7 @@ tic
 load('theta.mat');
 dconst_overTrials = [];
 dsurr_overTrials = [];
-subsetTrials = 4:pa.nTrials;
+subsetTrials = 3:pa.nTrials;
 for t = subsetTrials %pa.trialNumber %full set, change to pa.nTrials
     tf = isbetween(synced, oc.UTCtrialStart(t), oc.UTCtrialEnd(t)+milliseconds(50)); %in case being inbetween trialstart and end cuts off too much eyetracking data
     trial_times = [];

@@ -71,7 +71,7 @@ positions(:,2) = positions(:,2)+fixation;
 dots = repmat(clusters,nDotsPerCluster,1); % ground plane
 % for no floor
 % dots = [];
-objectwidth = pa.paddleHalfWidth*2;
+objectwidth = pa.paddleHalfWidth;
 object = [objectwidth, objectwidth, objectwidth]; %length, width, height
 dotsperobj = 15;
 a = -object(1);
@@ -84,6 +84,10 @@ if ~isempty(nObjects)
         newpositions = [r(:,1)+positions(obj,1), r(:,2)+(height-b), r(:,3)+positions(obj,2)];
         dots = [dots; newpositions];
     end
+    
+%     y = pa.positions(2,:)+height-pa.paddleHalfHeight;
+
+
 end
             
 fixation_dot = [0, height, fixation];
