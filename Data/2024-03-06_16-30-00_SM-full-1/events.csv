@@ -1,0 +1,15 @@
+recording id,timestamp [ns],name,type
+cc00bbed-9ad8-4580-8987-fa4446f3f187,1709760600747000000,recording.begin,recording
+cc00bbed-9ad8-4580-8987-fa4446f3f187,1709760620876000000,calibrationpoint,recording
+cc00bbed-9ad8-4580-8987-fa4446f3f187,1709760621005000000,calibrationpoint,recording
+cc00bbed-9ad8-4580-8987-fa4446f3f187,1709760622469000000,calibrationpoint,recording
+cc00bbed-9ad8-4580-8987-fa4446f3f187,1709760622556000000,calibrationpoint,recording
+cc00bbed-9ad8-4580-8987-fa4446f3f187,1709760622643000000,calibrationpoint,recording
+cc00bbed-9ad8-4580-8987-fa4446f3f187,1709760623940000000,calibrationpoint,recording
+cc00bbed-9ad8-4580-8987-fa4446f3f187,1709760625154000000,calibrationpoint,recording
+cc00bbed-9ad8-4580-8987-fa4446f3f187,1709760625246000000,calibrationpoint,recording
+cc00bbed-9ad8-4580-8987-fa4446f3f187,1709760625317000000,calibrationpoint,recording
+cc00bbed-9ad8-4580-8987-fa4446f3f187,1709760626253000000,calibrationpoint,recording
+cc00bbed-9ad8-4580-8987-fa4446f3f187,1709760626331000000,calibrationpoint,recording
+cc00bbed-9ad8-4580-8987-fa4446f3f187,1709760636109000000,trialstart,recording
+cc00bbed-9ad8-4580-8987-fa4446f3f187,1709761398589000000,recording.end,recording

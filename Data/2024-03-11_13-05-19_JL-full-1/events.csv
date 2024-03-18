@@ -1,0 +1,10 @@
+recording id,timestamp [ns],name,type
+e3f12d07-356c-47fd-86ef-9104d211ba62,1710176719386000000,recording.begin,recording
+e3f12d07-356c-47fd-86ef-9104d211ba62,1710176737039000000,calibrationpoint,recording
+e3f12d07-356c-47fd-86ef-9104d211ba62,1710176741131000000,calibrationpoint,recording
+e3f12d07-356c-47fd-86ef-9104d211ba62,1710176743794000000,calibrationpoint,recording
+e3f12d07-356c-47fd-86ef-9104d211ba62,1710176743869000000,calibrationpoint,recording
+e3f12d07-356c-47fd-86ef-9104d211ba62,1710176746250000000,calibrationpoint,recording
+e3f12d07-356c-47fd-86ef-9104d211ba62,1710176748400000000,calibrationpoint,recording
+e3f12d07-356c-47fd-86ef-9104d211ba62,1710176771134000000,trialstart,recording
+e3f12d07-356c-47fd-86ef-9104d211ba62,1710177744045000000,recording.end,recording
