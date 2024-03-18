@@ -4,7 +4,7 @@
 %  6-Jan-2016  jf Edited to improve lag  ged condition performance   
 % 14-Jan-2016 jf  Switched over to Windows pla tform and optimized the code
  % for timing and stimulus presentation - including now measured gamma
- % correction  
+ % correction   
  % 19-Aug-2016 jf Added a few modifications: randomized padd le start angle
 % on each trial, feedback options, random/variable lag for lagged condition
 % Dec-Jan-2019 - JF updated code to  work with CV1; minor  changes to call
