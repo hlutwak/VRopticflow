@@ -8,7 +8,7 @@ function [ds,pa] = SetupParameters(ds)
 
 %% Basic experimental specs 
 
-pa.subjectName = 'DL-monocular';
+pa.subjectName = 'DL-full';
 pa.block =2 ;
 pa.feedbackFlag = 1;  % 0 --> no feedback;  1 --> only sound-based feedback;  2 --> visual + sound-based feedback
 
