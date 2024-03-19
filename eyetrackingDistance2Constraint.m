@@ -5,7 +5,7 @@ addpath('/Users/hopelutwak/Documents/MATLAB/psignifit')
 addpath(genpath('/Users/hopelutwak/Documents/GitHub/VRopticflow/Analysis'))
 
 D=dir('Data/');
-filename = '2024-03-18_12-55-11_JL-full-2';
+filename = '2024-03-11_15-39-28_PL-monocular-1';
 
 gaze = readtable(['Data/', filename, '/gaze.csv']);
 blinks = readtable(['Data/', filename, '/blinks.csv']);
@@ -91,8 +91,7 @@ axis equal
 idx = find(strcmpi(evts.name, 'calibrationpoint')==1);
 cali_times = synced_evts(idx);
 
-
-for t = 4 %pa.trialNumber %full set, change to pa.nTrials
+for t = 4:50 %pa.trialNumber %full set, change to pa.nTrials
     tf = isbetween(synced, oc.UTCtrialStart(t), oc.UTCtrialEnd(t));
     trial_times = [trial_times; synced(tf)];
     eyetracking = [eyetracking; x(tf), y(tf)];
