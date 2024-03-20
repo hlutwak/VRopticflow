@@ -5,7 +5,7 @@ addpath('/Users/hopelutwak/Documents/MATLAB/psignifit')
 addpath(genpath('/Users/hopelutwak/Documents/GitHub/VRopticflow/Analysis'))
 
 D=dir('Data/');
-filename = '2024-03-11_16-03-14_PL-full-2';
+filename = '2024-03-04_13-39-08_DL-full-1';
 
 gaze = readtable(['Data/', filename, '/gaze.csv']);
 blinks = readtable(['Data/', filename, '/blinks.csv']);

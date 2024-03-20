@@ -230,8 +230,8 @@ dend = [];
 % start_position = NaN(2, pa.trialNumber-1);
 % end_position = NaN(2, pa.trialNumber-1);
 
-startpos = [6,15.5];
-endpos = [6,12];
+startpos = [6,15];
+endpos = [5,11];
 
 bad_trials = [];
 
