@@ -13,7 +13,7 @@ dataFolder = '/Users/hopelutwak/Documents/GitHub/VRopticflow/Data';
 S = dir(fullfile(dataFolder,'*.mat'));
 
 % which subjects data to analyze
-subjects = ["IG"]; %"HL" "IK"
+subjects = ["KZ"]; %"HL" "IK"
 stims = ["full-1", "full-2"]; %"pilot"
 depth_range = .05;
 
