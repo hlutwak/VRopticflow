@@ -14,7 +14,7 @@ S = dir(fullfile(dataFolder,'*.mat'));
 
 % which subjects data to analyze
 subjects = ["IG"]; %"HL" "IK"
-stims = ["full-1", "full-2"]; %"pilot"
+stims = ["monocular-1", "monocular-2"]; %["full-1", "full-2"]; %"pilot"
 depth_range = .05;
 
 % loop over all subjects
@@ -79,6 +79,39 @@ for s  = 1:length(subjects)
 
     
 end
+
+%% deviance differences
+x = categorical({'constraint', 'surround'});
+conds = categorical({'full', 'dots', 'monocular'});
+conds = reordercats(conds, {'full', 'dots', 'monocular'});
+const.full = [16, 37, 52, 24, 29, 33, 38, 61, 21, 40];
+surr.full = [312,137,184,195,219,225, 112, 230,143,139];
+
+const.dots = [71	93	29	83	62	91	85	26	120	38];
+surr.dots = [233	269	106	144	134	215	203	301	264	110];
+
+const.mono = [41	29	44	18	42	29	40	47	39	24];
+surr.mono = [203	208	253	150	250	225	153	221	217	157];
+ 
+% const vs surround
+fig = figure();
+for d = 1:length(const)
+    hold on, plot(x, [const(d), surr(d)], '.-','MarkerSize',20,'LineWidth', 2)
+end
+title('Monocular')
+set(gca, 'FontSize', 16)
+
+ylim([0. 350])
+
+
+% const for each stimulus
+fig = figure();
+for d = 1:length(const.full)
+    hold on, plot(conds, [const.full(d)', const.dots(d)', const.mono(d)'], '.-','MarkerSize',20,'LineWidth', 2)
+end
+set(gca, 'FontSize', 16)
+
+ylim([0 150])
 
 %% iterate over different values of distance to const
 distances  = linspace(.01, .1, 5);

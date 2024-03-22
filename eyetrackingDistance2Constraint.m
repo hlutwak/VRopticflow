@@ -3,6 +3,15 @@
 %% get eye tracking interval
 addpath('/Users/hopelutwak/Documents/MATLAB/psignifit')
 addpath(genpath('/Users/hopelutwak/Documents/GitHub/VRopticflow/Analysis'))
+dataFolder = '/Users/hopelutwak/Documents/GitHub/VRopticflow/Data';
+
+
+% names of files
+S = dir(fullfile(dataFolder));
+% 
+% % which subjects data to analyze
+% subjects = ["DL"]; %"HL" "IK"
+% stims = ["full-1"]; %["full-1", "full-2"]; %"pilot"
 
 D=dir('Data/');
 filename = '2024-03-04_13-39-08_DL-full-1';
@@ -91,7 +100,7 @@ axis equal
 idx = find(strcmpi(evts.name, 'calibrationpoint')==1);
 cali_times = synced_evts(idx);
 
-for t = 4:pa.nTrials %pa.trialNumber %full set, change to pa.nTrials
+for t = 2:pa.nTrials %pa.trialNumber %full set, change to pa.nTrials
     tf = isbetween(synced, oc.UTCtrialStart(t), oc.UTCtrialEnd(t));
     trial_times = [trial_times; synced(tf)];
     eyetracking = [eyetracking; x(tf), y(tf)];
@@ -100,7 +109,28 @@ for t = 4:pa.nTrials %pa.trialNumber %full set, change to pa.nTrials
     start_position(:,t) = [x(idx(1)); y(idx(1))];
     end_position (:,t) = [x(idx(end)); y(idx(end))];
     hold on, scatter(x(tf), y(tf))
+    
 end
+
+%% find good trials, no large horizontal variations
+
+good_trials = [];
+startpos = [6,14]; %guess MP [5,-1.45]; DL [6,14] [8,12], MG [5.4, 15.4]
+% endpos = [5,11]; % DL [5,11], MG [5.2, 11.2]
+
+figure
+for t = 2:pa.nTrials %pa.trialNumber %full set, change to pa.nTrials
+    tf = isbetween(synced, oc.UTCtrialStart(t), oc.UTCtrialEnd(t));
+    
+    distX  = abs(x(tf) - startpos(1));
+    if ~sum(find(distX>2))
+        good_trials = [good_trials, t];
+        hold on, scatter(x(tf), y(tf))
+    end
+    
+end
+
+set(gca, 'FontSize', 16)
 
 %% interpolate eye data
 interp_times = trial_times(1):milliseconds(1/ds.frameRate*1000):trial_times(end);
@@ -127,12 +157,13 @@ trial = 4;
 
 [dconst, dsurr] = DistanceToConstraint(ds, pa, .05, theta, trial);
 
+
 %% try for multiple trials
 tic
 load('theta.mat');
 dconst_overTrials = [];
 dsurr_overTrials = [];
-subsetTrials = 3:pa.nTrials;
+subsetTrials = good_trials;
 for t = subsetTrials %pa.trialNumber %full set, change to pa.nTrials
     tf = isbetween(synced, oc.UTCtrialStart(t), oc.UTCtrialEnd(t)+milliseconds(50)); %in case being inbetween trialstart and end cuts off too much eyetracking data
     trial_times = [];
@@ -170,15 +201,20 @@ toc
 
 %% figure out how to save extra field to pa with dconst/surr values
 % MPdata = load(pa.dataFile);
-% pa.dconst = dconst_overTrials;
-% pa.dsurr = dsurr_overTrials;
-% 
+pa.goodTrials = good_trials;
+pa.dconst = dconst_overTrials;
+pa.dsurr = dsurr_overTrials;
+
+
 % save(pa.dataFile, '-struct', 'MPdata');
+pa.baseDir = pwd;
+pa.dataFile = fullfile(pa.baseDir, 'Data', [pa.subjectName '-' num2str(pa.block) '-' pa.date '-copy' '.mat']);
+save(pa.dataFile, 'pa', 'ds', 'kb','oc');
 
 %% psignifit with new dconst
 
 % matrix of results
-pcorrect = eq(pa.LR(subsetTrials), pa.LRresponse(subsetTrials));
+pcorrect = eq(pa.LR(pa.goodTrials), pa.LRresponse(pa.goodTrials));
 pcorrect = +pcorrect;
 nTrials = ones(size(pcorrect));
 
@@ -190,8 +226,16 @@ options.expType     = '2AFC';   % choose 2-AFC as the paradigm of the experiment
 options.fixedPars = NaN(5,1);                                
 % options.fixedPars(5) = 0;       % fix eta (dispersion) to zero
 
-data_const = [dconst_overTrials; pcorrect; nTrials]';
-data_surr = [dsurr_overTrials; pcorrect; nTrials]';
+% do this for both blocks
+data_const = [pa.dconst; pcorrect; nTrials]';
+data_surr = [pa.dsurr; pcorrect; nTrials]';
+
+%
+% data_const2 = [pa.dconst; pcorrect; nTrials]';
+% data_surr2 = [pa.dsurr; pcorrect; nTrials]';
+% 
+% data_const = [data_const; data_const2];
+% data_surr = [data_surr; data_surr2];
 
 result_const = psignifit(data_const,options);
 result_surr = psignifit(data_surr,options);
