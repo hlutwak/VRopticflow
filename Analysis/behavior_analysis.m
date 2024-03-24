@@ -3,6 +3,7 @@
 
 % add psignifit toolbox
 addpath('/Users/hopelutwak/Documents/MATLAB/psignifit')
+addpath(genpath('/Applications/Psychtoolbox'))
 addpath('/Users/hopelutwak/Documents/GitHub/VRopticflow/Analysis')
 % addpath(genpath('C:\Users\hlutw\Documents\MATLAB\psignifit-master'))
 % assign data folder

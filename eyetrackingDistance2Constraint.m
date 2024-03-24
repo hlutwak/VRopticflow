@@ -14,7 +14,7 @@ S = dir(fullfile(dataFolder));
 % stims = ["full-1"]; %["full-1", "full-2"]; %"pilot"
 
 D=dir('Data/');
-filename = '2024-03-04_13-39-08_DL-full-1';
+filename = '2024-03-06_11-52-42_MG-full-1';
 
 gaze = readtable(['Data/', filename, '/gaze.csv']);
 blinks = readtable(['Data/', filename, '/blinks.csv']);
@@ -68,7 +68,7 @@ hold on, line([synced_evts'; synced_evts'], [yl(1); yl(2)].*ones(size(evts_time'
 
 
 %% butterworth filter
-[b,a]=butter(4,1/25);
+[b,a]=butter(4,1/50);
 output_datax=filter(b,a,x);
 output_datay = filter(b,a,y);
 
@@ -115,10 +115,10 @@ end
 %% find good trials, no large horizontal variations
 
 good_trials = [];
-startpos = [6,14]; %guess MP [5,-1.45]; DL [6,14] [8,12], MG [5.4, 15.4]
+startpos = [5.4, 15.4]; %guess MP [5,-1.45]; DL [6,14] [8,12], MG [5.4, 15.4]
 % endpos = [5,11]; % DL [5,11], MG [5.2, 11.2]
 
-figure
+% figure
 for t = 2:pa.nTrials %pa.trialNumber %full set, change to pa.nTrials
     tf = isbetween(synced, oc.UTCtrialStart(t), oc.UTCtrialEnd(t));
     
