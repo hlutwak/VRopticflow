@@ -213,11 +213,6 @@ save(pa.dataFile, 'pa', 'ds', 'kb','oc');
 
 %% psignifit with new dconst
 
-% matrix of results
-pcorrect = eq(pa.LR(pa.goodTrials), pa.LRresponse(pa.goodTrials));
-pcorrect = +pcorrect;
-nTrials = ones(size(pcorrect));
-
 options             = struct;   % initialize as an empty struct
 options.sigmoidName = 'weibull';   
 options.expType     = '2AFC';   % choose 2-AFC as the paradigm of the experiment
@@ -226,19 +221,27 @@ options.expType     = '2AFC';   % choose 2-AFC as the paradigm of the experiment
 options.fixedPars = NaN(5,1);                                
 % options.fixedPars(5) = 0;       % fix eta (dispersion) to zero
 
+
+% matrix of results
+pcorrect = eq(pa.LR(pa.goodTrials), pa.LRresponse(pa.goodTrials));
+pcorrect = +pcorrect;
+nTrials = ones(size(pcorrect));
+
 % do this for both blocks
 data_const = [pa.dconst; pcorrect; nTrials]';
 data_surr = [pa.dsurr; pcorrect; nTrials]';
 
-%
-% data_const2 = [pa.dconst; pcorrect; nTrials]';
-% data_surr2 = [pa.dsurr; pcorrect; nTrials]';
-% 
-% data_const = [data_const; data_const2];
-% data_surr = [data_surr; data_surr2];
+
+data_const2 = [pa.dconst; pcorrect; nTrials]';
+data_surr2 = [pa.dsurr; pcorrect; nTrials]';
+
+data_const = [data_const; data_const2];
+data_surr = [data_surr; data_surr2];
 
 result_const = psignifit(data_const,options);
 result_surr = psignifit(data_surr,options);
 
 figure, plotPsych(result_const, options);
 figure, plotPsych(result_surr, options);
+
+%% iterate need to recalculate with different value of d

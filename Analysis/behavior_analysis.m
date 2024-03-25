@@ -14,8 +14,8 @@ dataFolder = '/Users/hopelutwak/Documents/GitHub/VRopticflow/Data';
 S = dir(fullfile(dataFolder,'*.mat'));
 
 % which subjects data to analyze
-subjects = ["IG"]; %"HL" "IK"
-stims = ["monocular-1", "monocular-2"]; %["full-1", "full-2"]; %"pilot"
+subjects = ["MG"]; %"HL" "IK"
+stims = ["full-1", "full-2"]; %["full-1", "full-2"]; %"pilot" ["monocular-1", "monocular-2"]
 depth_range = .05;
 
 % loop over all subjects
@@ -115,7 +115,7 @@ set(gca, 'FontSize', 16)
 ylim([0 150])
 
 %% iterate over different values of distance to const
-distances  = linspace(.01, .1, 5);
+distances  = linspace(.025, .15, 10);
 dev = zeros(1,length(distances));
 
 for d = 1:length(distances)
@@ -129,3 +129,9 @@ for d = 1:length(distances)
     dev(d) = result.deviance;
 end
 
+
+%% full vs dots vs monocular
+figure, plot(distances, dev, 'LineWidth', 2)
+hold on, plot(distances, dev, 'LineWidth', 2)
+legend('full', 'dots', 'monocular')
+set(gca, 'FontSize', 16)
