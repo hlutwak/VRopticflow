@@ -71,7 +71,7 @@ for s  = 1:length(subjects)
 
     result_const = psignifit(data_const,options);
     
-    options.fixedPars(3) = result_const.Fit(3); % fix lapse rate at 1%
+    options.fixedPars(3) = result_const.Fit(3); % fix lapse rate at calcualted for constraint
     result_surr = psignifit(data_surr, options);
     figure, plotPsych(result_const, options);
     title(['distance to constraint, depth range = ', num2str(depth_range)])
