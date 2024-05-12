@@ -15,7 +15,7 @@ figFolder = '/Users/hopelutwak/Documents/GitHub/VRopticflow/Figures';
 S = dir(fullfile(dataFolder,'*.mat'));
 
 % which subjects data to analyze
-subjects = ["MG"]; %"HL" "IK"
+subjects = ["PL", "MP", "SM", "JL", "IK", "JO", "KZ", "IG"]; %"HL" "IK"
 stims = ["full-1", "full-2"]; %["full-1", "full-2"]; %"pilot" ["monocular-1", "monocular-2"]
 depth_range = .05;
 
@@ -71,17 +71,16 @@ for s  = 1:length(subjects)
                         153,153,255; 102,102,255; 51,51,255; 0,0,204]/255;
 
     result_const = psignifit(data_const,options);
-    
-    options.fixedPars(3) = result_const.Fit(3); % fix lapse rate at calcualted for constraint
+    options.fixedPars(3) = result_const.Fit(3); % fix lapse rate at calculated for constraint
     result_surr = psignifit(data_surr, options);
     figure, plotPsych(result_const, options);
     title(['distance to constraint, depth range = ', num2str(depth_range)])
-    figname = [subjects+'_const_'+stims(1)+'.eps'];
+    figname = [subjects(s)+'_const_'+stims(1)+'.eps'];
     saveas(gcf, fullfile(figFolder, figname), 'epsc')
     
     figure, plotPsych(result_surr, options);
     title('distance to surround')
-    figname = [subjects+'_surr_'+stims(1)+'.eps'];
+    figname = [subjects(s)+'_surr_'+stims(1)+'.eps'];
     saveas(gcf, fullfile(figFolder, figname), 'epsc')
 
     
@@ -119,6 +118,16 @@ end
 set(gca, 'FontSize', 16)
 
 ylim([0 150])
+
+% scatter const vs surround
+figure, scatter(const.full, surr.full, 50, 'filled')
+axis equal
+xlim([0 350])
+ylim([0 350])
+
+hold on
+plot([min([xlim ylim]) max([xlim ylim])], [min([xlim ylim]) max([xlim ylim])], '--k')
+
 
 %% iterate over different values of distance to const
 distances  = linspace(.025, .15, 10);

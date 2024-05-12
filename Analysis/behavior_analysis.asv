@@ -9,6 +9,7 @@ addpath('/Users/hopelutwak/Documents/GitHub/VRopticflow/Analysis')
 % assign data folder
 dataFolder = '/Users/hopelutwak/Documents/GitHub/VRopticflow/Data';
 % dataFolder = 'C:\Users\hlutw\Documents\GitHub\VRopticflow\Data';
+figFolder = '/Users/hopelutwak/Documents/GitHub/VRopticflow/Figures';
 
 % names of files
 S = dir(fullfile(dataFolder,'*.mat'));
@@ -75,9 +76,13 @@ for s  = 1:length(subjects)
     result_surr = psignifit(data_surr, options);
     figure, plotPsych(result_const, options);
     title(['distance to constraint, depth range = ', num2str(depth_range)])
-    figname = [subjects, '
+    figname = [subjects+'_const_'+stims(1)+'.eps'];
+    saveas(gcf, fullfile(figFolder, figname), 'epsc')
+    
     figure, plotPsych(result_surr, options);
     title('distance to surround')
+    figname = [subjects+'_surr_'+stims(1)+'.eps'];
+    saveas(gcf, fullfile(figFolder, figname), 'epsc')
 
     
 end
@@ -114,6 +119,11 @@ end
 set(gca, 'FontSize', 16)
 
 ylim([0 150])
+
+% scatter const vs surround
+figure, scatter(const.full, surr.full)
+hold on
+plot(xlim, ylim, '--k')
 
 %% iterate over different values of distance to const
 distances  = linspace(.025, .15, 10);
