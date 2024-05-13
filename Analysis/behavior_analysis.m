@@ -15,8 +15,9 @@ figFolder = '/Users/hopelutwak/Documents/GitHub/VRopticflow/Figures';
 S = dir(fullfile(dataFolder,'*.mat'));
 
 % which subjects data to analyze
-subjects = ["PL", "MP", "SM", "JL", "IK", "JO", "KZ", "IG"]; %"HL" "IK"
-stims = ["full-1", "full-2"]; %["full-1", "full-2"]; %"pilot" ["monocular-1", "monocular-2"]
+subjects = ["IG"]; %"HL" "IK"
+% all: "PL", "MP", "SM", "JL", "IK", "JO", "KZ", "IG"
+stims = ["full-1"]; %["full-1", "full-2"]; %"pilot" ["monocular-1", "monocular-2"]
 depth_range = .05;
 
 % loop over all subjects
