@@ -15,9 +15,9 @@ analysisFolder = '/Users/hopelutwak/Documents/GitHub/VRopticflow/Analysis';
 S = dir(fullfile(dataFolder,'*.mat'));
 
 % which subjects data to analyze
-subjects = ["IG"]; %"HL" "IK"
+subjects = ["MG"]; %"HL" "IK"
 % all: "PL", "MP", "SM", "JL", "IK", "JO", "KZ", "IG"
-stims = ["monocular-1","monocular-2"]; %["full-1", "full-2"]; %"pilot" ["monocular-1", "monocular-2"]
+stims = ["dots-1", "dots-2"]; %["full-1", "full-2"]; %"pilot" ["monocular-1", "monocular-2"]
 depth_range = .05;
 
 % loop over all subjects
@@ -131,7 +131,7 @@ plot([min([xlim ylim]) max([xlim ylim])], [min([xlim ylim]) max([xlim ylim])], '
 
 
 %% iterate over different values of distance to const
-distances  = linspace(.025, .15, 10);
+distances  = linspace(.05, .6, 10);
 dev = zeros(1,length(distances));
 
 for d = 1:length(distances)
@@ -166,6 +166,22 @@ if idx == length(distances)
     dev = [dev dev_ext];
     distances = [distances distances_ext];
 elseif idx == 1
+    distances_prev = linspace(max(0,distances(1)-10*mean(diff(distances))), distances(1)-mean(diff(distances)), 10);
+    dev_prev = zeros(1,length(distances_prev));
+    
+    for d = 1:length(distances_prev)
+        [dconst, dsurr] = DistanceToConstraint(ds, pa, distances_prev(d));
+        data_const(:,1) = repmat(dconst(:), count, 1);
+        
+        % run psignifit
+        result = psignifit(data_const,options);
+        figure, plotPsych(result, options);
+        %     thresh = exp(result.Fit(1));
+        dev_prev(d) = result.deviance;
+    end
+    
+    dev = [dev_prev dev];
+    distances = [distances_prev distances];
 end
 
 % subj distances deviances
@@ -176,11 +192,11 @@ end
 save (fullfile(analysisFolder, "constraint_length_opt.mat"), "constraint_length_opt")
 
 %% full vs dots vs monocular
-figure, plot(distances, dev, 'LineWidth', 2)
+figure, hold on, plot(distances, dev, 'LineWidth', 2)
 
 figure
 for s = 1:3
-    hold on, plot(constraint_length_opt(2).distances{s}, constraint_length_opt(2).dev{s}, 'LineWidth', 2)
+    hold on, plot(constraint_length_opt(8).distances{s}, constraint_length_opt(8).dev{s}, 'LineWidth', 2)
     
 end
 legend('full', 'dots', 'monocular')

@@ -15,9 +15,9 @@ analysisFolder = '/Users/hopelutwak/Documents/GitHub/VRopticflow/Analysis';
 S = dir(fullfile(dataFolder,'*.mat'));
 
 % which subjects data to analyze
-subjects = ["KZ"]; %"HL" "IK"
+subjects = ["MG"]; %"HL" "IK"
 % all: "PL", "MP", "SM", "JL", "IK", "JO", "KZ", "IG"
-stims = ["full-1","full-2"]; %["full-1", "full-2"]; %"pilot" ["monocular-1", "monocular-2"]
+stims = ["monocular-1", "monocular-2"]; %["full-1", "full-2"]; %"pilot" ["monocular-1", "monocular-2"]
 depth_range = .05;
 
 % loop over all subjects
@@ -131,7 +131,10 @@ plot([min([xlim ylim]) max([xlim ylim])], [min([xlim ylim]) max([xlim ylim])], '
 
 
 %% iterate over different values of distance to const
-distances  = linspace(.025, .15, 10);
+distances  = linspace(0.025, 0.15, 10);
+
+% window of distances cube could physically be distances  = linspace(.05, .6, 10);
+% constraint_length_opt distances = linspace(0.025, 0.15, 10)
 dev = zeros(1,length(distances));
 
 for d = 1:length(distances)
@@ -189,14 +192,17 @@ end
 % if contains(stims, "monocular")
 %     save( fullfile(subjects(s), distances.mat) "distances"
 %%
+%load constraint_legnth_opt.mat
+% replace correct array in mat file
+
 save (fullfile(analysisFolder, "constraint_length_opt.mat"), "constraint_length_opt")
 
 %% full vs dots vs monocular
-figure, plot(distances, dev, 'LineWidth', 2)
+figure, hold on, plot(distances, dev, 'LineWidth', 2)
 
 figure
 for s = 1:3
-    hold on, plot(constraint_length_opt(6).distances{s}, constraint_length_opt(6).dev{s}, 'LineWidth', 2)
+    hold on, plot(constraint_length_opt(8).distances{s}, constraint_length_opt(8).dev{s}, 'LineWidth', 2)
     
 end
 legend('full', 'dots', 'monocular')

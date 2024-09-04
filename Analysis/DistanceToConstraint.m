@@ -220,7 +220,7 @@ for cond = 1:size(conditions, 1)
         % smaller range for far/close on constraint line
         v_constraint_far(:,:,ii) = constraint_velocity_screen(ones(size(Z(:,ii))).*(Z(:,ii)+depth_range), [x(:,ii)';y(:,ii)']./100, T(ii,:), view_dist,Z(fixation_idx,ii));
         v_constraint_far(:,:,ii) = v_constraint_far(:,:,ii)*100;
-        v_constraint_close(:,:,ii) = constraint_velocity_screen(ones(size(Z(:,ii))).*(Z(:,ii)-depth_range), [x(:,ii)';y(:,ii)']./100, T(ii,:), view_dist,Z(fixation_idx,ii));
+        v_constraint_close(:,:,ii) = constraint_velocity_screen(ones(size(Z(:,ii))).*(Z(:,ii))-depth_range, [x(:,ii)';y(:,ii)']./100, T(ii,:), view_dist,Z(fixation_idx,ii));
         v_constraint_close(:,:,ii) = v_constraint_close(:,:,ii)*100;
         
         % Indices of dots to show based on how close/far the dots in the real world are (viewing depths)
