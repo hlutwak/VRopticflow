@@ -17,8 +17,9 @@ S = dir(fullfile(dataFolder,'*.mat'));
 % which subjects data to analyze
 subjects = ["MG"]; %"HL" "IK"
 % all: "PL", "MP", "SM", "JL", "IK", "JO", "KZ", "IG"
-stims = ["monocular-1", "monocular-2"]; %["full-1", "full-2"]; %"pilot" ["monocular-1", "monocular-2"]
+stims = ["full-1", "full-2"]; %["full-1", "full-2"]; %"pilot" ["monocular-1", "monocular-2"]
 depth_range = .05;
+
 
 % loop over all subjects
 
@@ -91,6 +92,8 @@ end
 x = categorical({'constraint', 'surround'});
 conds = categorical({'full', 'dots', 'monocular'});
 conds = reordercats(conds, {'full', 'dots', 'monocular'});
+subjects = ["MP","DL","PL", "MG", "SM", "JL", "IK", "JO", "KZ","IG"];
+
 const.full = [16, 37, 52, 24, 29, 33, 38, 61, 21, 40];
 surr.full = [312,137,184,195,219,225, 112, 230,143,139];
 
@@ -99,11 +102,12 @@ surr.dots = [233	269	106	144	134	215	203	301	264	110];
 
 const.mono = [41	29	44	18	42	29	40	47	39	24];
 surr.mono = [203	208	253	150	250	225	153	221	217	157];
- 
+
+
 % const vs surround
 fig = figure();
 for d = 1:length(const)
-    hold on, plot(x, [const(d), surr(d)], '.-','MarkerSize',20,'LineWidth', 2)
+    hold on, plot(x, [const(d), surr(d)],'.-','MarkerSize',20,'LineWidth', 2)
 end
 title('Monocular')
 set(gca, 'FontSize', 16)
@@ -112,13 +116,36 @@ ylim([0. 350])
 
 
 % const for each stimulus
+x = categorical(["full" "monocular" "dots"]);
+x = reordercats(x,string(x));
+
 fig = figure();
 for d = 1:length(const.full)
-    hold on, plot(conds, [const.full(d)', const.dots(d)', const.mono(d)'], '.-','MarkerSize',20,'LineWidth', 2)
+%     hold on, plot(conds, [const.full(d)', const.dots(d)', const.mono(d)'], '.-','MarkerSize',20,'LineWidth', 2)
+%     hold on, plot([conds(1) conds(3)], [const.full(d)', const.mono(d)'], '.-','MarkerSize',20,'LineWidth', 2) 
+    hold on, plot(x, [surr.full(d)', surr.mono(d)', surr.dots(d)'], '.-', 'color', c(d,:),'MarkerSize',20,'LineWidth', 2) 
+
 end
 set(gca, 'FontSize', 16)
+hold on, plot(x, mean([surr.full', surr.mono', surr.dots']), '.-', 'color', [.25 .25 .25],'MarkerSize',30,'LineWidth', 5)
+legend([subjects, "mean"])
 
+%   figname = "deviance_comparison";
+%  saveas(gcf, fullfile(figFolder, figname), 'epsc')
+
+fig = figure();
+for d = 1:length(const.full)
+%     hold on, plot(conds, [const.full(d)', const.dots(d)', const.mono(d)'], '.-','MarkerSize',20,'LineWidth', 2)
+%     hold on, plot([conds(1) conds(3)], [const.full(d)', const.mono(d)'], '.-','MarkerSize',20,'LineWidth', 2) 
+    hold on, plot(x, [const.full(d)', const.mono(d)', const.dots(d)'], '.-', 'color', c(d,:),'MarkerSize',20,'LineWidth', 2) 
+
+end
+set(gca, 'FontSize', 16)
+hold on, plot(x, mean([const.full', const.mono', const.dots']), '.-', 'color', [.25 .25 .25],'MarkerSize',30,'LineWidth', 5)
+legend([subjects, "mean"])
 ylim([0 150])
+figname = "deviance_combined";
+saveas(gcf, fullfile(figFolder, figname), 'epsc')
 
 % scatter const vs surround
 figure, scatter(const.full, surr.full, 50, 'filled')

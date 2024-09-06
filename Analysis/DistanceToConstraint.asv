@@ -65,9 +65,9 @@ clusters = rand(nClusters,3).*dim - [.5*dim(1), .5*dim(2)-height, 0]; % randomiz
 % [.5*dim(1), -height, 0];
  
 %object positions
-positions = -dim(1)/2+2*dim(1)/2*rand(nObjects,2); %uniform random positions across floor
-positions(:,2) = positions(:,2)+fixation;
-% positions = -[pa.positions(1,:)' pa.positions(3,:)'];
+% positions = -dim(1)/2+2*dim(1)/2*rand(nObjects,2); %uniform random positions across floor
+% positions(:,2) = positions(:,2)+fixation;
+positions = -[pa.positions(1,:)' pa.positions(3,:)'];
 % positions(3,:) = -positions(3,:);
  
 dots = repmat(clusters,nDotsPerCluster,1); % ground plane
@@ -83,7 +83,7 @@ aboveground = -pa.aboveground;
 if ~isempty(nObjects)
     for obj = 1:nObjects
         r = (b-a).*rand(dotsperobj,3) + a; % in line below added +pa.positions(2,obj)'
-        newpositions = [r(:,1)+positions(obj,1), r(:,2)+(height-b)-mean(pa.positions(2,obj))', r(:,3)+positions(obj,2)];
+        newpositions = [r(:,1)+positions(obj,1), r(:,2)+(height-b)-pa.positions(2,obj)', r(:,3)+positions(obj,2)];
         dots = [dots; newpositions];
     end
     
@@ -346,7 +346,7 @@ for cond = 1:size(conditions, 1)
             axis equal
             xlim(xlims)
             ylim(ylims)
-            title(['s = ', num2str(speeds(condition_indices(cond,1))), ' m/s,  dir = ', num2str(rad2deg(directions(condition_indices(cond,2)))), ' deg'])
+            title(['s = ', num2str(speeds(condition_indices(cond,1))), ' m/s,  dir = ', num2str(rad2deg(directions(conditions(cond,2)))), ' deg'])
 
             pause(1)
             end
