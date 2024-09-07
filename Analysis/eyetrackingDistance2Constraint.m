@@ -14,7 +14,7 @@ S = dir(fullfile(dataFolder));
 % stims = ["full-1"]; %["full-1", "full-2"]; %"pilot"
 
 D=dir('Data/');
-filename = '2024-03-06_11-52-42_MG-full-1';
+filename = '2024-02-26_15-15-38_MP-full-1';
 
 gaze = readtable(['Data/', filename, '/gaze.csv']);
 blinks = readtable(['Data/', filename, '/blinks.csv']);
@@ -72,7 +72,7 @@ hold on, line([synced_evts'; synced_evts'], [yl(1); yl(2)].*ones(size(evts_time'
 output_datax=filter(b,a,x);
 output_datay = filter(b,a,y);
 
-figure, plot(synced,output_datax, 'linewidth', 2), hold on, plot(synced,output_datay,'linewidth', 2)
+figure, set(gcf,'renderer','Painters'), plot(synced,output_datax, 'linewidth', 2), hold on, plot(synced,output_datay,'linewidth', 2)
 yl = ylim;
 hold on, line([oc.UTCtrialEnd; oc.UTCtrialEnd],[yl(1); yl(2)].*ones(size(oc.UTCtrialEnd)), 'color','r') 
 
@@ -112,24 +112,35 @@ for t = 2:pa.nTrials %pa.trialNumber %full set, change to pa.nTrials
     
 end
 
+% remove trials with high gaze speed
+reasonable_speed = find(gaze_speed<10);
+
+% average start and end position
+startpos = nanmean(start_position(:,reasonable_speed)');
+endpos = nanmean(end_position(:,reasonable_speed)');
+hold on, scatter(startpos(1), startpos(2), 'filled', 'g')
+hold on, scatter(endpos(1), endpos(2), 'filled', 'r')
+
+
 %% find good trials, no large horizontal variations
 
 good_trials = [];
-startpos = [5.4, 15.4]; %guess MP [5,-1.45]; DL [6,14] [8,12], MG [5.4, 15.4]
-% endpos = [5,11]; % DL [5,11], MG [5.2, 11.2]
+% startpos = [5.4, 15.4]; %guess MP [5,-1.45]; DL [6,14] [8,12], MG [5.4, 15.4]
+% % endpos = [5,11]; % DL [5,11], MG [5.2, 11.2]
 
-% figure
+% find 
+ figure
 for t = 2:pa.nTrials %pa.trialNumber %full set, change to pa.nTrials
     tf = isbetween(synced, oc.UTCtrialStart(t), oc.UTCtrialEnd(t));
-    
+    avg_xval = mean([startpos(1), endpos(1)]);
     distX  = abs(x(tf) - startpos(1));
-    if ~sum(find(distX>2))
+    if ~sum(find(distX>1))
         good_trials = [good_trials, t];
         hold on, scatter(x(tf), y(tf))
     end
     
 end
-
+axis equal
 set(gca, 'FontSize', 16)
 
 %% interpolate eye data
@@ -140,8 +151,8 @@ interp_y = interp1(trial_times, eyetracking(:,2), interp_times);
 figure, plot(trial_times,eyetracking(:,1),'o',interp_times,interp_x,':.');
 hold on, plot(trial_times,eyetracking(:,2),'o',interp_times,interp_y,':.');
 
-startpos = [5.4, 15.4]; %guess MP [5,-1.45]; DL [6,14], MG [5.4, 15.4]
-endpos = [5.2, 11.2]; % DL [5,11], MG [5.2, 11.2]
+% startpos = [5.4, 15.4]; %guess MP [5,-1.45]; DL [6,14], MG [5.4, 15.4]
+% endpos = [5.2, 11.2]; % DL [5,11], MG [5.2, 11.2]
 
 % subtract off what start and end positions are
 interp_x = interp_x - startpos(1);
@@ -151,7 +162,7 @@ interp_y = interp_y - startpos(2);
 load('theta.mat')
 theta = theta(1)- deg2rad(interp_y(1:length(theta)));
 
-trial = 4;
+trial = 3;
 
 % calculate for this trial
 

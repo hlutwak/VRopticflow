@@ -15,7 +15,7 @@ analysisFolder = '/Users/hopelutwak/Documents/GitHub/VRopticflow/Analysis';
 S = dir(fullfile(dataFolder,'*.mat'));
 
 % which subjects data to analyze
-subjects = ["MG"]; %"HL" "IK"
+subjects = ["MP"]; %"HL" "IK"
 % all: "PL", "MP", "SM", "JL", "IK", "JO", "KZ", "IG"
 stims = ["full-1", "full-2"]; %["full-1", "full-2"]; %"pilot" ["monocular-1", "monocular-2"]
 depth_range = .05;
@@ -145,7 +145,7 @@ hold on, plot(x, mean([const.full', const.mono', const.dots']), '.-', 'color', [
 legend([subjects, "mean"])
 ylim([0 150])
 figname = "deviance_combined";
-saveas(gcf, fullfile(figFolder, figname), 'epsc')
+% saveas(gcf, fullfile(figFolder, figname), 'epsc')
 
 % scatter const vs surround
 figure, scatter(const.full, surr.full, 50, 'filled')

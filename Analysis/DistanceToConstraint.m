@@ -3,7 +3,7 @@ function  [dconstraint, dsurround] = DistanceToConstraint(ds, pa, depth_range, t
 % simulate VR flow scene to generate distance to constraint for multiple velocities
 % takes saved variables from VR experiment
 % plots center, surround velocities as well as constraint
-visualize = 1;
+visualize = 0;
 seed=2;
 rng(seed) % to have random dots that appear in the same "random" place each time
 ns = pa.targetMotionDuration; % number of seconds
@@ -27,6 +27,7 @@ if nargin < 4 || isempty(trial)
     condition_indices = conditions;
     conditions = [speeds(conditions(:,1)).*cos(directions(conditions(:,2))); speeds(conditions(:,1)).*sin(directions(conditions(:,2)))]';
 else
+    condition_speeddir = [pa.fullFactorial(trial,3), pa.fullFactorial(trial,4)];
     conditions = [pa.fullFactorial(trial,1), pa.fullFactorial(trial,2)];
 end
 
@@ -83,7 +84,7 @@ aboveground = -pa.aboveground;
 if ~isempty(nObjects)
     for obj = 1:nObjects
         r = (b-a).*rand(dotsperobj,3) + a; % in line below added +pa.positions(2,obj)'
-        newpositions = [r(:,1)+positions(obj,1), r(:,2)+(height-b)-mean(pa.positions(2,obj))', r(:,3)+positions(obj,2)];
+        newpositions = [r(:,1)+positions(obj,1), r(:,2)+(height-b)-pa.positions(2,obj)', r(:,3)+positions(obj,2)];
         dots = [dots; newpositions];
     end
     
@@ -346,8 +347,12 @@ for cond = 1:size(conditions, 1)
             axis equal
             xlim(xlims)
             ylim(ylims)
-            title(['s = ', num2str(speeds(condition_indices(cond,1))), ' m/s,  dir = ', num2str(rad2deg(directions(condition_indices(cond,2)))), ' deg'])
+            if exist('conditon_indices','var')
+                title(['s = ', num2str(speeds(condition_indices(cond,1))), ' m/s,  dir = ', num2str(rad2deg(directions(condition_indices(cond,2)))), ' deg'])
+            else
+                title(['s = ', num2str(condition_speeddir(1)), ' m/s,  dir = ', num2str(rad2deg(condition_speeddir(2))), ' deg'])
 
+            end
             pause(1)
             end
             %

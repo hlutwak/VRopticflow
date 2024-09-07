@@ -67,6 +67,10 @@ for ii = 1:s(3)
 end
 
 %% eye tracking data
+
+figFolder = '/Users/hopelutwak/Documents/GitHub/VRopticflow/Figures';
+
+
 D=dir('Data/');
 % filename = '2023-10-11_14-57-35-1e54f077';
 % filename = '2023-10-12_12-25-27-004bb3c5'; % fix/obj dist 2,1.5
@@ -75,7 +79,7 @@ D=dir('Data/');
 % filename = '2024-02-21_12-36-02_hl_fulleyetracking-fixed-15trans-20240221t123559-0-012e0633';
 % filename = '2024-02-21_13-15-23_hl_fulleyetrackingdots-fixed-20240221t131520-0-44d050a3';
 % filename = '2024-02-21_14-44-58_hl_fulleyetracking_eyesim-fixed-20240221t144454-0-f2d8da04';
-filename = '2024-03-05_15-41-10_PL-full-1';
+filename = '2024-02-26_15-15-38_MP-full-1';
 
 gaze = readtable(['Data/', filename, '/gaze.csv']);
 blinks = readtable(['Data/', filename, '/blinks.csv']);
@@ -136,25 +140,28 @@ offset = milliseconds(evts_time(idx) - oc.UTCtrialStart(2));
 synced = date_time-milliseconds(offset);
 synced_evts = evts_time -milliseconds(offset);
 
-figure, plot(synced,x, 'linewidth', 2), hold on, plot(synced,y,'linewidth', 2)
+figure,  set(gcf,'renderer','Painters'), plot(synced,x, 'linewidth', 2), hold on, plot(synced,y,'linewidth', 2)
 yl = ylim;
 hold on, line([oc.UTCtrialEnd; oc.UTCtrialEnd],[yl(1); yl(2)].*ones(size(oc.UTCtrialEnd)), 'color','r') 
 
 hold on, line([oc.UTCtrialStart; oc.UTCtrialStart],[yl(1); yl(2)].*ones(size(oc.UTCtrialStart)), 'color','g') 
 hold on, line([synced_evts'; synced_evts'], [yl(1); yl(2)].*ones(size(evts_time')), 'color','k') 
 
+% figname = "exampleEyetracking"
+% saveas(gcf, fullfile(figFolder, figname), 'epsc')
 
 %% butterworth filter
 [b,a]=butter(4,1/25);
-output_datax=filter(b,a,x);
+output_datax =filter(b,a,x);
 output_datay = filter(b,a,y);
 
-figure, plot(synced,output_datax, 'linewidth', 2), hold on, plot(synced,output_datay,'linewidth', 2)
+figure,  set(gcf,'renderer','Painters'), plot(synced,output_datax, 'linewidth', 2), hold on, plot(synced,output_datay,'linewidth', 2)
 yl = ylim;
 hold on, line([oc.UTCtrialEnd; oc.UTCtrialEnd],[yl(1); yl(2)].*ones(size(oc.UTCtrialEnd)), 'color','r') 
 
 hold on, line([oc.UTCtrialStart; oc.UTCtrialStart],[yl(1); yl(2)].*ones(size(oc.UTCtrialStart)), 'color','g') 
-hold on, line([evts_time'; evts_time'], [yl(1); yl(2)].*ones(size(evts_time')), 'color','k') 
+% hold on, line([evts_time'; evts_time'], [yl(1); yl(2)].*ones(size(evts_time')), 'color','k') 
+hold on, line([synced_evts'; synced_evts'], [yl(1); yl(2)].*ones(size(evts_time')), 'color','k') 
 
 x = output_datax;
 y= output_datay;
@@ -230,8 +237,8 @@ dend = [];
 % start_position = NaN(2, pa.trialNumber-1);
 % end_position = NaN(2, pa.trialNumber-1);
 
-startpos = [6,15.5];
-endpos = [6,12];
+% startpos = [6,15.5];
+% endpos = [6,12];
 
 bad_trials = [];
 
@@ -245,8 +252,11 @@ for trial = 2:pa.nTrials %600 % 2:pa.nTrials %full set, change to pa.nTrials
      
 %     averageEyePath=[linspace(startpos(1),endpos(1),length(eyetracking)).' linspace(startpos(2),endpos(2),length(eyetracking)).'];
     [peak,ii] = max(eyetracking(:,2));
-    dstart = [dstart vecnorm(eyetracking(ii,:) - startpos)];
-    dend = [dend vecnorm(eyetracking(end,:)-endpos)];
+%     dstart = [dstart vecnorm(eyetracking(ii,:) - startpos)];
+    dstart = [dstart eyetracking(ii,1)-startpos(1)]; %change to if x value outside range
+%     dend = [dend vecnorm(eyetracking(end,:)-endpos)];
+    dend = [dend eyetracking(end,1)-endpos(1)];
+    
     if dstart(end) >1 || dend(end) >1
         bad_trials = [bad_trials, trial];
     end
@@ -301,7 +311,7 @@ hold on, line([oc.UTCtrialStart; oc.UTCtrialStart]+seconds(.5),[yl(1); yl(2)].*o
 cov(TT.x(stim_interval_idx), TT.y(stim_interval_idx))
 
 %% load behavioral file
-load('Data\HL_pilot-fixed-20230726T160928-0.mat')
+% load('Data\HL_pilot-fixed-20230726T160928-0.mat')
 
 % have to take data from stimulus with eye simulation
 change_angle = rad2deg(max(track_theta) - min(track_theta));
