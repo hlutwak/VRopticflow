@@ -68,7 +68,7 @@ hold on, line([synced_evts'; synced_evts'], [yl(1); yl(2)].*ones(size(evts_time'
 
 
 %% butterworth filter
-[b,a]=butter(4,1/50);
+[b,a]=butter(4,1/60);
 output_datax=filter(b,a,x);
 output_datay = filter(b,a,y);
 
