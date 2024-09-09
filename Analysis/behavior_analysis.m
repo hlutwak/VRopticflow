@@ -104,16 +104,17 @@ const.mono = [41	29	44	18	42	29	40	47	39	24];
 surr.mono = [203	208	253	150	250	225	153	221	217	157];
 
 
-% const vs surround
-fig = figure();
-for d = 1:length(const)
-    hold on, plot(x, [const(d), surr(d)],'.-','MarkerSize',20,'LineWidth', 2)
-end
-title('Monocular')
-set(gca, 'FontSize', 16)
+% % const vs surround
+% fig = figure();
+% for d = 1:length(const)
+%     hold on, plot(x, [const(d), surr(d)],'.-','MarkerSize',20,'LineWidth', 2)
+% end
+% title('Monocular')
+% set(gca, 'FontSize', 16)
+% 
+% ylim([0. 350])
 
-ylim([0. 350])
-
+c = lines(length(subjects));
 
 % const for each stimulus
 x = categorical(["full" "monocular" "dots"]);
