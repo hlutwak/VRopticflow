@@ -8,7 +8,7 @@ dataFolder = '/Users/hopelutwak/Documents/GitHub/VRopticflow/Data';
 % 
 % % which subjects data to analyze
 subjects = "MP"; %"HL" "IK"
-stims = "full-2"; %["full-1", "full-2"]; %"pilot"
+stims = "monocular-2"; %["full-1", "full-2"]; %"pilot"
 
 D=dir('Data/');
 
@@ -220,6 +220,7 @@ tic
 load('theta.mat'); % theortical theta
 dconst_overTrials = [];
 dsurr_overTrials = [];
+depth_range = 0.05;
 
 for t = good_trials %pa.trialNumber %full set, change to pa.nTrials
     tf = isbetween(synced, oc.UTCtrialStart(t), oc.UTCtrialEnd(t)+milliseconds(50)); %in case being inbetween trialstart and end cuts off too much eyetracking data
@@ -246,7 +247,7 @@ for t = good_trials %pa.trialNumber %full set, change to pa.nTrials
     theta_thisTrial = theta(1)- deg2rad(interp_y(1:length(theta)));
     trial = t;
     
-    [dconst, dsurr] = DistanceToConstraint(ds, pa, .05, theta, trial);
+    [dconst, dsurr] = DistanceToConstraint(ds, pa, depth_range, theta, trial);
     dconst_overTrials = [dconst_overTrials dconst];
     dsurr_overTrials = [dsurr_overTrials dsurr];
     if mod(t,50) == 0
@@ -264,20 +265,12 @@ pa.dsurr = dsurr_overTrials;
 
 
 % save(pa.dataFile, '-struct', 'MPdata');
-pa.baseDir = pwd;
-pa.dataFile = fullfile(pa.baseDir, 'Data', [pa.subjectName '-' num2str(pa.block) '-' pa.date '-copy' '.mat']);
-save(pa.dataFile, 'pa', 'ds', 'kb','oc');
-
+% pa.baseDir = pwd;
+% pa.dataFile = fullfile(pa.baseDir, 'Data', [pa.subjectName '-' num2str(pa.block) '-' pa.date '-copy' '.mat']);
+% save(pa.dataFile, 'pa', 'ds', 'kb','oc');
+% 
 
 %% psignifit with new dconst
-
-options             = struct;   % initialize as an empty struct
-options.sigmoidName = 'weibull';   
-options.expType     = '2AFC';   % choose 2-AFC as the paradigm of the experiment
-                                % this sets the guessing rate to .5 and
-                                % fits the rest of the parameters
-options.fixedPars = NaN(5,1);                                
-% options.fixedPars(5) = 0;       % fix eta (dispersion) to zero
 
 
 % matrix of results
@@ -289,29 +282,71 @@ nTrials = ones(size(pcorrect));
 data_const = [pa.dconst; pcorrect; nTrials]';
 data_surr = [pa.dsurr; pcorrect; nTrials]';
 
-
-MP_processed.full1.const = data_const;
-MP_processed.full1.surr = data_surr;
-MP_processed.full1.good_trials = good_trials;
-
 all = 2:pa.nTrials;
 idx = ismember(all, good_trials);
 removed_trials = all(~idx);
-MP_processed.full1.removed_trials = removed_trials;
+
+MP_processed.monocular2.const = data_const;
+MP_processed.monocular2.surr = data_surr;
+MP_processed.monocular2.good_trials = good_trials;
+MP_processed.monocular2.removed_trials = removed_trials;
 
 save('MP_processed', 'MP_processed')
 
+%% do this once you've gone through both blocks
+MP_processed.full.const = [MP_processed.full1.const; MP_processed.full2.const]
+MP_processed.full.surr = [MP_processed.full1.surr; MP_processed.full2.surr]
 
-data_const2 = [pa.dconst; pcorrect; nTrials]';
-data_surr2 = [pa.dsurr; pcorrect; nTrials]';
 
-data_const = [data_const; data_const2];
-data_surr = [data_surr; data_surr2];
+MP_processed.dots.const = [MP_processed.dots1.const; MP_processed.dots2.const]
+MP_processed.dots.surr = [MP_processed.dots1.surr; MP_processed.dots2.surr]
 
+MP_processed.monocular.const = [MP_processed.monocular1.const; MP_processed.full2.const]
+MP_processed.monocular.surr = [MP_processed.monocular.surr; MP_processed.full2.surr]
+
+
+% data_const = [data_const; data_const2];
+% data_surr = [data_surr; data_surr2];
+% 
+data_const = MP_processed.dots.const;
+data_surr = MP_processed.dots.surr;
+
+
+options             = struct;   % initialize as an empty struct
+options.sigmoidName = 'weibull';   
+options.expType     = '2AFC';   % choose 2-AFC as the paradigm of the experiment
+                                % this sets the guessing rate to .5 and
+                                % fits the rest of the parameters
+options.fixedPars = NaN(5,1);  
+options.poolxTol = 0.005;
+% options.fixedPars(5) = 0;       % fix eta (dispersion) to zero
 result_const = psignifit(data_const,options);
 result_surr = psignifit(data_surr,options);
 
+
 figure, plotPsych(result_const, options);
+title(['depth range = ', num2str(depth_range)])
 figure, plotPsych(result_surr, options);
+title(['depth range = ', num2str(depth_range)])
+
+
+% save results
+result_const.depth_range = depth_range;
+result_surr.depth_range = depth_range;
+
+MP_processed.full.result_surr = result_surr;
+
+
+%% save figs
+s = 1;
+figFolder = '/Users/hopelutwak/Documents/GitHub/VRopticflow/Figures';
+stim = extractBefore(stims(1),'-');
+figname = [subjects(s)+'_const_eyetracking_'+stim+'.eps'];
+
+
+figname = [subjects(s)+'_surr_eyetracking_'+stim+'.eps'];
+
+saveas(gcf, fullfile(figFolder, figname), 'epsc')
+
 
 %% iterate need to recalculate with different value of d
