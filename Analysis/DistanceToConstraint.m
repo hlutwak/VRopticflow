@@ -83,8 +83,8 @@ aboveground = -pa.aboveground;
  
 if ~isempty(nObjects)
     for obj = 1:nObjects
-        r = (b-a).*rand(dotsperobj,3) + a; % in line below added +pa.positions(2,obj)'
-        newpositions = [r(:,1)+positions(obj,1), r(:,2)+(height-b)-pa.positions(2,obj)', r(:,3)+positions(obj,2)];
+        r = (b-a).*rand(dotsperobj,3) + a; % in line below added -pa.positions(2,obj)'
+        newpositions = [r(:,1)+positions(obj,1), r(:,2)+(height-b)+aboveground*rand(1), r(:,3)+positions(obj,2)];
         dots = [dots; newpositions];
     end
     
