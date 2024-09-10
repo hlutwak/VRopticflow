@@ -7,7 +7,7 @@ dataFolder = '/Users/hopelutwak/Documents/GitHub/VRopticflow/Data';
 
 % 
 % % which subjects data to analyze
-subjects = "MP"; %"HL" "IK"
+subjects = "SM"; %"HL" "IK"
 stims = "full-2"; %["full-1", "full-2"]; %"pilot"
 
 D=dir('Data/');
@@ -251,33 +251,33 @@ all = 1:pa.nTrials;
 idx = ismember(all, good_trials);
 removed_trials = all(~idx);
 
-MP_processed.full2.const = data_const;
-MP_processed.full2.surr = data_surr;
-MP_processed.full2.good_trials = good_trials;
-MP_processed.full2.removed_trials = removed_trials;
+SM_processed.full2.const = data_const;
+SM_processed.full2.surr = data_surr;
+SM_processed.full2.good_trials = good_trials;
+SM_processed.full2.removed_trials = removed_trials;
 
-save('MP_processed', 'MP_processed')
+save('SM_processed', 'SM_processed')
 
 %% do this once you've gone through both blocks
-MP_processed.full.const = [MP_processed.full1.const; MP_processed.full2.const]
-MP_processed.full.surr = [MP_processed.full1.surr; MP_processed.full2.surr]
+SM_processed.full.const = [SM_processed.full1.const; SM_processed.full2.const]
+SM_processed.full.surr = [SM_processed.full1.surr; SM_processed.full2.surr]
 
 
-MP_processed.dots.const = [MP_processed.dots1.const; MP_processed.dots2.const]
-MP_processed.dots.surr = [MP_processed.dots1.surr; MP_processed.dots2.surr]
+SM_processed.dots.const = [SM_processed.dots1.const; SM_processed.dots2.const]
+SM_processed.dots.surr = [SM_processed.dots1.surr; SM_processed.dots2.surr]
 
-MP_processed.monocular.const = [MP_processed.monocular1.const; MP_processed.monocular2.const]
-MP_processed.monocular.surr = [MP_processed.monocular1.surr; MP_processed.monocular2.surr]
+SM_processed.monocular.const = [SM_processed.monocular1.const; SM_processed.monocular2.const]
+SM_processed.monocular.surr = [SM_processed.monocular1.surr; SM_processed.monocular2.surr]
 
 
-data_const = MP_processed.full.const;
-data_surr = MP_processed.full.surr;
+data_const = SM_processed.full.const;
+data_surr = SM_processed.full.surr;
 
-data_const = MP_processed.dots.const;
-data_surr = MP_processed.dots.surr;
+data_const = SM_processed.dots.const;
+data_surr = SM_processed.dots.surr;
 
-data_const = MP_processed.monocular.const;
-data_surr = MP_processed.monocular.surr;
+data_const = SM_processed.monocular.const;
+data_surr = SM_processed.monocular.surr;
 
 options             = struct;   % initialize as an empty struct
 options.sigmoidName = 'weibull';   
@@ -301,10 +301,10 @@ title(['depth range = ', num2str(depth_range)])
 result_const.depth_range = depth_range;
 result_surr.depth_range = depth_range;
 
-MP_processed.full.result_surr = result_surr;
-MP_process.full.result_const = result_const;
+SM_processed.full.result_surr = result_surr;
+SM_processed.full.result_const = result_const;
 
-save('MP_processed', 'MP_processed')
+save('SM_processed', 'SM_processed')
 
 %% save figs
 s = 1;

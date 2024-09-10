@@ -7,8 +7,8 @@ dataFolder = '/Users/hopelutwak/Documents/GitHub/VRopticflow/Data';
 
 % 
 % % which subjects data to analyze
-subjects = "MP"; %"HL" "IK"
-stims = "monocular-2"; %["full-1", "full-2"]; %"pilot"
+subjects = "SM"; %"HL" "IK"
+stims = "full-2"; %["full-1", "full-2"]; %"pilot"
 
 D=dir('Data/');
 
@@ -96,7 +96,7 @@ x = output_datax;
 y= output_datay;
 
 
-%% eye data within intervals
+% eye data within intervals
 trial_times = [];
 eyetracking = [];
 gaze_speed = NaN(1, pa.trialNumber-1);
@@ -139,29 +139,19 @@ reasonable_speed = find(gaze_speed<15);
 
 
 % find startpos by getting half second before first trial starts
-t = 2;
+t = 1;
 [val, idx] = min(abs(synced - oc.UTCtrialStart(t)));
 interval = .5;
 [val, interval_start] = min(abs(synced(idx) - synced-seconds(.5)));
 startpos = [mean(x(interval_start:idx)), mean(y(interval_start:idx))];
-hold on, scatter(startpos(1), startpos(2), 100, 'filled', 'g')
+hold on, scatter(startpos(1), startpos(2), 100, 'filled', 'b')
 
 % average start and end position
-% startpos = nanmean(start_position(:,reasonable_speed)');
+startpos = nanmean(start_position(:,reasonable_speed)');
 endpos = nanmean(end_position(:,reasonable_speed)');
 hold on, scatter(startpos(1), startpos(2), 'filled', 'g')
 hold on, scatter(endpos(1), endpos(2), 'filled', 'r')
 
-%% look at trajectory for a trial
-for t= 4 %pa.trialNumber %full set, change to pa.nTrials
-    tf = isbetween(synced, oc.UTCtrialStart(t), oc.UTCtrialEnd(t));
-    trial_times = [trial_times; synced(tf)];
-    eyetracking = [eyetracking; x(tf), y(tf)];
-    idx = find(tf);
-
-figure, for ii = 1:length(idx),hold on, scatter(x(idx(ii)), y(idx(ii)))
-pause(.05), end
-end
 
 %% find good trials, no large horizontal variations
 
@@ -188,31 +178,6 @@ axis equal
 set(gca, 'FontSize', 16)
 
 disp(['num good trials = ', num2str(length(good_trials)), ' out of ', num2str(pa.nTrials)])
-
-%% interpolate eye data
-interp_times = trial_times(1):milliseconds(1/ds.frameRate*1000):trial_times(end);
-interp_x = interp1(trial_times, eyetracking(:,1), interp_times);
-interp_y = interp1(trial_times, eyetracking(:,2), interp_times);
-
-figure, plot(trial_times,eyetracking(:,1),'o',interp_times,interp_x,':.');
-hold on, plot(trial_times,eyetracking(:,2),'o',interp_times,interp_y,':.');
-
-% startpos = [5.4, 15.4]; %guess MP [5,-1.45]; DL [6,14], MG [5.4, 15.4]
-% endpos = [5.2, 11.2]; % DL [5,11], MG [5.2, 11.2]
-
-% subtract off what start and end positions are
-interp_x = interp_x - startpos(1);
-interp_y = interp_y - startpos(2);
-
-% for now try just changing theta for y
-load('theta.mat')
-theta = theta(1)- deg2rad(interp_y(1:length(theta)));
-
-trial = 3;
-
-% calculate for this trial
-
-[dconst, dsurr] = DistanceToConstraint(ds, pa, .05, theta, trial);
 
 
 %% try for multiple trials
@@ -282,35 +247,37 @@ nTrials = ones(size(pcorrect));
 data_const = [pa.dconst; pcorrect; nTrials]';
 data_surr = [pa.dsurr; pcorrect; nTrials]';
 
-all = 2:pa.nTrials;
+all = 1:pa.nTrials;
 idx = ismember(all, good_trials);
 removed_trials = all(~idx);
 
-MP_processed.monocular2.const = data_const;
-MP_processed.monocular2.surr = data_surr;
-MP_processed.monocular2.good_trials = good_trials;
-MP_processed.monocular2.removed_trials = removed_trials;
+SM_processed.full2.const = data_const;
+SM_processed.full2.surr = data_surr;
+SM_processed.full2.good_trials = good_trials;
+SM_processed.full2.removed_trials = removed_trials;
 
-save('MP_processed', 'MP_processed')
+save('SM_processed', 'SM_processed')
 
 %% do this once you've gone through both blocks
-MP_processed.full.const = [MP_processed.full1.const; MP_processed.full2.const]
-MP_processed.full.surr = [MP_processed.full1.surr; MP_processed.full2.surr]
+SM_processed.full.const = [SM_processed.full1.const; SM_processed.full2.const]
+SM_processed.full.surr = [SM_processed.full1.surr; SM_processed.full2.surr]
 
 
-MP_processed.dots.const = [MP_processed.dots1.const; MP_processed.dots2.const]
-MP_processed.dots.surr = [MP_processed.dots1.surr; MP_processed.dots2.surr]
+SM_processed.dots.const = [SM_processed.dots1.const; SM_processed.dots2.const]
+SM_processed.dots.surr = [SM_processed.dots1.surr; SM_processed.dots2.surr]
 
-MP_processed.monocular.const = [MP_processed.monocular1.const; MP_processed.full2.const]
-MP_processed.monocular.surr = [MP_processed.monocular.surr; MP_processed.full2.surr]
+SM_processed.monocular.const = [SM_processed.monocular1.const; SM_processed.monocular2.const]
+SM_processed.monocular.surr = [SM_processed.monocular1.surr; SM_processed.monocular2.surr]
 
 
-% data_const = [data_const; data_const2];
-% data_surr = [data_surr; data_surr2];
-% 
-data_const = MP_processed.dots.const;
-data_surr = MP_processed.dots.surr;
+data_const = SM_processed.full.const;
+data_surr = SM_processed.full.surr;
 
+data_const = SM_processed.dots.const;
+data_surr = SM_processed.dots.surr;
+
+data_const = SM_processed.monocular.const;
+data_surr = SM_processed.monocular.surr;
 
 options             = struct;   % initialize as an empty struct
 options.sigmoidName = 'weibull';   
@@ -334,8 +301,10 @@ title(['depth range = ', num2str(depth_range)])
 result_const.depth_range = depth_range;
 result_surr.depth_range = depth_range;
 
-MP_processed.full.result_surr = result_surr;
+SM_processed.full.result_surr = result_surr;
+SM_processed.full.result_const = result_const;
 
+save('SM_processed', 'SM_processed')
 
 %% save figs
 s = 1;
@@ -349,4 +318,39 @@ figname = [subjects(s)+'_surr_eyetracking_'+stim+'.eps'];
 saveas(gcf, fullfile(figFolder, figname), 'epsc')
 
 
-%% iterate need to recalculate with different value of d
+%% archive
+%% look at trajectory for a trial (SKIP)
+for t= 4 %pa.trialNumber %full set, change to pa.nTrials
+    tf = isbetween(synced, oc.UTCtrialStart(t), oc.UTCtrialEnd(t));
+    trial_times = [trial_times; synced(tf)];
+    eyetracking = [eyetracking; x(tf), y(tf)];
+    idx = find(tf);
+
+figure, for ii = 1:length(idx),hold on, scatter(x(idx(ii)), y(idx(ii)))
+pause(.05), end
+end
+
+%% interpolate eye data one trial (SKIP)
+interp_times = trial_times(1):milliseconds(1/ds.frameRate*1000):trial_times(end);
+interp_x = interp1(trial_times, eyetracking(:,1), interp_times);
+interp_y = interp1(trial_times, eyetracking(:,2), interp_times);
+
+figure, plot(trial_times,eyetracking(:,1),'o',interp_times,interp_x,':.');
+hold on, plot(trial_times,eyetracking(:,2),'o',interp_times,interp_y,':.');
+
+% startpos = [5.4, 15.4]; %guess MP [5,-1.45]; DL [6,14], MG [5.4, 15.4]
+% endpos = [5.2, 11.2]; % DL [5,11], MG [5.2, 11.2]
+
+% subtract off what start and end positions are
+interp_x = interp_x - startpos(1);
+interp_y = interp_y - startpos(2);
+
+% for now try just changing theta for y
+load('theta.mat')
+theta = theta(1)- deg2rad(interp_y(1:length(theta)));
+
+trial = 3;
+
+% calculate for this trial
+
+[dconst, dsurr] = DistanceToConstraint(ds, pa, .05, theta, trial);
