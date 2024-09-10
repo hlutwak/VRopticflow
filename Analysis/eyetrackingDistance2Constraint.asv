@@ -7,8 +7,8 @@ dataFolder = '/Users/hopelutwak/Documents/GitHub/VRopticflow/Data';
 
 % 
 % % which subjects data to analyze
-subjects = "SM"; %"HL" "IK"
-stims = "full-2"; %["full-1", "full-2"]; %"pilot"
+subjects = "JO"; %"HL" "IK"
+stims = "full-1"; %["full-1", "full-2"]; %"pilot"
 
 D=dir('Data/');
 
@@ -251,34 +251,35 @@ all = 1:pa.nTrials;
 idx = ismember(all, good_trials);
 removed_trials = all(~idx);
 
-SM_processed.full2.const = data_const;
-SM_processed.full2.surr = data_surr;
-SM_processed.full2.good_trials = good_trials;
-SM_processed.full2.removed_trials = removed_trials;
+JO_processed.full1.const = data_const;
+JO_processed.full1.surr = data_surr;
+JO_processed.full1.good_trials = good_trials;
+JO_processed.full1.removed_trials = removed_trials;
 
-save('SM_processed', 'SM_processed')
+save('JO_processed', 'JO_processed')
 
 %% do this once you've gone through both blocks
-SM_processed.full.const = [SM_processed.full1.const; SM_processed.full2.const]
-SM_processed.full.surr = [SM_processed.full1.surr; SM_processed.full2.surr]
+JO_processed.full.const = [JO_processed.full1.const; JO_processed.full2.const]
+JO_processed.full.surr = [JO_processed.full1.surr; JO_processed.full2.surr]
 
 
-SM_processed.dots.const = [SM_processed.dots1.const; SM_processed.dots2.const]
-SM_processed.dots.surr = [SM_processed.dots1.surr; SM_processed.dots2.surr]
+JO_processed.dots.const = [JO_processed.dots1.const; JO_processed.dots2.const]
+JO_processed.dots.surr = [JO_processed.dots1.surr; JO_processed.dots2.surr]
 
-SM_processed.monocular.const = [SM_processed.monocular1.const; SM_processed.monocular2.const]
-SM_processed.monocular.surr = [SM_processed.monocular1.surr; SM_processed.monocular2.surr]
+JO_processed.monocular.const = [JO_processed.monocular1.const; JO_processed.monocular2.const]
+JO_processed.monocular.surr = [JO_processed.monocular1.surr; JO_processed.monocular2.surr]
 
 
-data_const = SM_processed.full.const;
-data_surr = SM_processed.full.surr;
+data_const = JO_processed.full.const;
+data_surr = JO_processed.full.surr;
 
-data_const = SM_processed.dots.const;
-data_surr = SM_processed.dots.surr;
+data_const = JO_processed.dots.const;
+data_surr = JO_processed.dots.surr;
 
-data_const = SM_processed.monocular.const;
-data_surr = SM_processed.monocular.surr;
+data_const = JO_processed.monocular.const;
+data_surr = JO_processed.monocular.surr;
 
+%%
 options             = struct;   % initialize as an empty struct
 options.sigmoidName = 'weibull';   
 options.expType     = '2AFC';   % choose 2-AFC as the paradigm of the experiment
@@ -301,10 +302,10 @@ title(['depth range = ', num2str(depth_range)])
 result_const.depth_range = depth_range;
 result_surr.depth_range = depth_range;
 
-SM_processed.full.result_surr = result_surr;
-SM_processed.full.result_const = result_const;
+JO_processed.full.result_surr = result_surr;
+JO_processed.full.result_const = result_const;
 
-save('SM_processed', 'SM_processed')
+save('JO_processed', 'JO_processed')
 
 %% save figs
 s = 1;
