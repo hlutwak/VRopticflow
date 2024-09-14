@@ -8,7 +8,7 @@ dataFolder = '/Users/hopelutwak/Documents/GitHub/VRopticflow/Data';
 % 
 % % which subjects data to analyze
 subjects = "JO"; %"HL" "IK"
-stims = "full-2"; %["full-1", "full-2"]; %"pilot"
+stims = "full-1"; %["full-1", "full-2"]; %"pilot"
 
 D=dir('Data/');
 
@@ -156,6 +156,9 @@ hold on, scatter(endpos(1), endpos(2), 'filled', 'r')
 %% find good trials, no large horizontal variations
 
 good_trials = [];
+bad_trials = [];
+target_comparison = [];
+response_comparison = [];
 % startpos = [5.4, 15.4]; %guess MP [5,-1.45]; DL [6,14] [8,12], MG [5.4, 15.4]
 % % endpos = [5,11]; % DL [5,11], MG [5.2, 11.2]
 
@@ -163,11 +166,22 @@ good_trials = [];
  figure
 for t = 2:pa.nTrials %pa.trialNumber %full set, change to pa.nTrials
     tf = isbetween(synced, oc.UTCtrialStart(t), oc.UTCtrialEnd(t));
-    avg_xval = mean([startpos(1), endpos(1)]);
-    distX  = abs(x(tf) - startpos(1));
-    if sum(tf)>0 && ~sum(find(distX>1))
+    idx = find(tf);
+    xvals = [startpos(1), endpos(1)]; % get horizontal vals for start and end pos
+    distX  = abs(x(tf) - xvals); % calculate distance between either
+    if sum(tf)>0 && ~sum(find(distX>1.5))
         good_trials = [good_trials, t];
         hold on, scatter(x(tf), y(tf))
+    elseif sum(tf)>0 && sum(find(distX>1.5))
+        bad_trials = [bad_trials, t];
+        hold on, scatter(x(tf), y(tf), 50,[0.5, 0.5, 0.5])
+        % does the target go in the direction of the eye movement? does
+        % this align with response?
+        % what direction did the eye movement go 
+        [val,val_idx] = max(abs(diff(x(tf)))); % peak horizontal velocity
+        eye_direction = sign(x(idx(val_idx)) - x(idx(1)));
+        target_comparison = [target_comparison pa.LR(t) == eye_direction];
+        response_comparison = [response_comparison pa.LRresponse(t) == eye_direction];
     end
     
 end
@@ -177,7 +191,7 @@ hold on, scatter(endpos(1), endpos(2), 'filled', 'r')
 axis equal
 set(gca, 'FontSize', 16)
 
-disp(['num good trials = ', num2str(length(good_trials)), ' out of ', num2str(pa.nTrials)])
+disp(['num good trials = ', num2str(length(good_trials)), ' out of ', num2str(pa.nTrials), ', ' num2str(length(good_trials)/pa.nTrials*100), '%'])
 
 
 %% try for multiple trials

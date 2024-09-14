@@ -15,9 +15,9 @@ analysisFolder = '/Users/hopelutwak/Documents/GitHub/VRopticflow/Analysis';
 S = dir(fullfile(dataFolder,'*.mat'));
 
 % which subjects data to analyze
-subjects = ["SM"]; %"HL" "IK"
+subjects = ["MP"]; %"HL" "IK"
 % all: "PL", "MP", "SM", "JL", "IK", "JO", "KZ", "IG"
-stims = ["full-1", "full-2"]; %["full-1", "full-2"]; %"pilot" ["monocular-1", "monocular-2"]
+stims = ["monocular-1", "monocular-2"]; %["full-1", "full-2"]; %"pilot" ["monocular-1", "monocular-2"]
 depth_range = .05;
 
 
@@ -159,13 +159,16 @@ plot([min([xlim ylim]) max([xlim ylim])], [min([xlim ylim]) max([xlim ylim])], '
 
 
 %% iterate over different values of distance to const
-distances  = linspace(0.025, 0.15, 10);
+distances  = logspace(-2, 1.5, 10);
+%logspace(-2, 2, 10);
+%linspace(0.025, 0.15, 10);
 
 % window of distances cube could physically be distances  = linspace(.05, .6, 10);
 % constraint_length_opt distances = linspace(0.025, 0.15, 10)
 dev = zeros(1,length(distances));
 
-for d = 1:length(distances)
+tic
+for d = 1 :length(distances) 
     [dconst, dsurr] = DistanceToConstraint(ds, pa, distances(d));
     data_const(:,1) = repmat(dconst(:), count, 1);
 
@@ -174,46 +177,53 @@ for d = 1:length(distances)
     figure, plotPsych(result, options);
 %     thresh = exp(result.Fit(1));
     dev(d) = result.deviance;
+%     if mod(d,5) == 0
+        display(d)
+%     end
 end
 
 [val,idx] = min(dev);
+toc
 
+% 
+figure, semilogx(distances,dev,'o-','LineWidth', 5)
+set(gca, 'FontSize', 16)
 
-if idx == length(distances)
-    distances_ext = linspace(distances(end)+mean(diff(distances)), (distances(end))+10*mean(diff(distances)), 10);
-    dev_ext = zeros(1,length(distances_ext));
-    
-    for d = 1:length(distances_ext)
-        [dconst, dsurr] = DistanceToConstraint(ds, pa, distances_ext(d));
-        data_const(:,1) = repmat(dconst(:), count, 1);
-        
-        % run psignifit
-        result = psignifit(data_const,options);
-        figure, plotPsych(result, options);
-        %     thresh = exp(result.Fit(1));
-        dev_ext(d) = result.deviance;
-    end
-    
-    dev = [dev dev_ext];
-    distances = [distances distances_ext];
-elseif idx == 1
-    distances_prev = linspace(max(0,distances(1)-10*mean(diff(distances))), distances(1)-mean(diff(distances)), 10);
-    dev_prev = zeros(1,length(distances_prev));
-    
-    for d = 1:length(distances_prev)
-        [dconst, dsurr] = DistanceToConstraint(ds, pa, distances_prev(d));
-        data_const(:,1) = repmat(dconst(:), count, 1);
-        
-        % run psignifit
-        result = psignifit(data_const,options);
-        figure, plotPsych(result, options);
-        %     thresh = exp(result.Fit(1));
-        dev_prev(d) = result.deviance;
-    end
-    
-    dev = [dev_prev dev];
-    distances = [distances_prev distances];
-end
+% if idx == length(distances)
+%     distances_ext = linspace(distances(end)+mean(diff(distances)), (distances(end))+10*mean(diff(distances)), 10);
+%     dev_ext = zeros(1,length(distances_ext));
+%     
+%     for d = 1:length(distances_ext)
+%         [dconst, dsurr] = DistanceToConstraint(ds, pa, distances_ext(d));
+%         data_const(:,1) = repmat(dconst(:), count, 1);
+%         
+%         % run psignifit
+%         result = psignifit(data_const,options);
+%         figure, plotPsych(result, options);
+%         %     thresh = exp(result.Fit(1));
+%         dev_ext(d) = result.deviance;
+%     end
+%     
+%     dev = [dev dev_ext];
+%     distances = [distances distances_ext];
+% elseif idx == 1
+%     distances_prev = linspace(max(0,distances(1)-10*mean(diff(distances))), distances(1)-mean(diff(distances)), 10);
+%     dev_prev = zeros(1,length(distances_prev));
+%     
+%     for d = 1:length(distances_prev)
+%         [dconst, dsurr] = DistanceToConstraint(ds, pa, distances_prev(d));
+%         data_const(:,1) = repmat(dconst(:), count, 1);
+%         
+%         % run psignifit
+%         result = psignifit(data_const,options);
+%         figure, plotPsych(result, options);
+%         %     thresh = exp(result.Fit(1));
+%         dev_prev(d) = result.deviance;
+%     end
+%     
+%     dev = [dev_prev dev];
+%     distances = [distances_prev distances];
+% end
 
 % subj distances deviances
 % save dev and distances

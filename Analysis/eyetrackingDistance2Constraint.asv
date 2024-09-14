@@ -156,6 +156,7 @@ hold on, scatter(endpos(1), endpos(2), 'filled', 'r')
 %% find good trials, no large horizontal variations
 
 good_trials = [];
+bad_trials = [];
 % startpos = [5.4, 15.4]; %guess MP [5,-1.45]; DL [6,14] [8,12], MG [5.4, 15.4]
 % % endpos = [5,11]; % DL [5,11], MG [5.2, 11.2]
 
@@ -163,11 +164,20 @@ good_trials = [];
  figure
 for t = 2:pa.nTrials %pa.trialNumber %full set, change to pa.nTrials
     tf = isbetween(synced, oc.UTCtrialStart(t), oc.UTCtrialEnd(t));
-    avg_xval = mean([startpos(1), endpos(1)]);
-    distX  = abs(x(tf) - startpos(1));
-    if sum(tf)>0 && ~sum(find(distX>1))
+    idx = find(tf);
+    xvals = [startpos(1), endpos(1)]; % get horizontal vals for start and end pos
+    distX  = abs(x(tf) - xvals); % calculate distance between either
+    if sum(tf)>0 && ~sum(find(distX>1.5))
         good_trials = [good_trials, t];
         hold on, scatter(x(tf), y(tf))
+    elseif sum(tf)>0 && sum(find(distX>1.5))
+        bad_trials = [bad_trials, t];
+        hold on, scatter(x(tf), y(tf), 50,[0.5, 0.5, 0.5])
+        % does the target go in the direction of the eye movement? does
+        % this align with response?
+        % what direction did the eye movement go 
+        [val,val_idx] = max(abs(x(tf))) % peak velocity 
+        pa.LR(t)
     end
     
 end
@@ -177,7 +187,7 @@ hold on, scatter(endpos(1), endpos(2), 'filled', 'r')
 axis equal
 set(gca, 'FontSize', 16)
 
-disp(['num good trials = ', num2str(length(good_trials)), ' out of ', num2str(pa.nTrials)])
+disp(['num good trials = ', num2str(length(good_trials)), ' out of ', num2str(pa.nTrials), ', ' num2str(length(good_trials)/pa.nTrials*100), '%'])
 
 
 %% try for multiple trials
@@ -251,10 +261,10 @@ all = 1:pa.nTrials;
 idx = ismember(all, good_trials);
 removed_trials = all(~idx);
 
-JO_processed.full1.const = data_const;
-JO_processed.full1.surr = data_surr;
-JO_processed.full1.good_trials = good_trials;
-JO_processed.full1.removed_trials = removed_trials;
+JO_processed.full2.const = data_const;
+JO_processed.full2.surr = data_surr;
+JO_processed.full2.good_trials = good_trials;
+JO_processed.full2.removed_trials = removed_trials;
 
 save('JO_processed', 'JO_processed')
 
@@ -298,7 +308,7 @@ figure, plotPsych(result_surr, options);
 title(['depth range = ', num2str(depth_range)])
 
 
-% save results
+%% save results
 result_const.depth_range = depth_range;
 result_surr.depth_range = depth_range;
 

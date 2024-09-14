@@ -3,9 +3,9 @@ function  [dconstraint, dsurround] = DistanceToConstraint(ds, pa, depth_range, t
 % simulate VR flow scene to generate distance to constraint for multiple velocities
 % takes saved variables from VR experiment
 % plots center, surround velocities as well as constraint
-visualize = 0;
-% seed=2;
-% rng(seed) % to have random dots that appear in the same "random" place each time
+visualize = 1;
+seed=2;
+rng(seed) % to have random dots that appear in the same "random" place each time
 ns = pa.targetMotionDuration; % number of seconds
 world_speed = pa.translation; % m/s speed of the observer in a straight line
 if ~isfield(ds,'frameRate')
@@ -166,7 +166,7 @@ for cond = 1:size(conditions, 1)
     end
     
     % visualize observer trajectory within dots
-    if visualize
+    if visualize && cond ==1
         figure(1), hold on, plot3(trajectory(:,3), -trajectory(:,1), -trajectory(:,2), 'LineWidth', 3)
         hold on, plot3(target_trajectory(:,3), -target_trajectory(:,1), -target_trajectory(:,2), 'LineWidth', 2)
         legend('dots', 'trajectory', 'moving object')
@@ -223,7 +223,10 @@ for cond = 1:size(conditions, 1)
         % smaller range for far/close on constraint line
         v_constraint_far(:,:,ii) = constraint_velocity_screen(ones(size(Z(:,ii))).*(Z(:,ii)+depth_range), [x(:,ii)';y(:,ii)']./100, T(ii,:), view_dist,Z(fixation_idx,ii));
         v_constraint_far(:,:,ii) = v_constraint_far(:,:,ii)*100;
-        v_constraint_close(:,:,ii) = constraint_velocity_screen(ones(size(Z(:,ii))).*(Z(:,ii))-depth_range, [x(:,ii)';y(:,ii)']./100, T(ii,:), view_dist,Z(fixation_idx,ii));
+        close_depths = (Z(:,ii))-depth_range;
+        neg_depths = close_depths<0;
+        close_depths(neg_depths) = objectwidth;
+        v_constraint_close(:,:,ii) = constraint_velocity_screen(ones(size(Z(:,ii))).*close_depths, [x(:,ii)';y(:,ii)']./100, T(ii,:), view_dist,Z(fixation_idx,ii));
         v_constraint_close(:,:,ii) = v_constraint_close(:,:,ii)*100;
         
         % Indices of dots to show based on how close/far the dots in the real world are (viewing depths)
@@ -239,7 +242,7 @@ for cond = 1:size(conditions, 1)
     rvelocityY = diff(y,1,2);
     
 %     %visualize first frame in pixels
-    if visualize
+    if visualize && cond ==1
         figure, scatter(x(I(:,1),1)*ppcm(1), -y(I(:,1),1)*ppcm(2), 'filled')
         hold on, scatter(x(fixation_idx,1)*ppcm(1), -y(fixation_idx,1)*ppcm(2), 'filled', 'r') %fixation
         hold on, scatter(x(stationary_idx,1)*ppcm(1), -y(stationary_idx,1)*ppcm(2), 'filled', 'b') %stationary
@@ -315,11 +318,12 @@ for cond = 1:size(conditions, 1)
         end
         % plot mean velocity object and surround
         
-        if ii == 1 %round((ns*fps-1)/2)
+        if ii == ns*fps-1 %1 %round((ns*fps-1)/2)
     
             if visualize
-                subplot(numel(directions),numel(speeds),cond)
-                clf
+                figure
+%                 subplot(numel(directions),numel(speeds),cond)
+%                 clf
 
                 set(gcf,'position',[500, 500, 600, 400])
                 set(gcf,'color','w');
@@ -347,13 +351,13 @@ for cond = 1:size(conditions, 1)
             axis equal
             xlim(xlims)
             ylim(ylims)
-            if exist('conditon_indices','var')
+            if nargin < 4 || isempty(trial)
                 title(['s = ', num2str(speeds(condition_indices(cond,1))), ' m/s,  dir = ', num2str(rad2deg(directions(condition_indices(cond,2)))), ' deg'])
             else
                 title(['s = ', num2str(condition_speeddir(1)), ' m/s,  dir = ', num2str(rad2deg(condition_speeddir(2))), ' deg'])
 
             end
-            pause(1)
+%             pause(1)
             end
             %
         end
