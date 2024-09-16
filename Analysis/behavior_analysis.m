@@ -15,9 +15,9 @@ analysisFolder = '/Users/hopelutwak/Documents/GitHub/VRopticflow/Analysis';
 S = dir(fullfile(dataFolder,'*.mat'));
 
 % which subjects data to analyze
-subjects = ["MP"]; %"HL" "IK"
+subjects = ["PL"]; %"HL" "IK"
 % all: "PL", "MP", "SM", "JL", "IK", "JO", "KZ", "IG"
-stims = ["full-1", "full-2"]; %add "copy" to have pa.good_trials, and/or dconst and dsurround based on vertical eye movements
+stims = ["monocular-1", "monocular-2"]; %add "copy" to have pa.good_trials, and/or dconst and dsurround based on vertical eye movements
 % % ["full-1", "full-2"]; %"pilot" ["monocular-1", "monocular-2"]
 ideal_eye = 0; % use measurements of data_const and data_surr based on ideal eye movements, otherwise use eyetracking vertical movements
 depth_range = .05;

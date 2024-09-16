@@ -2,14 +2,16 @@
 
 %% get eye tracking interval
 clear
+close all
+
 addpath('/Users/hopelutwak/Documents/MATLAB/psignifit')
 addpath(genpath('/Users/hopelutwak/Documents/GitHub/VRopticflow/Analysis'))
 dataFolder = '/Users/hopelutwak/Documents/GitHub/VRopticflow/Data';
 
 % 
 % % which subjects data to analyze
-subjects = "MP"; %"HL" "IK"
-stims = "full-2"; %["full-1", "full-2"]; %"pilot"
+subjects = "MG"; %"HL" "IK"
+stims = "full-1"; %["full-1", "full-2"]; %"pilot"
 
 D=dir('Data/');
 
@@ -201,6 +203,8 @@ for t = 2:pa.nTrials %pa.trialNumber %full set, change to pa.nTrials
     elseif sum(tf)>0 && sum(find(distX>1.5))
         bad_trials = [bad_trials, t];
 %         hold on, scatter(x(tf), y(tf), 50,[0.5, 0.5, 0.5])
+%         hold on, plot(x(tf), y(tf), '.-', 'LineWidth', 3)
+
         hold on, plot(x(tf), y(tf), '.-','color',[0.5, 0.5, 0.5], 'LineWidth', 3)
 
         % does the target go in the direction of the eye movement? does
