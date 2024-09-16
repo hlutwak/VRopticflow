@@ -3,9 +3,9 @@ function  [dconstraint, dsurround] = DistanceToConstraint(ds, pa, depth_range, t
 % simulate VR flow scene to generate distance to constraint for multiple velocities
 % takes saved variables from VR experiment
 % plots center, surround velocities as well as constraint
-visualize = 1;
-seed=2;
-rng(seed) % to have random dots that appear in the same "random" place each time
+visualize = 0;
+% seed=2;
+% rng(seed) % to have random dots that appear in the same "random" place each time
 ns = pa.targetMotionDuration; % number of seconds
 world_speed = pa.translation; % m/s speed of the observer in a straight line
 if ~isfield(ds,'frameRate')

@@ -17,9 +17,12 @@ S = dir(fullfile(dataFolder,'*.mat'));
 % which subjects data to analyze
 subjects = ["MP"]; %"HL" "IK"
 % all: "PL", "MP", "SM", "JL", "IK", "JO", "KZ", "IG"
-stims = ["monocular-1", "monocular-2"]; %["full-1", "full-2"]; %"pilot" ["monocular-1", "monocular-2"]
+stims = ["full-1", "full-2"]; %add "copy" to have pa.good_trials, and/or dconst and dsurround based on vertical eye movements
+% % ["full-1", "full-2"]; %"pilot" ["monocular-1", "monocular-2"]
+ideal_eye = 0; % use measurements of data_const and data_surr based on ideal eye movements, otherwise use eyetracking vertical movements
 depth_range = .05;
-
+data_const = [];
+data_surr= [];
 
 % loop over all subjects
 
@@ -30,63 +33,92 @@ for s  = 1:length(subjects)
     count = 0;
     for f = 1:length(S)
         subj = contains(S(f).name,subjects(s));
-        sti = contains(S(f).name,stims);
-        
+        sti = contains(S(f).name,stims) && contains(S(f).name, 'eyetracking');
+        %add "eyetrakcing" to have pa.good_trials, and/or dconst and dsurround based on vertical eye movements
+
         if subj && sti
             load(fullfile(dataFolder,S(f).name));
-            n_conditions = length(pa.speed)*length(pa.direction);
-            conditions = fullfact([numel(pa.speed), numel(pa.direction)]);
-            data_session = [];
-            for cond = 1:n_conditions
-                idx_speed = find(pa.fullFactorial(:,3) == pa.speed(conditions(cond,1)));
-                idx_direction = find(pa.fullFactorial(:,4) == pa.direction(conditions(cond,2)));
-                idx = intersect(idx_speed, idx_direction);
-                data_session(cond,:) = [nan(1) nan(1) pa.speed(conditions(cond,1)), rad2deg(pa.direction(conditions(cond,2))), sum(eq(pa.LR(idx), pa.LRresponse(idx))), pa.nRepeats];
-            end
-            [dconst, dsurr] = DistanceToConstraint(ds, pa, depth_range);
-            data_session(:,1) = dconst(:);
-            data_session(:,2) = dsurr(:);
-            data = [data; data_session];
-            data_const = [data(:,1) data(:,end-1:end)]; % to surround data_const = [data(:,1) data(:,end-1:end)];
-            data_surr = [data(:,2) data(:,end-1:end)];
-            count = count+1;
-            
-        end
+            display(fullfile(dataFolder,S(f).name));
 
-    end
+            if ideal_eye
+                n_conditions = length(pa.speed)*length(pa.direction);
+                conditions = fullfact([numel(pa.speed), numel(pa.direction)]);
+                data_session = [];
+                for cond = 1:n_conditions
+                    idx_speed = find(pa.fullFactorial(:,3) == pa.speed(conditions(cond,1)));
+                    idx_direction = find(pa.fullFactorial(:,4) == pa.direction(conditions(cond,2)));
+                    idx = intersect(idx_speed, idx_direction);
+                    if isfield(pa, 'good_trials')
+                        idx = intersect(idx, pa.good_trials);
+                    end
+                    data_session(cond,:) = [nan(1) nan(1) pa.speed(conditions(cond,1)), rad2deg(pa.direction(conditions(cond,2))), sum(eq(pa.LR(idx), pa.LRresponse(idx))), length(idx)];
 
-    
-    options             = struct;   % initialize as an empty struct
-    options.sigmoidName = 'weibull';   
-    options.expType     = '2AFC';   % choose 2-AFC as the paradigm of the experiment
-                                    % this sets the guessing rate to .5 and
-                                    % fits the rest of the parameters
-    options.fixedPars = NaN(5,1);   
-%     options.fixedPars(3) = .01; % fix lapse rate at 1%
-%     options.fixedPars(5) = 0;       % fix eta (dispersion) to zero
-% 4 speeds, 6 directions
-    options.dataColor = [255,153,255; 255,102,255; 255,51,255; 204,0,204;
+                end
+                [dconst, dsurr] = DistanceToConstraint(ds, pa, depth_range);
+                data_session(:,1) = dconst(:);
+                data_session(:,2) = dsurr(:);
+                data = [data; data_session];
+                data_const = [data(:,1) data(:,end-1:end)]; % to surround data_const = [data(:,1) data(:,end-1:end)];
+                data_surr = [data(:,2) data(:,end-1:end)];
+                count = count+1;
+
+                    % 4 speeds, 6 directions
+                    options.dataColor = [255,153,255; 255,102,255; 255,51,255; 204,0,204;
                         255,153,153; 255,102,102; 255,51,51; 204,0,0;
                         255,204,153; 255,178,102; 255, 153, 51; 204,102,0;
                         204,255,153; 178,255,102; 153,255,51; 102,204,0;
                         153,255,255; 102,255,255; 51,255,255; 0,204,204;
                         153,153,255; 102,102,255; 51,51,255; 0,0,204]/255;
 
+            else
+                data_const = [data_const; pa.data_const];
+                data_surr = [data_surr; pa.data_surr];
+%                 options.poolxTol = 0.005;
+%                 options.nblocks = 24;
+
+            end
+        end
+
+    end
+
+
+    options             = struct;   % initialize as an empty struct
+    options.sigmoidName = 'weibull';
+    options.expType     = '2AFC';   % choose 2-AFC as the paradigm of the experiment
+    % this sets the guessing rate to .5 and
+    % fits the rest of the parameters
+    options.fixedPars = NaN(5,1);
+    if ideal_eye
+    else
+        options.poolxTol = 0.005;
+
+    end
+
+    %     options.fixedPars(3) = .01; % fix lapse rate at 1%
+%         options.fixedPars(5) = 0;       % fix eta (dispersion) to zero
+
     result_const = psignifit(data_const,options);
-    options.fixedPars(3) = result_const.Fit(3); % fix lapse rate at calculated for constraint
-    result_surr = psignifit(data_surr, options);
+
     figure, plotPsych(result_const, options);
     title(['distance to constraint, depth range = ', num2str(depth_range)])
     figname = [subjects(s)+'_const_'+stims(1)+'.eps'];
-%     saveas(gcf, fullfile(figFolder, figname), 'epsc')
-    
+    %     saveas(gcf, fullfile(figFolder, figname), 'epsc')
+
+    options.fixedPars(3) = result_const.Fit(3); % fix lapse rate at calculated for constraint
+    result_surr = psignifit(data_surr,options);
+
+
     figure, plotPsych(result_surr, options);
     title('distance to surround')
     figname = [subjects(s)+'_surr_'+stims(1)+'.eps'];
-%     saveas(gcf, fullfile(figFolder, figname), 'epsc')
+    %     saveas(gcf, fullfile(figFolder, figname), 'epsc')
 
-    
+
 end
+
+display(['const dev = '  num2str(result_const.deviance)])
+display(['surr dev = '  num2str(result_surr.deviance)])
+
 
 %% deviance differences
 x = categorical({'constraint', 'surround'});
