@@ -15,14 +15,14 @@ analysisFolder = '/Users/hopelutwak/Documents/GitHub/VRopticflow/Analysis';
 S = dir(fullfile(dataFolder,'*.mat'));
 
 % which subjects data to analyze
-subjects = "MP";
+subjects = "IK";
 % ["MP","DL", "MG", "SM", "IK", "JO", "KZ","IG"];
 %["MP","DL", "MG", "SM", "IK", "JO", "KZ","IG"]; %,"DL","PL", "MG", "SM", "IK", "JO", "KZ","IG"];
 
 % all: "PL", "MP", "SM", "JL", "IK", "JO", "KZ", "IG"
 % all with good eyetracking trials: subjects = ["MP","DL","PL", "MG", "SM", "IK", "JO", "KZ","IG"];
 
-stims = ["dots-1", "dots-2"]; %add "copy" to have pa.good_trials, and/or dconst and dsurround based on vertical eye movements
+stims = ["monocular-1", "monocular-2"]; %add "copy" to have pa.good_trials, and/or dconst and dsurround based on vertical eye movements
 % % ["full-1", "full-2"];["dots-1", "dots-2"] ["monocular-1", "monocular-2"]
 ideal_eye = 1; % use measurements of data_const and data_surr based on ideal eye movements, otherwise use eyetracking vertical movements
 depth_range = .05;
@@ -232,8 +232,8 @@ plot([min([xlim ylim]) max([xlim ylim])], [min([xlim ylim]) max([xlim ylim])], '
 
 
 %% iterate over different values of distance to const
-% distances  = logspace(-2, 1.5, 20);
-distances  = logspace(-1.5, 1, 10);
+distances  = logspace(-2, 1.5, 20);
+% distances  = logspace(-1.5, -.5, 10);
 
 %logspace(-2, 2, 10);
 %linspace(0.025, 0.15, 10);
