@@ -2,7 +2,7 @@
 
 %% get eye tracking interval
 clear
-close all
+% close all
 
 addpath('/Users/hopelutwak/Documents/MATLAB/psignifit')
 addpath(genpath('/Users/hopelutwak/Documents/GitHub/VRopticflow/Analysis'))
@@ -10,8 +10,8 @@ dataFolder = '/Users/hopelutwak/Documents/GitHub/VRopticflow/Data';
 
 % 
 % % which subjects data to analyze
-subjects = "MG"; %"HL" "IK"
-stims = "full-1"; %["full-1", "full-2"]; %"pilot"
+subjects = "IG"; %"HL" "IK"
+stims = "dots-2"; %["full-1", "full-2"]; %"pilot"
 
 D=dir('Data/');
 
@@ -161,7 +161,7 @@ for t = 2:pa.nTrials %pa.trialNumber %full set, change to pa.nTrials
 end
 
 % remove trials with high gaze speed
-reasonable_speed = find(gaze_speed<35);
+reasonable_speed = find(gaze_speed<100);
 
 
 % % find startpos by getting half second before first trial starts
@@ -199,7 +199,6 @@ for t = 2:pa.nTrials %pa.trialNumber %full set, change to pa.nTrials
         good_trials = [good_trials, t];
 %         hold on, scatter(x(tf), y(tf))
         hold on, plot(x(tf), y(tf), '.-', 'LineWidth', 3)
-
     elseif sum(tf)>0 && sum(find(distX>1.5))
         bad_trials = [bad_trials, t];
 %         hold on, scatter(x(tf), y(tf), 50,[0.5, 0.5, 0.5])

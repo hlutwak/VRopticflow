@@ -4,8 +4,8 @@ function  [dconstraint, dsurround] = DistanceToConstraint(ds, pa, depth_range, t
 % takes saved variables from VR experiment
 % plots center, surround velocities as well as constraint
 visualize = 0;
-% seed=2;
-% rng(seed) % to have random dots that appear in the same "random" place each time
+seed=2;
+rng(seed) % to have random dots that appear in the same "random" place each time
 ns = pa.targetMotionDuration; % number of seconds
 world_speed = pa.translation; % m/s speed of the observer in a straight line
 if ~isfield(ds,'frameRate')
@@ -70,13 +70,19 @@ positions = -dim(1)/2+2*dim(1)/2*rand(nObjects,2); %uniform random positions acr
 positions(:,2) = positions(:,2)+fixation;
 % positions = -[pa.positions(1,:)' pa.positions(3,:)'];
 % positions(3,:) = -positions(3,:);
- 
+%  
 dots = repmat(clusters,nDotsPerCluster,1); % ground plane
 % for no floor
 % dots = [];
 objectwidth = pa.paddleHalfWidth;
 object = [objectwidth, objectwidth, objectwidth]; %length, width, height
-dotsperobj = 15;
+
+if contains(pa.subjectName, 'dots')
+    dotsperobj = 1;
+else
+    dotsperobj = 15;
+end
+
 a = -object(1);
 b = object(1);
 aboveground = -pa.aboveground;
@@ -318,7 +324,7 @@ for cond = 1:size(conditions, 1)
         end
         % plot mean velocity object and surround
         
-        if ii == ns*fps-1 %1 %round((ns*fps-1)/2)
+        if ii == 1; %ns*fps-1 %1 %round((ns*fps-1)/2)
     
             if visualize
                 figure

@@ -15,11 +15,16 @@ analysisFolder = '/Users/hopelutwak/Documents/GitHub/VRopticflow/Analysis';
 S = dir(fullfile(dataFolder,'*.mat'));
 
 % which subjects data to analyze
-subjects = ["PL"]; %"HL" "IK"
+subjects = "MP";
+% ["MP","DL", "MG", "SM", "IK", "JO", "KZ","IG"];
+%["MP","DL", "MG", "SM", "IK", "JO", "KZ","IG"]; %,"DL","PL", "MG", "SM", "IK", "JO", "KZ","IG"];
+
 % all: "PL", "MP", "SM", "JL", "IK", "JO", "KZ", "IG"
-stims = ["monocular-1", "monocular-2"]; %add "copy" to have pa.good_trials, and/or dconst and dsurround based on vertical eye movements
-% % ["full-1", "full-2"]; %"pilot" ["monocular-1", "monocular-2"]
-ideal_eye = 0; % use measurements of data_const and data_surr based on ideal eye movements, otherwise use eyetracking vertical movements
+% all with good eyetracking trials: subjects = ["MP","DL","PL", "MG", "SM", "IK", "JO", "KZ","IG"];
+
+stims = ["dots-1", "dots-2"]; %add "copy" to have pa.good_trials, and/or dconst and dsurround based on vertical eye movements
+% % ["full-1", "full-2"];["dots-1", "dots-2"] ["monocular-1", "monocular-2"]
+ideal_eye = 1; % use measurements of data_const and data_surr based on ideal eye movements, otherwise use eyetracking vertical movements
 depth_range = .05;
 data_const = [];
 data_surr= [];
@@ -62,13 +67,6 @@ for s  = 1:length(subjects)
                 data_surr = [data(:,2) data(:,end-1:end)];
                 count = count+1;
 
-                    % 4 speeds, 6 directions
-                    options.dataColor = [255,153,255; 255,102,255; 255,51,255; 204,0,204;
-                        255,153,153; 255,102,102; 255,51,51; 204,0,0;
-                        255,204,153; 255,178,102; 255, 153, 51; 204,102,0;
-                        204,255,153; 178,255,102; 153,255,51; 102,204,0;
-                        153,255,255; 102,255,255; 51,255,255; 0,204,204;
-                        153,153,255; 102,102,255; 51,51,255; 0,0,204]/255;
 
             else
                 data_const = [data_const; pa.data_const];
@@ -80,6 +78,7 @@ for s  = 1:length(subjects)
         end
 
     end
+    disp([pa.subjectName, ' goodtrials = ', num2str(sum(data_const(:,end))/(length(data_const)*20)*100), '%']) %pa.nRepeats=20 except MP in one environment
 
 
     options             = struct;   % initialize as an empty struct
@@ -89,6 +88,14 @@ for s  = 1:length(subjects)
     % fits the rest of the parameters
     options.fixedPars = NaN(5,1);
     if ideal_eye
+        % 4 speeds, 6 directions
+        options.dataColor = [255,153,255; 255,102,255; 255,51,255; 204,0,204;
+            255,153,153; 255,102,102; 255,51,51; 204,0,0;
+            255,204,153; 255,178,102; 255, 153, 51; 204,102,0;
+            204,255,153; 178,255,102; 153,255,51; 102,204,0;
+            153,255,255; 102,255,255; 51,255,255; 0,204,204;
+            153,153,255; 102,102,255; 51,51,255; 0,0,204]/255;
+
     else
         options.poolxTol = 0.005;
 
@@ -101,8 +108,13 @@ for s  = 1:length(subjects)
 
     figure, plotPsych(result_const, options);
     title(['distance to constraint, depth range = ', num2str(depth_range)])
-    figname = [subjects(s)+'_const_'+stims(1)+'.eps'];
-    %     saveas(gcf, fullfile(figFolder, figname), 'epsc')
+    
+    if isfield(pa, 'good_trials')
+        figname = [subjects(s)+'_const_'+stims(1)+'_goodtrials'+'.eps'];
+    else
+        figname = [subjects(s)+'_const_'+stims(1)+'.eps'];
+    end
+    saveas(gcf, fullfile(figFolder, figname), 'epsc')
 
     options.fixedPars(3) = result_const.Fit(3); % fix lapse rate at calculated for constraint
     result_surr = psignifit(data_surr,options);
@@ -110,15 +122,21 @@ for s  = 1:length(subjects)
 
     figure, plotPsych(result_surr, options);
     title('distance to surround')
-    figname = [subjects(s)+'_surr_'+stims(1)+'.eps'];
-    %     saveas(gcf, fullfile(figFolder, figname), 'epsc')
+    if isfield(pa, 'good_trials')
+        figname = [subjects(s)+'_surr_'+stims(1)+'_goodtrials'+'.eps'];
+    else
+        figname = [subjects(s)+'_surr_'+stims(1)+'.eps'];
+    end
+    saveas(gcf, fullfile(figFolder, figname), 'epsc')
+
+
+    display(['const dev = '  num2str(result_const.deviance)])
+    display(['surr dev = '  num2str(result_surr.deviance)])
+
+
 
 
 end
-
-display(['const dev = '  num2str(result_const.deviance)])
-display(['surr dev = '  num2str(result_surr.deviance)])
-
 
 %% deviance differences
 x = categorical({'constraint', 'surround'});
@@ -135,6 +153,29 @@ surr.dots = [233	269	106	144	134	215	203	301	264	110];
 const.mono = [41	29	44	18	42	29	40	47	39	24];
 surr.mono = [203	208	253	150	250	225	153	221	217	157];
 
+% with eyetracking (no JL)
+subjects = ["MP","DL","PL", "MG", "SM", "IK", "JO", "KZ","IG"];
+
+const.full = [15.6351, 5.8561, 13.427, 20.5445, 12.5146, 17.7019, 4.0937, 5.3757, 5.861];
+surr.full = [68.7766, 42.1598, 36.401, 28.4526, 58.2991, 42.5696, 45.2817, 22.1162, 23.7202];
+
+const.dots = [55.4234	70.218	9.7616	52.2366	24.4333		53.953	26.908	22.4821 3.8244];
+surr.dots = [125.7537	122.5027	37.2422	38.6214	39.2498		73.7502	93.9493	100.7684 16.9668];
+
+const.mono = [4.7275	12.8345	5.1145	7.4692	4.8169		11.1978	10.7408	8.3045	10.7063];
+surr.mono = [52.7765	65.9968	30.8971	60.341	35.1009		53.887	34.6784	67.3172	16.7235];
+
+% with just good trials, seeded cubes no JL or IG
+subjects = ["MP","DL","PL", "MG", "SM", "IK", "JO", "KZ"];
+
+const.full= [15.6395	28.7171	35.2079	24.8349	29.7911		37.9016	44.5579	19.4831];
+surr.full = [235.6173	137.8694	103.4511	133.819	153.7909		50.0077	159.5812	72.6018];
+
+const.dots = [63.897	86.9814	53.2302	67.3524	60.8678		69.4851	26.3628	71.8504];
+surr.dots = [202.006	206.9385	207.1306	93.8245	216.0456		128.5636	237.5121	148.3069];
+
+const.mono = [27.1673	29.6859	46.3152	24.0491	40.472		32.7438	41.0679	29.8143];
+surr.mono = [120.5473	138.4028	231.3806	79.1458	224.4793		52.4259	151.5077	150.3862];
 
 % % const vs surround
 % fig = figure();
@@ -176,14 +217,14 @@ end
 set(gca, 'FontSize', 16)
 hold on, plot(x, mean([const.full', const.mono', const.dots']), '.-', 'color', [.25 .25 .25],'MarkerSize',30,'LineWidth', 5)
 legend([subjects, "mean"])
-ylim([0 150])
+ylim([0 100])
 figname = "deviance_combined";
 % saveas(gcf, fullfile(figFolder, figname), 'epsc')
 
 % scatter const vs surround
-figure, scatter(const.full, surr.full, 50, 'filled')
+figure, scatter(const.dots, surr.dots, 50, 'filled')
 axis equal
-xlim([0 350])
+xlim([0 100])
 ylim([0 350])
 
 hold on
@@ -191,7 +232,9 @@ plot([min([xlim ylim]) max([xlim ylim])], [min([xlim ylim]) max([xlim ylim])], '
 
 
 %% iterate over different values of distance to const
-distances  = logspace(-2, 1.5, 10);
+% distances  = logspace(-2, 1.5, 20);
+distances  = logspace(-1.5, 1, 10);
+
 %logspace(-2, 2, 10);
 %linspace(0.025, 0.15, 10);
 
@@ -207,6 +250,8 @@ for d = 1 :length(distances)
     % run psignifit
     result = psignifit(data_const,options);
     figure, plotPsych(result, options);
+    title(num2str(distances(d)))
+    set(gca, 'FontSize', 16)
 %     thresh = exp(result.Fit(1));
     dev(d) = result.deviance;
 %     if mod(d,5) == 0
@@ -220,6 +265,9 @@ toc
 % 
 figure, semilogx(distances,dev,'o-','LineWidth', 5)
 set(gca, 'FontSize', 16)
+
+% 
+% hold on, plot(distances, dev, 'o-','LineWidth', 5)
 
 % if idx == length(distances)
 %     distances_ext = linspace(distances(end)+mean(diff(distances)), (distances(end))+10*mean(diff(distances)), 10);
