@@ -15,7 +15,7 @@ analysisFolder = '/Users/hopelutwak/Documents/GitHub/VRopticflow/Analysis';
 S = dir(fullfile(dataFolder,'*.mat'));
 
 % which subjects data to analyze
-subjects = "IK";
+subjects = "DL";
 % ["MP","DL", "MG", "SM", "IK", "JO", "KZ","IG"];
 %["MP","DL", "MG", "SM", "IK", "JO", "KZ","IG"]; %,"DL","PL", "MG", "SM", "IK", "JO", "KZ","IG"];
 
@@ -114,7 +114,7 @@ for s  = 1:length(subjects)
     else
         figname = [subjects(s)+'_const_'+stims(1)+'.eps'];
     end
-    saveas(gcf, fullfile(figFolder, figname), 'epsc')
+%     saveas(gcf, fullfile(figFolder, figname), 'epsc')
 
     options.fixedPars(3) = result_const.Fit(3); % fix lapse rate at calculated for constraint
     result_surr = psignifit(data_surr,options);
@@ -127,7 +127,7 @@ for s  = 1:length(subjects)
     else
         figname = [subjects(s)+'_surr_'+stims(1)+'.eps'];
     end
-    saveas(gcf, fullfile(figFolder, figname), 'epsc')
+%     saveas(gcf, fullfile(figFolder, figname), 'epsc')
 
 
     display(['const dev = '  num2str(result_const.deviance)])
@@ -198,7 +198,6 @@ for d = 1:length(const.full)
 %     hold on, plot(conds, [const.full(d)', const.dots(d)', const.mono(d)'], '.-','MarkerSize',20,'LineWidth', 2)
 %     hold on, plot([conds(1) conds(3)], [const.full(d)', const.mono(d)'], '.-','MarkerSize',20,'LineWidth', 2) 
     hold on, plot(x, [surr.full(d)', surr.mono(d)', surr.dots(d)'], '.-', 'color', c(d,:),'MarkerSize',20,'LineWidth', 2) 
-
 end
 set(gca, 'FontSize', 16)
 hold on, plot(x, mean([surr.full', surr.mono', surr.dots']), '.-', 'color', [.25 .25 .25],'MarkerSize',30,'LineWidth', 5)
@@ -229,6 +228,30 @@ ylim([0 350])
 
 hold on
 plot([min([xlim ylim]) max([xlim ylim])], [min([xlim ylim]) max([xlim ylim])], '--k')
+
+
+%% plot optimal depth ranges
+% const for each stimulus
+x = categorical(["full" "monocular" "dots"]);
+x = reordercats(x,string(x));
+
+subjects = ["MP","DL","PL", "MG", "SM", "JO", "KZ"];
+c = lines(length(subjects));
+
+
+full = [0.05	0.1274	0.05	0.05	0.127		0.19	0.015];
+dots = [0.3	    0.2976	0.29	NaN	    0.45		0.12	0.45];
+monocular = [0.29	0.2976	0.12	0.19	0.127		0.12	0.05];
+
+fig = figure();
+for d = 1:length(full)
+%     hold on, plot(conds, [const.full(d)', const.dots(d)', const.mono(d)'], '.-','MarkerSize',20,'LineWidth', 2)
+%     hold on, plot([conds(1) conds(3)], [const.full(d)', const.mono(d)'], '.-','MarkerSize',20,'LineWidth', 2) 
+    hold on, plot(x, [full(d) monocular(d) dots(d)], '.-', 'color', c(d,:),'MarkerSize',20,'LineWidth', 2) 
+end
+set(gca, 'FontSize', 16)
+hold on, plot(x, nanmean([full' monocular' dots']), '.-', 'color', [.25 .25 .25],'MarkerSize',30,'LineWidth', 5)
+legend([subjects, "mean"])
 
 
 %% iterate over different values of distance to const
