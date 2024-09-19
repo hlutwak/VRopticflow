@@ -15,17 +15,16 @@ analysisFolder = '/Users/hopelutwak/Documents/GitHub/VRopticflow/Analysis';
 S = dir(fullfile(dataFolder,'*.mat'));
 
 % which subjects data to analyze
-subjects = "DL";
-% ["MP","DL", "MG", "SM", "IK", "JO", "KZ","IG"];
-%["MP","DL", "MG", "SM", "IK", "JO", "KZ","IG"]; %,"DL","PL", "MG", "SM", "IK", "JO", "KZ","IG"];
+subjects = ["DL"]; %,"DL", "PL","MG", "SM", "IK", "JO", "KZ","IG"
 
 % all: "PL", "MP", "SM", "JL", "IK", "JO", "KZ", "IG"
 % all with good eyetracking trials: subjects = ["MP","DL","PL", "MG", "SM", "IK", "JO", "KZ","IG"];
 
-stims = ["monocular-1", "monocular-2"]; %add "copy" to have pa.good_trials, and/or dconst and dsurround based on vertical eye movements
+stims = ["full-1", "full-2"]; %add "copy" to have pa.good_trials, and/or dconst and dsurround based on vertical eye movements
 % % ["full-1", "full-2"];["dots-1", "dots-2"] ["monocular-1", "monocular-2"]
 ideal_eye = 1; % use measurements of data_const and data_surr based on ideal eye movements, otherwise use eyetracking vertical movements
-depth_range = .05;
+depth_range = .05; % additive
+depth_range = 1.01; % multiplicative
 data_const = [];
 data_surr= [];
 
@@ -88,14 +87,14 @@ for s  = 1:length(subjects)
     % fits the rest of the parameters
     options.fixedPars = NaN(5,1);
     if ideal_eye
-        % 4 speeds, 6 directions
+%         4 speeds, 6 directions
         options.dataColor = [255,153,255; 255,102,255; 255,51,255; 204,0,204;
             255,153,153; 255,102,102; 255,51,51; 204,0,0;
             255,204,153; 255,178,102; 255, 153, 51; 204,102,0;
             204,255,153; 178,255,102; 153,255,51; 102,204,0;
             153,255,255; 102,255,255; 51,255,255; 0,204,204;
             153,153,255; 102,102,255; 51,51,255; 0,0,204]/255;
-
+% options.poolxTol = 0.0025;
     else
         options.poolxTol = 0.005;
 
@@ -107,7 +106,7 @@ for s  = 1:length(subjects)
     result_const = psignifit(data_const,options);
 
     figure, plotPsych(result_const, options);
-    title(['distance to constraint, depth range = ', num2str(depth_range)])
+    title([subjects(s),' distance to constraint, depth range = ', num2str(depth_range)])
     
     if isfield(pa, 'good_trials')
         figname = [subjects(s)+'_const_'+stims(1)+'_goodtrials'+'.eps'];
@@ -121,7 +120,7 @@ for s  = 1:length(subjects)
 
 
     figure, plotPsych(result_surr, options);
-    title('distance to surround')
+    title([subjects(s)+ ' distance to surround'])
     if isfield(pa, 'good_trials')
         figname = [subjects(s)+'_surr_'+stims(1)+'_goodtrials'+'.eps'];
     else
@@ -130,11 +129,8 @@ for s  = 1:length(subjects)
 %     saveas(gcf, fullfile(figFolder, figname), 'epsc')
 
 
-    display(['const dev = '  num2str(result_const.deviance)])
-    display(['surr dev = '  num2str(result_surr.deviance)])
-
-
-
+    display([subjects(s) + ' const dev = '+   num2str(result_const.deviance)])
+    display([subjects(s) + ' surr dev = ' + num2str(result_surr.deviance)])
 
 end
 
@@ -255,11 +251,14 @@ legend([subjects, "mean"])
 
 
 %% iterate over different values of distance to const
-distances  = logspace(-2, 1.5, 20);
+% additive distance
+% distances  = logspace(-2, 1.5, 20);
 % distances  = logspace(-1.5, -.5, 10);
 
-%logspace(-2, 2, 10);
-%linspace(0.025, 0.15, 10);
+% multiplicative
+distances = linspace(1.0001, 1.3, 30); % 0.5% to 100%
+percentages = round((distances-1)*100,2);
+
 
 % window of distances cube could physically be distances  = linspace(.05, .6, 10);
 % constraint_length_opt distances = linspace(0.025, 0.15, 10)
@@ -269,7 +268,6 @@ tic
 for d = 1 :length(distances) 
     [dconst, dsurr] = DistanceToConstraint(ds, pa, distances(d));
     data_const(:,1) = repmat(dconst(:), count, 1);
-
     % run psignifit
     result = psignifit(data_const,options);
     figure, plotPsych(result, options);
@@ -288,6 +286,14 @@ toc
 % 
 figure, semilogx(distances,dev,'o-','LineWidth', 5)
 set(gca, 'FontSize', 16)
+
+figure, plot(distances,dev,'o-','LineWidth', 5)
+set(gca, 'FontSize', 16)
+ticks = 1:5:length(distances);
+xticks(distances(ticks))
+pticks = split(num2str(percentages));
+xticklabels(pticks(ticks))
+
 
 % 
 % hold on, plot(distances, dev, 'o-','LineWidth', 5)
