@@ -14,13 +14,14 @@ analysisFolder = '/Users/hopelutwak/Documents/GitHub/VRopticflow/Analysis';
 % names of files
 S = dir(fullfile(dataFolder,'*.mat'));
 
+%
 % which subjects data to analyze
-subjects = ["SM"]; %,"DL", "PL","MG", "SM", "IK", "JO", "KZ","IG"
+subjects = ["IK"]; %,"DL", "PL","MG", "SM", "IK", "JO", "KZ","IG"
 
 % all: "PL", "MP", "SM", "JL", "IK", "JO", "KZ", "IG"
 % all with good eyetracking trials: subjects = ["MP","DL","PL", "MG", "SM", "IK", "JO", "KZ","IG"];
 
-stims = ["full-1", "full-2"] ; %add "copy" to have pa.good_trials, and/or dconst and dsurround based on vertical eye movements
+stims = ["dots-1", "dots-2"]; %add "copy" to have pa.good_trials, and/or dconst and dsurround based on vertical eye movements
 % % ["full-1", "full-2"];["dots-1", "dots-2"] ["monocular-1", "monocular-2"]
 ideal_eye = 1; % use measurements of data_const and data_surr based on ideal eye movements, otherwise use eyetracking vertical movements
 depth_range = .05; % additive
@@ -131,9 +132,6 @@ for s  = 1:length(subjects)
 
     display([subjects(s) + ' const dev = '+   num2str(result_const.deviance)])
     display([subjects(s) + ' surr dev = ' + num2str(result_surr.deviance)])
-
-
-
 
 end
 
@@ -260,7 +258,7 @@ legend([subjects, "mean"])
 
 % multiplicative
 distances = linspace(1.0001, 1.3, 30); % 0.5% to 100%
-percentages = round((distances-1)*100,1);
+percentages = round((distances-1)*100,2);
 
 
 % window of distances cube could physically be distances  = linspace(.05, .6, 10);
@@ -273,9 +271,9 @@ for d = 1 :length(distances)
     data_const(:,1) = repmat(dconst(:), count, 1);
     % run psignifit
     result = psignifit(data_const,options);
-    figure, plotPsych(result, options);
-    title(num2str(distances(d)))
-    set(gca, 'FontSize', 16)
+%     figure, plotPsych(result, options);
+%     title(num2str(distances(d)))
+%     set(gca, 'FontSize', 16)
 %     thresh = exp(result.Fit(1));
     dev(d) = result.deviance;
 %     if mod(d,5) == 0
@@ -284,16 +282,19 @@ for d = 1 :length(distances)
 end
 
 [val,idx] = min(dev);
+display(['dev = ' num2str(val),' distance = ' num2str(distances(idx))])
 toc
 
-% 
-figure, semilogx(distances,dev,'o-','LineWidth', 5)
-set(gca, 'FontSize', 16)
+% % 
+% figure, semilogx(distances,dev,'o-','LineWidth', 5)
+% set(gca, 'FontSize', 16)
 
 figure, plot(distances,dev,'o-','LineWidth', 5)
 set(gca, 'FontSize', 16)
-xticks(distances)
-xticklabels(split(num2str(percentages)))
+ticks = 1:5:length(distances);
+xticks(distances(ticks))
+pticks = split(num2str(percentages));
+xticklabels(pticks(ticks))
 
 
 % 
@@ -355,3 +356,55 @@ for s = 1:3
 end
 legend('full', 'dots', 'monocular')
 set(gca, 'FontSize', 16)
+
+%% eye movements improve resposne?
+
+
+for s  = 1:length(subjects)
+
+    data = [];
+    %load appropriate files
+    count = 0;
+    for f = 1:length(S)
+        subj = contains(S(f).name,subjects(s));
+        sti = contains(S(f).name,stims) && contains(S(f).name, 'eyetracking');
+        %add "eyetrakcing" to have pa.good_trials, and/or dconst and dsurround based on vertical eye movements
+
+        if subj && sti
+            load(fullfile(dataFolder,S(f).name));
+            display(fullfile(dataFolder,S(f).name));
+
+            if ideal_eye
+                n_conditions = length(pa.speed)*length(pa.direction);
+                conditions = fullfact([numel(pa.speed), numel(pa.direction)]);
+                data_session = [];
+                for cond = 1:n_conditions
+                    idx_speed = find(pa.fullFactorial(:,3) == pa.speed(conditions(cond,1)));
+                    idx_direction = find(pa.fullFactorial(:,4) == pa.direction(conditions(cond,2)));
+                    idx = intersect(idx_speed, idx_direction);
+                    if isfield(pa, 'good_trials')
+                        idx = intersect(idx, pa.good_trials);
+                    end
+                    data_session(cond,:) = [nan(1) nan(1) pa.speed(conditions(cond,1)), rad2deg(pa.direction(conditions(cond,2))), sum(eq(pa.LR(idx), pa.LRresponse(idx))), length(idx)];
+
+                end
+                [dconst, dsurr] = DistanceToConstraint(ds, pa, depth_range);
+                data_session(:,1) = dconst(:);
+                data_session(:,2) = dsurr(:);
+                data = [data; data_session];
+                data_const = [data(:,1) data(:,end-1:end)]; % to surround data_const = [data(:,1) data(:,end-1:end)];
+                data_surr = [data(:,2) data(:,end-1:end)];
+                count = count+1;
+
+
+            else
+                data_const = [data_const; pa.data_const];
+                data_surr = [data_surr; pa.data_surr];
+%                 options.poolxTol = 0.005;
+%                 options.nblocks = 24;
+
+            end
+        end
+
+    end
+end
