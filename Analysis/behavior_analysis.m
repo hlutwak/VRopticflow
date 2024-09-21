@@ -240,9 +240,14 @@ full = [0.05	0.1274	0.05	0.05	0.127		0.19	0.015];
 dots = [0.3	    0.2976	0.29	NaN	    0.45		0.12	0.45];
 monocular = [0.29	0.2976	0.12	0.19	0.127		0.12	0.05];
 
-full = (3*[1.0311	1.0828	1.0311	1.0001	1.0725	1.0518	1.0932	1.0104]-3)*100;
-dots = (3*[1.2069	1.2276	1.2586	1.1035	1.1966	1.1759	1.2173	1.1966]-3)*100;
-monocular = (3*[1.2483	1.0828	1.0725	1.0621	1.0828	1.0001	1.0828	1.0311]-3)*100;
+% full = (3*[1.0311	1.0828	1.0311	1.0001	1.0725	1.0518	1.0932	1.0104]-3)*100;
+% dots = (3*[1.2069	1.2276	1.2586	1.1035	1.1966	1.1759	1.2173	1.1966]-3)*100;
+% monocular = (3*[1.2483	1.0828	1.0725	1.0621	1.0828	1.0001	1.0828	1.0311]-3)*100;
+
+% 
+full = [1.0311	1.0828	1.0311	1.0001	1.0725	1.0518	1.0932	1.0104];
+dots = [1.2069	1.2276	1.2586	1.1035	1.1966	1.1759	1.2173	1.1966];
+monocular = [1.2483	1.0828	1.0725	1.0621	1.0828	1.0001	1.0828	1.0311];
 
 fig = figure();
 for d = 1:length(full)
@@ -255,9 +260,11 @@ hold on, plot(x, nanmean([full' monocular' dots']), '.-', 'color', [.25 .25 .25]
 legend([subjects, "mean"])
 
 y = nanmean([full' monocular' dots']);
-err = std([full' monocular' dots']);
+err = std([full' monocular' dots'])/sqrt(length(full));
 errorbar(x,nanmean([full' monocular' dots']), err, 'LineWidth', 2)
 
+
+figname = "optimal_depthrange";
 
 %% iterate over different values of distance to const
 % additive distance
