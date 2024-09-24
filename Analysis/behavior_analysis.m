@@ -16,12 +16,12 @@ S = dir(fullfile(dataFolder,'*.mat'));
 
 %
 % which subjects data to analyze
-subjects = ["KZ"]; %,"DL", "PL","MG", "SM", "IK", "JO", "KZ","IG"
+subjects = ["DL", "PL","MG", "SM", "IK", "JO", "KZ","IG"]; %"MP","DL", "PL","MG", "SM", "IK", "JO", "KZ","IG"
 
 % all: "PL", "MP", "SM", "JL", "IK", "JO", "KZ", "IG"
 % all with good eyetracking trials: subjects = ["MP","DL","PL", "MG", "SM", "IK", "JO", "KZ","IG"];
 
-stims = ["monocular-1", "monocular-2"] ; %add "copy" to have pa.good_trials, and/or dconst and dsurround based on vertical eye movements
+stims = ["full-1", "full-2"]; %add "copy" to have pa.good_trials, and/or dconst and dsurround based on vertical eye movements
 % % ["full-1", "full-2"];["dots-1", "dots-2"] ["monocular-1", "monocular-2"]
 ideal_eye = 1; % use measurements of data_const and data_surr based on ideal eye movements, otherwise use eyetracking vertical movements
 depth_range = .05; % additive
@@ -110,24 +110,24 @@ for s  = 1:length(subjects)
     title([subjects(s),' distance to constraint, depth range = ', num2str(depth_range)])
     
     if isfield(pa, 'good_trials')
-        figname = [subjects(s)+'_const_'+stims(1)+'_goodtrials'+'.eps'];
+        figname = [subjects(s)+'_const_'+stims(1)+'_multiplicative'+'.eps'];
     else
         figname = [subjects(s)+'_const_'+stims(1)+'.eps'];
     end
-%     saveas(gcf, fullfile(figFolder, figname), 'epsc')
+    saveas(gcf, fullfile(figFolder, figname), 'epsc')
 
-    options.fixedPars(3) = result_const.Fit(3); % fix lapse rate at calculated for constraint
+%     options.fixedPars(3) = result_const.Fit(3); % fix lapse rate at calculated for constraint
     result_surr = psignifit(data_surr,options);
 
 
     figure, plotPsych(result_surr, options);
     title([subjects(s)+ ' distance to surround'])
     if isfield(pa, 'good_trials')
-        figname = [subjects(s)+'_surr_'+stims(1)+'_goodtrials'+'.eps'];
+        figname = [subjects(s)+'_surr_'+stims(1)+'_multiplicative'+'.eps'];
     else
         figname = [subjects(s)+'_surr_'+stims(1)+'.eps'];
     end
-%     saveas(gcf, fullfile(figFolder, figname), 'epsc')
+    saveas(gcf, fullfile(figFolder, figname), 'epsc')
 
 
     display([subjects(s) + ' const dev = '+   num2str(result_const.deviance)])
@@ -174,6 +174,16 @@ surr.dots = [202.006	206.9385	207.1306	93.8245	216.0456		128.5636	237.5121	148.3
 const.mono = [27.1673	29.6859	46.3152	24.0491	40.472		32.7438	41.0679	29.8143];
 surr.mono = [120.5473	138.4028	231.3806	79.1458	224.4793		52.4259	151.5077	150.3862];
 
+
+% multiplicative range, sedded cubes no JL or IG
+
+const.full = [15.9151	30.2447	35.3319	24.5125	30.1324	38.3559	46.3583	18.7115];
+surr.full = [235.6138	137.748	103.4843	133.8528	153.9385	50.0077	159.6656	72.7322];
+const.dots = [67.0991	96.9531	57.3236	69.7838	66.7175	72.1655	28.2833	76.8247];
+surr.dots = [223.7979	234.2082	216.3863	124.0553	229.7325	143.1377	249.8042	164.549];
+const.mono = [27.6668	29.6249	49.3243	24.8407	44.1944	32.2815	44.8319	29.4757];
+surr.mono = [120.5473	138.4324	231.4612	79.1445	224.579	52.4371	151.5863	150.4013];
+
 % % const vs surround
 % fig = figure();
 % for d = 1:length(const)
@@ -218,10 +228,13 @@ figname = "deviance_combined";
 % saveas(gcf, fullfile(figFolder, figname), 'epsc')
 
 % scatter const vs surround
-figure, scatter(const.dots, surr.dots, 50, 'filled')
+figure
+hold on, scatter(surr.full, const.full, 50, 'filled')
+hold on, scatter(surr.dots, const.dots, 50, 'filled')
+hold on, scatter(surr.mono, const.mono, 50, 'filled')
 axis equal
-xlim([0 100])
-ylim([0 350])
+xlim([0 350])
+ylim([0 150])
 
 hold on
 plot([min([xlim ylim]) max([xlim ylim])], [min([xlim ylim]) max([xlim ylim])], '--k')
@@ -311,7 +324,8 @@ xticks(distances(ticks))
 pticks = split(num2str(percentages));
 xticklabels(pticks(ticks))
 
-
+xticks([1.1, 1.2, 1.3])
+xticklabels({"1.1", "1.2", "1.3"})
 % 
 % hold on, plot(distances, dev, 'o-','LineWidth', 5)
 

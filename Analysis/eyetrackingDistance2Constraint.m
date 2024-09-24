@@ -10,7 +10,7 @@ dataFolder = '/Users/hopelutwak/Documents/GitHub/VRopticflow/Data';
 
 % 
 % % which subjects data to analyze
-subjects = "IG"; %"HL" "IK"
+subjects = "DL"; %"HL" "IK"
 stims = "full-1"; %["full-1", "full-2"]; %"pilot"
 
 D=dir('Data/');
