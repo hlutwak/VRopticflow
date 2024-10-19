@@ -10,7 +10,7 @@ dataFolder = '/Users/hopelutwak/Documents/GitHub/VRopticflow/Data';
 
 % 
 % % which subjects data to analyze
-subjects = "DL"; %"HL" "IK"
+subjects = "MP"; %"HL" "IK"
 stims = "full-1"; %["full-1", "full-2"]; %"pilot"
 
 D=dir('Data/');
@@ -189,7 +189,7 @@ response_comparison = [];
 % % endpos = [5,11]; % DL [5,11], MG [5.2, 11.2]
 
 % find 
- figure
+ figure, set(gcf,'renderer','Painters')
 for t = 2:pa.nTrials %pa.trialNumber %full set, change to pa.nTrials
     tf = isbetween(synced, oc.UTCtrialStart(t), oc.UTCtrialEnd(t));
     idx = find(tf);
@@ -204,7 +204,7 @@ for t = 2:pa.nTrials %pa.trialNumber %full set, change to pa.nTrials
 %         hold on, scatter(x(tf), y(tf), 50,[0.5, 0.5, 0.5])
 %         hold on, plot(x(tf), y(tf), '.-', 'LineWidth', 3)
 
-        hold on, plot(x(tf), y(tf), '.-','color',[0.5, 0.5, 0.5], 'LineWidth', 3)
+        hold on, plot(x(tf), y(tf),'color',[0.5, 0.5, 0.5], 'LineWidth', 3)
 
         % does the target go in the direction of the eye movement? does
         % this align with response?

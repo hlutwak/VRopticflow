@@ -16,12 +16,12 @@ S = dir(fullfile(dataFolder,'*.mat'));
 
 %
 % which subjects data to analyze
-subjects = ["DL", "PL","MG", "SM", "IK", "JO", "KZ","IG"]; %"MP","DL", "PL","MG", "SM", "IK", "JO", "KZ","IG"
+subjects = ["MP"]; %"MP","DL", "PL","MG", "SM", "IK", "JO", "KZ","IG"
 
 % all: "PL", "MP", "SM", "JL", "IK", "JO", "KZ", "IG"
 % all with good eyetracking trials: subjects = ["MP","DL","PL", "MG", "SM", "IK", "JO", "KZ","IG"];
 
-stims = ["full-1", "full-2"]; %add "copy" to have pa.good_trials, and/or dconst and dsurround based on vertical eye movements
+stims = ["monocular-1", "monocular-2"]; %add "copy" to have pa.good_trials, and/or dconst and dsurround based on vertical eye movements
 % % ["full-1", "full-2"];["dots-1", "dots-2"] ["monocular-1", "monocular-2"]
 ideal_eye = 1; % use measurements of data_const and data_surr based on ideal eye movements, otherwise use eyetracking vertical movements
 depth_range = .05; % additive
@@ -82,7 +82,7 @@ for s  = 1:length(subjects)
 
 
     options             = struct;   % initialize as an empty struct
-    options.sigmoidName = 'weibull';
+    options.sigmoidName = 'weibull'; %'weibull';
     options.expType     = '2AFC';   % choose 2-AFC as the paradigm of the experiment
     % this sets the guessing rate to .5 and
     % fits the rest of the parameters
@@ -285,7 +285,7 @@ figname = "optimal_depthrange";
 % distances  = logspace(-1.5, -.5, 10);
 
 % multiplicative
-distances = linspace(1.0001, 1.3, 30); % 0.5% to 100%
+distances = linspace(1.0001, 1.3, 20); % 0.5% to 100%
 percentages = round((distances-1)*100,2);
 
 
