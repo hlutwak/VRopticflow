@@ -198,7 +198,7 @@ for t = 2:pa.nTrials %pa.trialNumber %full set, change to pa.nTrials
     if sum(tf)>0 && ~sum(find(distX>1.5))
         good_trials = [good_trials, t];
 %         hold on, scatter(x(tf), y(tf))
-        hold on, plot(x(tf), y(tf), '.-', 'LineWidth', 3)
+        hold on, plot(x(tf), y(tf), '.-', 'LineWidth', 3, 'color',[0, 0, 0])
     elseif sum(tf)>0 && sum(find(distX>1.5))
         bad_trials = [bad_trials, t];
 %         hold on, scatter(x(tf), y(tf), 50,[0.5, 0.5, 0.5])

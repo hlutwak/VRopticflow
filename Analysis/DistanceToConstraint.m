@@ -4,7 +4,7 @@ function  [dconstraint, dsurround] = DistanceToConstraint(ds, pa, depth_range, t
 % takes saved variables from VR experiment
 % plots center, surround velocities as well as constraint
 visualize = 0;
-seed=2;
+seed=2; %5 is full
 rng(seed) % to have random dots that appear in the same "random" place each time
 ns = pa.targetMotionDuration; % number of seconds
 world_speed = pa.translation; % m/s speed of the observer in a straight line
@@ -14,7 +14,13 @@ else
     fps = ds.frameRate; %Screen(screenNumber,'FrameRate'); % should be 144 to match experiment
 end
 
- 
+
+if visualize
+    writerObj = VideoWriter('myVideo.mp4', 'MPEG-4');
+    writerObj.FrameRate = fps/4;
+    open(writerObj);
+end
+
 height = -pa.floorHeight;
 
 speeds =  pa.speed;
@@ -280,8 +286,8 @@ for cond = 1:size(conditions, 1)
     %show target vs surround velocities throughout stim
     radius = 3; %in cm
     center = target_idx; %target_idx vs stationary_idx
-    xlims = [-.1, .1];
-    ylims = [-.1, .1];
+    xlims = [-.05, .2];
+    ylims = [-.2, .05];
     
     
     
@@ -314,11 +320,11 @@ for cond = 1:size(conditions, 1)
             distance2center_point = vecnorm((center_point - [x(onscreen,ii),y(onscreen,ii)])');
             window_idx = find(distance2center_point<radius);
             % plot window on object
-            % hold on, scatter(x(window_idx,ii), -y(window_idx,ii), 50,[0.8500 0.3250 0.0980])
+%             hold on, scatter(x(window_idx,ii), -y(window_idx,ii), 50,[0.8500 0.3250 0.0980])
             
             % find non target velocities
             surround_idx = window_idx(~ismember(window_idx, target_onscreen));
-            % hold on, scatter(x(surround_idx,ii), -y(surround_idx,ii), 50,[0 0.4470 0.7410])
+%             hold on, scatter(x(surr ound_idx,ii), -y(surround_idx,ii), 50,[0 0.4470 0.7410])
             
             % get target and surround velocity mean
             center_mean= mean([rvelocityX(onscreen(target_onscreen),ii), rvelocityY(onscreen(target_onscreen),ii)]);
@@ -332,26 +338,34 @@ for cond = 1:size(conditions, 1)
         if ii == 1 %ns*fps-1 %1 %round((ns*fps-1)/2)
     
             if visualize
-                figure
+                constraintFig = figure(10);
+                
 %                 subplot(numel(directions),numel(speeds),cond)
-%                 clf
+                clf
 
                 set(gcf,'position',[500, 500, 600, 400])
                 set(gcf,'color','w');
-            
+                
             
             % plot suround velocities
             surround_idx = onscreen(surround_idx);
-            quiver(zeros(size(rvelocityX(surround_idx,ii))),zeros(size(rvelocityX(surround_idx,ii))), rvelocityX(surround_idx,ii), -rvelocityY(surround_idx,ii), 'AutoScale', 'off', 'LineWidth', 2)
+%             quiver(zeros(size(rvelocityX(surround_idx,ii))),zeros(size(rvelocityX(surround_idx,ii))), rvelocityX(surround_idx,ii), -rvelocityY(surround_idx,ii), 'AutoScale', 'off', 'LineWidth', 2)
+            quiver(zeros(size(rvelocityX(surround_idx,ii))),zeros(size(rvelocityX(surround_idx,ii))), rvelocityX(surround_idx,ii), -rvelocityY(surround_idx,ii),'color','#808285', 'AutoScale', 'off', 'LineWidth', 2)
+
             hold on
-            quiver(zeros(size(rvelocityX(center,ii))),zeros(size(rvelocityX(center,ii))), rvelocityX(center,ii), -rvelocityY(center,ii), 'AutoScale', 'off', 'LineWidth', 2)
-    
+%             quiver(zeros(size(rvelocityX(center,ii))),zeros(size(rvelocityX(center,ii))), rvelocityX(center,ii), -rvelocityY(center,ii), 'AutoScale', 'off', 'LineWidth', 2)
+            quiver(zeros(size(rvelocityX(center,ii))),zeros(size(rvelocityX(center,ii))), rvelocityX(center,ii), -rvelocityY(center,ii), 'color', '#F16667','AutoScale', 'off', 'LineWidth', 2)
+
 %            plot mean velocity object and surround
             if dotsperobj>1
                 hold on
-                quiver(0,0, center_mean(1), -center_mean(2), 'r','AutoScale', 'off', 'LineWidth', 5)
+%                 quiver(0,0, center_mean(1), -center_mean(2), 'r','AutoScale', 'off', 'LineWidth', 5)
+                  quiver(0,0, center_mean(1), -center_mean(2), 'color','#F16667','AutoScale', 'off', 'LineWidth', 2)
+
                 hold on
-                quiver(0,0,surround_mean(1), -surround_mean(2), 'color',[0,0,0.75],'AutoScale', 'off', 'LineWidth', 5)
+%                 quiver(0,0,surround_mean(1), -surround_mean(2), 'color',[0,0,0.75],'AutoScale', 'off', 'LineWidth', 5)
+                quiver(0,0,surround_mean(1), -surround_mean(2), 'color','#808285','AutoScale', 'off', 'LineWidth', 2)
+
             end
     
             hold on,
@@ -369,11 +383,26 @@ for cond = 1:size(conditions, 1)
                 title(['s = ', num2str(condition_speeddir(1)), ' m/s,  dir = ', num2str(rad2deg(condition_speeddir(2))), ' deg'])
 
             end
-%             pause(1)
-            end
+            fontsize(gca, 16, 'points')
+            pause(1/fps)
+            frame = getframe(constraintFig);
+            writeVideo(writerObj, frame);
             %
+
+            figure(11)
+            scale_factor = 20;
+%             scatter(x(I(:,1),1)*ppcm(1), -y(I(:,1),1)*ppcm(2), 'filled')
+            hold on, quiver(x(I(:,1),1), -y(I(:,1),1), rvelocityX(I(:,1),ii)*scale_factor, -rvelocityY(I(:,1),ii)*scale_factor,'color','#808285', 'AutoScale', 'off','LineWidth', 2) %'AutoScale', 'off',
+            hold on, quiver(x(surround_idx,1), -y(surround_idx,1), rvelocityX(surround_idx,ii)*scale_factor, -rvelocityY(surround_idx,ii)*scale_factor,'color','k','AutoScale', 'off','LineWidth', 2)
+            hold on, quiver(x(center,1), -y(center,1), rvelocityX(center,ii)*scale_factor, -rvelocityY(center,ii)*scale_factor, 'color', '#4859A7', 'AutoScale', 'off','LineWidth', 2)
+            axis equal
+           close(writerObj);
+
+            end
         end
     end
+%     close(writerObj);
+
     
     dconstraint(cond) = nanmean(mean_d(:,1));
     dsurround(cond) = nanmean(mean_d(:,2));
