@@ -1,4 +1,4 @@
-function  [dconstraint, dsurround] = DistanceToConstraint(ds, pa, depth_range, theta, trial)
+function  [dconstraint, dsurround] = DistanceToConstraint(ds, pa, depth_range, depth_est, theta, trial)
 
 % simulate VR flow scene to generate distance to constraint for multiple velocities
 % takes saved variables from VR experiment
@@ -16,9 +16,9 @@ end
 
 
 if visualize
-    writerObj = VideoWriter('myVideo.mp4', 'MPEG-4');
-    writerObj.FrameRate = fps/4;
-    open(writerObj);
+%     writerObj = VideoWriter('myVideo.mp4', 'MPEG-4');
+%     writerObj.FrameRate = fps/4;
+%     open(writerObj);
 end
 
 height = -pa.floorHeight;
@@ -27,7 +27,7 @@ speeds =  pa.speed;
 directions = pa.direction ; 
 
 
-if nargin < 4 || isempty(trial)
+if nargin < 5 %|| isempty(trial)
     theta = [];
     conditions = fullfact([numel(speeds), numel(directions)]);
     condition_indices = conditions;
@@ -234,12 +234,11 @@ for cond = 1:size(conditions, 1)
         
         % smaller range for far/close on constraint line
 %         v_constraint_far(:,:,ii) = constraint_velocity_screen(ones(size(Z(:,ii))).*(Z(:,ii)+depth_range), [x(:,ii)';y(:,ii)']./100, T(ii,:), view_dist,Z(fixation_idx,ii));
-        v_constraint_far(:,:,ii) = constraint_velocity_screen(ones(size(Z(:,ii))).*(Z(:,ii)*depth_range), [x(:,ii)';y(:,ii)']./100, T(ii,:), view_dist,Z(fixation_idx,ii));
-
+        v_constraint_far(:,:,ii) = constraint_velocity_screen(ones(size(Z(:,ii))).*((Z(:,ii)+depth_est)*depth_range), [x(:,ii)';y(:,ii)']./100, T(ii,:), view_dist,Z(fixation_idx,ii));
         v_constraint_far(:,:,ii) = v_constraint_far(:,:,ii)*100;
         
 %         close_depths = (Z(:,ii))-depth_range;
-        close_depths = (Z(:,ii))/depth_range;
+        close_depths = (Z(:,ii)+depth_est)/depth_range;
 
         neg_depths = close_depths<0;
         close_depths(neg_depths) = objectwidth;
@@ -364,7 +363,7 @@ for cond = 1:size(conditions, 1)
 
                 hold on
 %                 quiver(0,0,surround_mean(1), -surround_mean(2), 'color',[0,0,0.75],'AutoScale', 'off', 'LineWidth', 5)
-                quiver(0,0,surround_mean(1), -surround_mean(2), 'color','#808285','AutoScale', 'off', 'LineWidth', 2)
+                quiver(0,0,surround_mean(1), -surround_mean(2), 'color',[0,0,0],'AutoScale', 'off', 'LineWidth', 2)
 
             end
     
@@ -377,7 +376,7 @@ for cond = 1:size(conditions, 1)
             axis equal
             xlim(xlims)
             ylim(ylims)
-            if nargin < 4 || isempty(trial)
+            if nargin < 5 %|| isempty(trial)
                 title(['s = ', num2str(speeds(condition_indices(cond,1))), ' m/s,  dir = ', num2str(rad2deg(directions(condition_indices(cond,2)))), ' deg'])
             else
                 title(['s = ', num2str(condition_speeddir(1)), ' m/s,  dir = ', num2str(rad2deg(condition_speeddir(2))), ' deg'])
@@ -385,18 +384,18 @@ for cond = 1:size(conditions, 1)
             end
             fontsize(gca, 16, 'points')
             pause(1/fps)
-            frame = getframe(constraintFig);
-            writeVideo(writerObj, frame);
+%             frame = getframe(constraintFig);
+%             writeVideo(writerObj, frame);
             %
 
-            figure(11)
+            figure(20)
             scale_factor = 20;
 %             scatter(x(I(:,1),1)*ppcm(1), -y(I(:,1),1)*ppcm(2), 'filled')
             hold on, quiver(x(I(:,1),1), -y(I(:,1),1), rvelocityX(I(:,1),ii)*scale_factor, -rvelocityY(I(:,1),ii)*scale_factor,'color','#808285', 'AutoScale', 'off','LineWidth', 2) %'AutoScale', 'off',
             hold on, quiver(x(surround_idx,1), -y(surround_idx,1), rvelocityX(surround_idx,ii)*scale_factor, -rvelocityY(surround_idx,ii)*scale_factor,'color','k','AutoScale', 'off','LineWidth', 2)
             hold on, quiver(x(center,1), -y(center,1), rvelocityX(center,ii)*scale_factor, -rvelocityY(center,ii)*scale_factor, 'color', '#4859A7', 'AutoScale', 'off','LineWidth', 2)
             axis equal
-           close(writerObj);
+% %            close(writerObj);
 
             end
         end

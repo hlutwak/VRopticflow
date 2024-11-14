@@ -2,7 +2,9 @@
 % get behavior files, conccatenate same trials, run psignifit
 
 % add psignifit toolbox
-addpath('/Users/hopelutwak/Documents/MATLAB/psignifit')
+% addpath('/Users/hopelutwak/Documents/MATLAB/psignifit')
+addpath(genpath('/Users/hopelutwak/Documents/MATLAB/'))
+
 addpath(genpath('/Applications/Psychtoolbox'))
 addpath('/Users/hopelutwak/Documents/GitHub/VRopticflow/Analysis')
 % addpath(genpath('C:\Users\hlutw\Documents\MATLAB\psignifit-master'))
@@ -16,16 +18,17 @@ S = dir(fullfile(dataFolder,'*.mat'));
 
 %
 % which subjects data to analyze
-subjects = ["DL"]; %"MP","DL", "PL","MG", "SM", "IK", "JO", "KZ","IG"
+subjects = ["MP","DL", "PL","MG", "SM", "IK", "JO", "KZ"]; %"MP","DL", "PL","MG", "SM", "IK", "JO", "KZ","IG"
 
 % all: "PL", "MP", "SM", "JL", "IK", "JO", "KZ", "IG"
 % all with good eyetracking trials: subjects = ["MP","DL","PL", "MG", "SM", "IK", "JO", "KZ","IG"];
 
-stims = ["full-1", "full-2"]; %, "monocular-2"]; %add "copy" to have pa.good_trials, and/or dconst and dsurround based on vertical eye movements
+stims =  ["monocular-1", "monocular-2"]; %, "monocular-2"]; %add "copy" to have pa.good_trials, and/or dconst and dsurround based on vertical eye movements
 % % ["full-1", "full-2"];["dots-1", "dots-2"] ["monocular-1", "monocular-2"]
 ideal_eye = 1; % use measurements of data_const and data_surr based on ideal eye movements, otherwise use eyetracking vertical movements
 % depth_range = .05; % additive
-depth_range = 1.08; % multiplicative
+depth_est = 0;
+depth_range = 1.05; % multiplicative
 data_const = [];
 data_surr= [];
 
@@ -59,9 +62,9 @@ for s  = 1:length(subjects)
                     data_session(cond,:) = [nan(1) nan(1) pa.speed(conditions(cond,1)), rad2deg(pa.direction(conditions(cond,2))), sum(eq(pa.LR(idx), pa.LRresponse(idx))), length(idx)];
 
                 end
-%                 pa.speed = [0.3];
-%                 pa.direction = deg2rad(90);
-                [dconst, dsurr] = DistanceToConstraint(ds, pa, depth_range);
+%                 pa.speed = [0.5];
+%                 pa.direction = deg2rad(270);
+                [dconst, dsurr] = DistanceToConstraint(ds, pa, depth_range, depth_est);
                 data_session(:,1) = dconst(:);
                 data_session(:,2) = dsurr(:);
                 data = [data; data_session];
@@ -109,7 +112,7 @@ for s  = 1:length(subjects)
     result_const = psignifit(data_const,options);
 
     figure, plotPsych(result_const, options);
-    title([subjects(s),' distance to constraint, depth range = ', num2str(depth_range)])
+    title([subjects(s),' distance to constraint, depth range = ', num2str(depth_range), 'depth estimate = ', num2str(depth_est)])
     
     if isfield(pa, 'good_trials')
         figname = [subjects(s)+'_const_'+stims(1)+'_multiplicative'+'.eps'];
@@ -137,6 +140,118 @@ for s  = 1:length(subjects)
 
 end
 
+%% iterate over different values of distance to const
+% additive distance
+% distances  = logspace(-2, 1.5, 20);
+% distances  = logspace(-1.5, -.5, 10);
+
+% multiplicative
+depth_ranges = linspace(1.0001, 1.3, 10); % 0.5% to 100%
+% percentages = round((distances-1)*100,2);
+
+% depth est
+depth_estimates = linspace(-.4,.4, 11); %+.35m to hit the ground plane
+
+
+% window of distances cube could physically be distances  = linspace(.05, .6, 10);
+% constraint_length_opt distances = linspace(0.025, 0.15, 10)
+dev = zeros(length(depth_estimates),length(depth_ranges));
+
+tic
+for depth = 1:length(depth_estimates)
+    for range = 1:length(depth_ranges) 
+        [dconst, dsurr] = DistanceToConstraint(ds, pa, depth_ranges(range), depth_estimates(depth));
+        data_const(:,1) = repmat(dconst(:), count, 1);
+        % run psignifit
+        result = psignifit(data_const,options);
+    %     figure, plotPsych(result, options);
+    %     title(num2str(distances(d)))
+    %     set(gca, 'FontSize', 16)
+    %     thresh = exp(result.Fit(1));
+        dev(depth,range) = result.deviance;
+    %     if mod(d,5) == 0
+            display([depth_estimates(depth),depth_ranges(range)])
+    %     end
+    end
+end
+toc
+
+% imagesc(dev)
+
+% [val,idx] = min(dev);
+% display(['dev = ' num2str(val),' distance = ' num2str(depth_ranges(idx))])
+
+xx = meshgrid(depth_estimates, depth_ranges)';
+yy = meshgrid(depth_ranges, depth_estimates);
+zz = dev;
+figure, surf(xx,yy,zz)
+
+[min_val,idx]=min(dev(:))
+[row,col]=ind2sub(size(dev),idx);
+depth_ranges(col)
+depth_estimates(row)
+
+title([subjects stims(1) 'opt depth range = ' num2str(depth_ranges(col)) 'opt depth estimate = ', num2str(depth_estimates(row)), 'deviance = ' num2str(min_val)])
+
+% % 
+% figure, semilogx(distances,dev,'o-','LineWidth', 5)
+% set(gca, 'FontSize', 16)
+
+% figure, hold on, plot(depth_ranges,dev,'o-','LineWidth', 5)
+% set(gca, 'FontSize', 16)
+% ticks = 1:5:length(depth_ranges);
+
+% xticks(distances(ticks))
+% pticks = split(num2str(percentages));
+% xticklabels(pticks(ticks))
+% 
+% xticks([1.1, 1.2, 1.3])
+% xticklabels({"1.1", "1.2", "1.3"})
+% 
+% hold on, plot(distances, dev, 'o-','LineWidth', 5)
+
+% if idx == length(distances)
+%     distances_ext = linspace(distances(end)+mean(diff(distances)), (distances(end))+10*mean(diff(distances)), 10);
+%     dev_ext = zeros(1,length(distances_ext));
+%     
+%     for d = 1:length(distances_ext)
+%         [dconst, dsurr] = DistanceToConstraint(ds, pa, distances_ext(d));
+%         data_const(:,1) = repmat(dconst(:), count, 1);
+%         
+%         % run psignifit
+%         result = psignifit(data_const,options);
+%         figure, plotPsych(result, options);
+%         %     thresh = exp(result.Fit(1));
+%         dev_ext(d) = result.deviance;
+%     end
+%     
+%     dev = [dev dev_ext];
+%     distances = [distances distances_ext];
+% elseif idx == 1
+%     distances_prev = linspace(max(0,distances(1)-10*mean(diff(distances))), distances(1)-mean(diff(distances)), 10);
+%     dev_prev = zeros(1,length(distances_prev));
+%     
+%     for d = 1:length(distances_prev)
+%         [dconst, dsurr] = DistanceToConstraint(ds, pa, distances_prev(d));
+%         data_const(:,1) = repmat(dconst(:), count, 1);
+%         
+%         % run psignifit
+%         result = psignifit(data_const,options);
+%         figure, plotPsych(result, options);
+%         %     thresh = exp(result.Fit(1));
+%         dev_prev(d) = result.deviance;
+%     end
+%     
+%     dev = [dev_prev dev];
+%     distances = [distances_prev distances];
+% end
+
+% subj distances deviances
+% save dev and distances
+% if contains(stims, "monocular")
+%     save( fullfile(subjects(s), distances.mat) "distances"
+
+
 %% deviance differences
 x = categorical({'constraint', 'surround'});
 conds = categorical({'full', 'dots', 'monocular'});
@@ -152,8 +267,8 @@ surr.dots = [233	269	106	144	134	215	203	301	264	110];
 const.mono = [41	29	44	18	42	29	40	47	39	24];
 surr.mono = [203	208	253	150	250	225	153	221	217	157];
 
-% with eyetracking (no JL)
-subjects = ["MP","DL","PL", "MG", "SM", "IK", "JO", "KZ","IG"];
+% with eyetracking (no JL, IG)
+subjects = ["MP","DL","PL", "MG", "SM", "IK", "JO", "KZ"]; %"IG"
 
 const.full = [15.6351, 5.8561, 13.427, 20.5445, 12.5146, 17.7019, 4.0937, 5.3757, 5.861];
 surr.full = [68.7766, 42.1598, 36.401, 28.4526, 58.2991, 42.5696, 45.2817, 22.1162, 23.7202];
@@ -203,10 +318,10 @@ x = categorical(["full" "monocular" "dots"]);
 x = reordercats(x,string(x));
 
 fig = figure();
-for d = 1:length(const.full)
+for range = 1:length(const.full)
 %     hold on, plot(conds, [const.full(d)', const.dots(d)', const.mono(d)'], '.-','MarkerSize',20,'LineWidth', 2)
 %     hold on, plot([conds(1) conds(3)], [const.full(d)', const.mono(d)'], '.-','MarkerSize',20,'LineWidth', 2) 
-    hold on, plot(x, [surr.full(d)', surr.mono(d)', surr.dots(d)'], '.-', 'color', c(d,:),'MarkerSize',20,'LineWidth', 2) 
+    hold on, plot(x, [surr.full(range)', surr.mono(range)', surr.dots(range)'], '.-', 'color', c(range,:),'MarkerSize',20,'LineWidth', 2) 
 end
 set(gca, 'FontSize', 16)
 hold on, plot(x, mean([surr.full', surr.mono', surr.dots']), '.-', 'color', [.25 .25 .25],'MarkerSize',30,'LineWidth', 5)
@@ -216,10 +331,10 @@ legend([subjects, "mean"])
 %  saveas(gcf, fullfile(figFolder, figname), 'epsc')
 
 fig = figure();
-for d = 1:length(const.full)
+for range = 1:length(const.full)
 %     hold on, plot(conds, [const.full(d)', const.dots(d)', const.mono(d)'], '.-','MarkerSize',20,'LineWidth', 2)
 %     hold on, plot([conds(1) conds(3)], [const.full(d)', const.mono(d)'], '.-','MarkerSize',20,'LineWidth', 2) 
-    hold on, plot(x, [const.full(d)', const.mono(d)', const.dots(d)'], '.-', 'color', c(d,:),'MarkerSize',20,'LineWidth', 2) 
+    hold on, plot(x, [const.full(range)', const.mono(range)', const.dots(range)'], '.-', 'color', c(range,:),'MarkerSize',20,'LineWidth', 2) 
 
 end
 set(gca, 'FontSize', 16)
@@ -250,7 +365,7 @@ x = reordercats(x,string(x));
 subjects = ["MP","DL","PL", "MG", "SM","IK", "JO", "KZ"];
 c = lines(length(subjects));
 
-
+%additive
 full = [0.05	0.1274	0.05	0.05	0.127		0.19	0.015];
 dots = [0.3	    0.2976	0.29	NaN	    0.45		0.12	0.45];
 monocular = [0.29	0.2976	0.12	0.19	0.127		0.12	0.05];
@@ -264,113 +379,74 @@ full = [1.0311	1.0828	1.0311	1.0001	1.0725	1.0518	1.0932	1.0104];
 dots = [1.2069	1.2276	1.2586	1.1035	1.1966	1.1759	1.2173	1.1966];
 monocular = [1.2483	1.0828	1.0725	1.0621	1.0828	1.0001	1.0828	1.0311];
 
+% depth est
+full = [0	0	0.04	0	0.04	0.08	-0.04	0.04];
+dots = [0.16	0.16	-0.04	0.2	0	0.16	0.04	0.16];
+monocular = [0.04	0.04	-0.04	0.04	-0.04	0.12	-0.04	0.08];
+
+% depth est and range
+full = [0	-0.08	0	0	0.16	0.08	0	0;
+1.0001	1.1334	1.0334	1.0001	1.1667	1.0667	1.1001	1.0001];
+
+dots = [0.24	0.24	0	0.4	0.08	0.32	0.16	0.32;
+1.1667	1.1667	1.2334	1.3	1.2667	1.2334	1.2	1.2];
+
+monocular = [-0.08	0.08	-0.16	0	-0.08	0.08	-0.08	0.08;
+1.2	1.1001	1.1334	1.0667	1.1001	1.0001	1.1001	1.0667];
+
+
+
+
 fig = figure();
-for d = 1:length(full)
+for range = 1:length(full)
 %     hold on, plot(conds, [const.full(d)', const.dots(d)', const.mono(d)'], '.-','MarkerSize',20,'LineWidth', 2)
 %     hold on, plot([conds(1) conds(3)], [const.full(d)', const.mono(d)'], '.-','MarkerSize',20,'LineWidth', 2) 
-    hold on, plot(x, [full(d) monocular(d) dots(d)], '.-', 'color', c(d,:),'MarkerSize',20,'LineWidth', 2) 
+    hold on, plot(x, [full(1,range) monocular(1,range) dots(1,range)], '.-', 'color', c(range,:),'MarkerSize',20,'LineWidth', 2) 
 end
 set(gca, 'FontSize', 16)
-hold on, plot(x, nanmean([full' monocular' dots']), '.-', 'color', [.25 .25 .25],'MarkerSize',30,'LineWidth', 5)
+hold on, plot(x, nanmean([full(1,:)' monocular(1,:)' dots(1,:)']), '.-', 'color', [.25 .25 .25],'MarkerSize',30,'LineWidth', 5)
 legend([subjects, "mean"])
 
-y = nanmean([full' monocular' dots']);
-err = std([full' monocular' dots'])/sqrt(length(full));
-errorbar(x,nanmean([full' monocular' dots']), err, 'LineWidth', 2)
+y = nanmean([full(1,:)' monocular(1,:)' dots(1,:)']);
+err = std([full(1,:)' monocular(1,:)' dots(1,:)'])/sqrt(length(full));
+errorbar(x,nanmean([full(1,:)' monocular(1,:)' dots(1,:)']), err, 'LineWidth', 2)
+
+
+fig = figure();
+for range = 1:length(full)
+%     hold on, plot(conds, [const.full(d)', const.dots(d)', const.mono(d)'], '.-','MarkerSize',20,'LineWidth', 2)
+%     hold on, plot([conds(1) conds(3)], [const.full(d)', const.mono(d)'], '.-','MarkerSize',20,'LineWidth', 2) 
+    hold on, plot(x, [full(2,range) monocular(2,range) dots(2,range)], '.-', 'color', c(range,:),'MarkerSize',20,'LineWidth', 2) 
+end
+set(gca, 'FontSize', 16)
+hold on, plot(x, nanmean([full(2,:)' monocular(2,:)' dots(2,:)']), '.-', 'color', [.25 .25 .25],'MarkerSize',30,'LineWidth', 5)
+legend([subjects, "mean"])
+
+y = nanmean([full(2,:)' monocular(2,:)' dots(2,:)']);
+err = std([full(2,:)' monocular(2,:)' dots(2,:)'])/sqrt(length(full));
+errorbar(x,nanmean([full(2,:)' monocular(2,:)' dots(2,:)']), err, 'LineWidth', 2)
+
+
 
 
 figname = "optimal_depthrange";
 
-%% iterate over different values of distance to const
-% additive distance
-% distances  = logspace(-2, 1.5, 20);
-% distances  = logspace(-1.5, -.5, 10);
+%errorbar plot
+bias = [full(1,:)' monocular(1,:)' dots(1,:)'];
+variance = [full(2,:)' monocular(2,:)' dots(2,:)'];
+est  = pa.objectdist+bias;
+ypos = est.*variance-pa.objectdist;
+yneg = est./variance-pa.objectdist;
 
-% multiplicative
-distances = linspace(1.0001, 1.3, 20); % 0.5% to 100%
-percentages = round((distances-1)*100,2);
+figure, errorbar(x, est, yneg, ypos)
 
+meanest = mean(est);
+meanvar = mean(variance);
+ymeanpos = meanest.*meanvar-pa.objectdist;
+ymeanneg = meanest./meanvar-pa.objectdist;
+figure
+hold on, errorbar(x, meanest, ymeanneg, ymeanpos)
 
-% window of distances cube could physically be distances  = linspace(.05, .6, 10);
-% constraint_length_opt distances = linspace(0.025, 0.15, 10)
-dev = zeros(1,length(distances));
-
-tic
-for d = 1 :length(distances) 
-    [dconst, dsurr] = DistanceToConstraint(ds, pa, distances(d));
-    data_const(:,1) = repmat(dconst(:), count, 1);
-    % run psignifit
-    result = psignifit(data_const,options);
-%     figure, plotPsych(result, options);
-%     title(num2str(distances(d)))
-%     set(gca, 'FontSize', 16)
-%     thresh = exp(result.Fit(1));
-    dev(d) = result.deviance;
-%     if mod(d,5) == 0
-        display(d)
-%     end
-end
-
-[val,idx] = min(dev);
-display(['dev = ' num2str(val),' distance = ' num2str(distances(idx))])
-toc
-
-% % 
-% figure, semilogx(distances,dev,'o-','LineWidth', 5)
-% set(gca, 'FontSize', 16)
-
-figure, plot(distances,dev,'o-','LineWidth', 5)
-set(gca, 'FontSize', 16)
-ticks = 1:5:length(distances);
-xticks(distances(ticks))
-pticks = split(num2str(percentages));
-xticklabels(pticks(ticks))
-
-xticks([1.1, 1.2, 1.3])
-xticklabels({"1.1", "1.2", "1.3"})
-% 
-% hold on, plot(distances, dev, 'o-','LineWidth', 5)
-
-% if idx == length(distances)
-%     distances_ext = linspace(distances(end)+mean(diff(distances)), (distances(end))+10*mean(diff(distances)), 10);
-%     dev_ext = zeros(1,length(distances_ext));
-%     
-%     for d = 1:length(distances_ext)
-%         [dconst, dsurr] = DistanceToConstraint(ds, pa, distances_ext(d));
-%         data_const(:,1) = repmat(dconst(:), count, 1);
-%         
-%         % run psignifit
-%         result = psignifit(data_const,options);
-%         figure, plotPsych(result, options);
-%         %     thresh = exp(result.Fit(1));
-%         dev_ext(d) = result.deviance;
-%     end
-%     
-%     dev = [dev dev_ext];
-%     distances = [distances distances_ext];
-% elseif idx == 1
-%     distances_prev = linspace(max(0,distances(1)-10*mean(diff(distances))), distances(1)-mean(diff(distances)), 10);
-%     dev_prev = zeros(1,length(distances_prev));
-%     
-%     for d = 1:length(distances_prev)
-%         [dconst, dsurr] = DistanceToConstraint(ds, pa, distances_prev(d));
-%         data_const(:,1) = repmat(dconst(:), count, 1);
-%         
-%         % run psignifit
-%         result = psignifit(data_const,options);
-%         figure, plotPsych(result, options);
-%         %     thresh = exp(result.Fit(1));
-%         dev_prev(d) = result.deviance;
-%     end
-%     
-%     dev = [dev_prev dev];
-%     distances = [distances_prev distances];
-% end
-
-% subj distances deviances
-% save dev and distances
-% if contains(stims, "monocular")
-%     save( fullfile(subjects(s), distances.mat) "distances"
 %%
 %load constraint_legnth_opt.mat
 % replace correct array in mat file
@@ -378,7 +454,7 @@ xticklabels({"1.1", "1.2", "1.3"})
 save (fullfile(analysisFolder, "constraint_length_opt.mat"), "constraint_length_opt")
 
 %% full vs dots vs monocular
-figure, hold on, plot(distances, dev, 'LineWidth', 2)
+figure, hold on, plot(depth_ranges, dev, 'LineWidth', 2)
 
 figure
 for s = 1:3
