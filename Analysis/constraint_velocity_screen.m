@@ -36,21 +36,35 @@ velocity_field = zeros(size(xy));                                 % number of pa
 %solve for the inverse depth at the X,Y,Z position that projects to the
 %desired x,y position, then use that to compute the flow vector at each
 %location (same Z value for all of the gabors).
+% 
+% for ii=1:length(Z)
+%         inv_depth = 1/(Z(ii));
+%         
+%         % Heeger + Jepson, Lutwak + Bonnen + Simoncelli
+%         x = xy(1,ii); % coordinates of screen
+%         y = xy(2,ii);
+%         f = view_dist;
+%         Pxy = inv_depth;
+%         
+%         A = [-f 0 x; 0 -f y];
+%         B = [f+x^2/f x*y/f 0; x*y/f f+y^2/f 0];
+%         velocity_field(1:2,ii) = (z0*Pxy*A+B)*translate'/z0;
+% end
+
+%velocities in m/s
+
+% adding in eye rotations, instead of z0 put theta (omegax)
 for ii=1:length(Z)
         inv_depth = 1/(Z(ii));
         
-        % Heeger + Jepson, Lutwak + Bonnen + Simoncelli
+        % Heeger + Jepson
         x = xy(1,ii); % coordinates of screen
         y = xy(2,ii);
         f = view_dist;
         Pxy = inv_depth;
         
         A = [-f 0 x; 0 -f y];
-%         B = [(x*y)/f -(f+x^2/f) y; f+y^2/f -(x*y)/f -x];
-        B = [f+x^2/f x*y/f 0; x*y/f f+y^2/f 0];
-%         z0 = f;
-%         velocity_field1(1:2,ii) = Pxy*A*translate'+B*rotate';
-        velocity_field(1:2,ii) = (z0*Pxy*A+B)*translate'/z0;
+        B = [(x*y)/f -(f+x^2/f) y; f+y^2/f -(x*y)/f -x];
+        rotate = [1/z0*translate(2), 0, 0];
+        velocity_field(1:2,ii) = Pxy*A*translate'+B*rotate';
 end
-
-%velocities in m/s

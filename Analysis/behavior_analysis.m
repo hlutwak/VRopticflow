@@ -18,17 +18,17 @@ S = dir(fullfile(dataFolder,'*.mat'));
 
 %
 % which subjects data to analyze
-subjects = ["MP","DL", "PL","MG", "SM", "IK", "JO", "KZ"]; %"MP","DL", "PL","MG", "SM", "IK", "JO", "KZ","IG"
+subjects = ["DL"]; %,"DL", "PL","MG", "SM", "IK", "JO", "KZ"]; %"MP","DL", "PL","MG", "SM", "IK", "JO", "KZ","IG"
 
 % all: "PL", "MP", "SM", "JL", "IK", "JO", "KZ", "IG"
 % all with good eyetracking trials: subjects = ["MP","DL","PL", "MG", "SM", "IK", "JO", "KZ","IG"];
 
-stims =  ["monocular-1", "monocular-2"]; %, "monocular-2"]; %add "copy" to have pa.good_trials, and/or dconst and dsurround based on vertical eye movements
+stims =  ["full-1"]; %, "monocular-2"]; %add "copy" to have pa.good_trials, and/or dconst and dsurround based on vertical eye movements
 % % ["full-1", "full-2"];["dots-1", "dots-2"] ["monocular-1", "monocular-2"]
 ideal_eye = 1; % use measurements of data_const and data_surr based on ideal eye movements, otherwise use eyetracking vertical movements
 % depth_range = .05; % additive
 depth_est = 0;
-depth_range = 1.4; % multiplicative
+depth_range = 1.05; % multiplicative
 data_const = [];
 data_surr= [];
 
@@ -62,8 +62,8 @@ for s  = 1:length(subjects)
                     data_session(cond,:) = [nan(1) nan(1) pa.speed(conditions(cond,1)), rad2deg(pa.direction(conditions(cond,2))), sum(eq(pa.LR(idx), pa.LRresponse(idx))), length(idx)];
 
                 end
-                pa.speed = [0.3];
-                pa.direction = deg2rad(90);
+%                 pa.speed = [0.3];
+%                 pa.direction = deg2rad(90);
                 [dconst, dsurr] = DistanceToConstraint(ds, pa, depth_range, depth_est);
                 data_session(:,1) = dconst(:);
                 data_session(:,2) = dsurr(:);
@@ -435,10 +435,10 @@ figname = "optimal_depthrange";
 bias = [full(1,:)' monocular(1,:)' dots(1,:)'];
 variance = [full(2,:)' monocular(2,:)' dots(2,:)'];
 est  = pa.objectdist+bias;
-ypos = est.*variance-pa.objectdist;
-yneg = est./variance-pa.objectdist;
+ypos = est.*variance-est;
+yneg = est./variance-est;
 
-figure, errorbar(x, est, yneg, ypos)
+figure, errorbar(x, est(6,:), yneg(6,:), ypos(6,:))
 
 meanest = mean(est);
 meanvar = mean(variance);

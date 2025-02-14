@@ -55,7 +55,7 @@ dim = [pa.floorWidth,0,pa.floorWidth]; % extent of where dots can be in m: X, Y,
 % 5 m across
 nClusters = 1000; % specify number of clusters
 nDotsPerCluster = 1;% number of dots per cluster
-nObjects = pa.nball;
+nObjects = 1; %pa.nball;
  
 % *** find these based on oculus display
 view_dist = .5; %m how far the screen is from the observer
@@ -175,6 +175,9 @@ for cond = 1:size(conditions, 1)
     secs = 1/fps:1/fps:ns;
     if isempty(theta)
         theta = atan(height./(fixation-world_speed*secs)); % update theta for observer fixating at a point at the ground in front of them, fixation m away
+        ideal_eye = 1;
+    else
+        ideal_eye = 0;
     end
     
     % visualize observer trajectory within dots
@@ -229,12 +232,20 @@ for cond = 1:size(conditions, 1)
         y(:,ii) = 100*view_dist*(drawndots(:,2,ii))./(drawndots(:,3,ii));
         
         % calculate velocity based on constraint eq, make sure x,y in m
-        v_constraint(:,:,ii) = constraint_velocity_screen(Z(:,ii), [x(:,ii)';y(:,ii)']./100, T(ii,:), view_dist,Z(fixation_idx,ii));
+%         if ideal_eye
+            v_constraint(:,:,ii) = constraint_velocity_screen(Z(:,ii), [x(:,ii)';y(:,ii)']./100, T(ii,:), view_dist,Z(fixation_idx,ii));
+            
+%         else
+            dtheta = diff(theta);
+            dtheta = [dtheta dtheta(end)];
+            v_constraint(:,:,ii) = constraint_velocity_screen(Z(:,ii), [x(:,ii)';y(:,ii)']./100, T(ii,:), view_dist,dtheta(ii));
+%         end
         v_constraint(:,:,ii) = v_constraint(:,:,ii).*100;
         
         % smaller range for far/close on constraint line
-%         v_constraint_far(:,:,ii) = constraint_velocity_screen(ones(size(Z(:,ii))).*(Z(:,ii)+depth_range), [x(:,ii)';y(:,ii)']./100, T(ii,:), view_dist,Z(fixation_idx,ii));
-        v_constraint_far(:,:,ii) = constraint_velocity_screen(ones(size(Z(:,ii))).*((Z(:,ii)+depth_est)*depth_range), [x(:,ii)';y(:,ii)']./100, T(ii,:), view_dist,Z(fixation_idx,ii));
+%         v_constraint_far(:,:,ii) = constraint_velocity_screen(ones(size(Z(:,ii))).*((Z(:,ii)+depth_est)*depth_range), [x(:,ii)';y(:,ii)']./100, T(ii,:), view_dist,Z(fixation_idx,ii));
+        v_constraint_far(:,:,ii) = constraint_velocity_screen(ones(size(Z(:,ii))).*((Z(:,ii)+depth_est)*depth_range), [x(:,ii)';y(:,ii)']./100, T(ii,:), view_dist,theta(ii));
+
         v_constraint_far(:,:,ii) = v_constraint_far(:,:,ii)*100;
         
 %         close_depths = (Z(:,ii))-depth_range;
@@ -242,7 +253,9 @@ for cond = 1:size(conditions, 1)
 
         neg_depths = close_depths<0;
         close_depths(neg_depths) = objectwidth;
-        v_constraint_close(:,:,ii) = constraint_velocity_screen(ones(size(Z(:,ii))).*close_depths, [x(:,ii)';y(:,ii)']./100, T(ii,:), view_dist,Z(fixation_idx,ii));
+%         v_constraint_close(:,:,ii) = constraint_velocity_screen(ones(size(Z(:,ii))).*close_depths, [x(:,ii)';y(:,ii)']./100, T(ii,:), view_dist,Z(fixation_idx,ii));
+          v_constraint_close(:,:,ii) = constraint_velocity_screen(ones(size(Z(:,ii))).*close_depths, [x(:,ii)';y(:,ii)']./100, T(ii,:), view_dist,theta(ii));
+
         v_constraint_close(:,:,ii) = v_constraint_close(:,:,ii)*100;
         
         % Indices of dots to show based on how close/far the dots in the real world are (viewing depths)
@@ -283,7 +296,7 @@ for cond = 1:size(conditions, 1)
     
     
     %show target vs surround velocities throughout stim
-    radius = 3; %in cm
+    radius = 3; %3 in cm
     center = target_idx; %target_idx vs stationary_idx
     xlims = [-.05, .2];
     ylims = [-.2, .05];
