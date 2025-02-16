@@ -18,16 +18,16 @@ S = dir(fullfile(dataFolder,'*.mat'));
 
 %
 % which subjects data to analyze
-subjects = ["DL"]; %,"DL", "PL","MG", "SM", "IK", "JO", "KZ"]; %"MP","DL", "PL","MG", "SM", "IK", "JO", "KZ","IG"
+subjects = ["MG"]; %,"DL", "PL","MG", "SM", "IK", "JO", "KZ"]; %"MP","DL", "PL","MG", "SM", "IK", "JO", "KZ","IG"
 
 % all: "PL", "MP", "SM", "JL", "IK", "JO", "KZ", "IG"
 % all with good eyetracking trials: subjects = ["MP","DL","PL", "MG", "SM", "IK", "JO", "KZ","IG"];
 
-stims =  ["full-1"]; %, "monocular-2"]; %add "copy" to have pa.good_trials, and/or dconst and dsurround based on vertical eye movements
+stims =  ["full-1", "full-2"]; %, "monocular-2"]; %add "copy" to have pa.good_trials, and/or dconst and dsurround based on vertical eye movements
 % % ["full-1", "full-2"];["dots-1", "dots-2"] ["monocular-1", "monocular-2"]
 ideal_eye = 1; % use measurements of data_const and data_surr based on ideal eye movements, otherwise use eyetracking vertical movements
 % depth_range = .05; % additive
-depth_est = .4;
+depth_est = 0;
 depth_range = 1.05; % multiplicative
 data_const = [];
 data_surr= [];
@@ -62,8 +62,8 @@ for s  = 1:length(subjects)
                     data_session(cond,:) = [nan(1) nan(1) pa.speed(conditions(cond,1)), rad2deg(pa.direction(conditions(cond,2))), sum(eq(pa.LR(idx), pa.LRresponse(idx))), length(idx)];
 
                 end
-                pa.speed = [0.3];
-                pa.direction = deg2rad(90);
+%                 pa.speed = [0.3];
+%                 pa.direction = deg2rad(90);
                 [dconst, dsurr] = DistanceToConstraint(ds, pa, depth_range, depth_est);
                 data_session(:,1) = dconst(:);
                 data_session(:,2) = dsurr(:);
@@ -279,7 +279,21 @@ surr.dots = [125.7537	122.5027	37.2422	38.6214	39.2498		73.7502	93.9493	100.7684
 const.mono = [4.7275	12.8345	5.1145	7.4692	4.8169		11.1978	10.7408	8.3045	10.7063];
 surr.mono = [52.7765	65.9968	30.8971	60.341	35.1009		53.887	34.6784	67.3172	16.7235];
 
-% with just good trials, seeded cubes no JL or IG
+% redoing eyetracking to update constraint calculation (no added rotation
+% before to constraint)
+subjects = ["MP","DL","PL", "MG", "SM", "IK", "JO", "KZ"]; %"IG"
+
+const.full = [15.6351, 5.8561, 13.427, 20.5445, 12.5146, 17.7019, 4.0937, 5.3757, 5.861];
+surr.full = [68.7766, 42.1598, 36.401, 28.4526, 58.2991, 42.5696, 45.2817, 22.1162, 23.7202];
+
+const.dots = [55.4234	70.218	9.7616	52.2366	24.4333		53.953	26.908	22.4821 3.8244];
+surr.dots = [125.7537	122.5027	37.2422	38.6214	39.2498		73.7502	93.9493	100.7684 16.9668];
+
+const.mono = [4.7275	12.8345	5.1145	7.4692	4.8169		11.1978	10.7408	8.3045	10.7063];
+surr.mono = [52.7765	65.9968	30.8971	60.341	35.1009		53.887	34.6784	67.3172	16.7235];
+
+
+% with just good trials, no eyetracking, seeded cubes no JL or IG
 subjects = ["MP","DL","PL", "MG", "SM", "IK", "JO", "KZ"];
 
 const.full= [15.6395	28.7171	35.2079	24.8349	29.7911		37.9016	44.5579	19.4831];

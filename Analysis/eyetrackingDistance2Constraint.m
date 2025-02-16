@@ -10,8 +10,8 @@ dataFolder = '/Users/hopelutwak/Documents/GitHub/VRopticflow/Data';
 
 % 
 % % which subjects data to analyze
-subjects = "MP"; %"HL" "IK"
-stims = "full-1"; %["full-1", "full-2"]; %"pilot"
+subjects = "KZ"; %"HL" "IK"
+stims = ["dots-2"]; %["full-1", "full-2"]; %"pilot"
 
 D=dir('Data/');
 
@@ -240,6 +240,7 @@ load('theta.mat'); % theortical theta
 dconst_overTrials = [];
 dsurr_overTrials = [];
 depth_range = 0.05;
+depth_est = 0;
 
 for t = good_trials %pa.trialNumber %full set, change to pa.nTrials
     tf = isbetween(synced, oc.UTCtrialStart(t), oc.UTCtrialEnd(t)+milliseconds(50)); %in case being inbetween trialstart and end cuts off too much eyetracking data
@@ -266,7 +267,7 @@ for t = good_trials %pa.trialNumber %full set, change to pa.nTrials
     theta_thisTrial = theta(1)- deg2rad(interp_y(1:length(theta)));
     trial = t;
     
-    [dconst, dsurr] = DistanceToConstraint(ds, pa, depth_range, theta, trial);
+    [dconst, dsurr] = DistanceToConstraint(ds, pa, depth_range, depth_est, theta, trial);
     dconst_overTrials = [dconst_overTrials dconst];
     dsurr_overTrials = [dsurr_overTrials dsurr];
     if mod(t,50) == 0
@@ -298,14 +299,34 @@ removed_trials = all(~idx);
 pa.data_const = data_const;
 pa.data_surr = data_surr;
 pa.removed_trials = removed_trials;
-
+ 
 % save(pa.dataFile, '-struct', 'MPdata');
 pa.baseDir = pwd;
 pa.dataFile = fullfile(pa.baseDir, 'Data', [pa.subjectName '-' num2str(pa.block) '-' pa.date '-eyetracking' '.mat']);
 save(pa.dataFile, 'pa', 'ds', 'kb','oc');
 
+%%
+% do this for first block
+pcorrect = eq(pa.LR(pa.goodTrials), pa.LRresponse(pa.goodTrials));
+pcorrect = +pcorrect;
+nTrials = ones(size(pcorrect));
 
+data_const = [pa.dconst; pcorrect; nTrials]';
+data_surr = [pa.dsurr; pcorrect; nTrials]';
+
+% load second block (don't delete anything) and do this
+pcorrect = eq(pa.LR(pa.goodTrials), pa.LRresponse(pa.goodTrials));
+pcorrect = +pcorrect;
+nTrials = ones(size(pcorrect));
+
+data_const = [data_const; [pa.dconst; pcorrect; nTrials]'];
+data_surr = [data_surr; [pa.dsurr; pcorrect; nTrials]'];
+
+%% then fit over both blocks
 %
+depth_range = 1.05;
+depth_est = 0;
+
 options             = struct;   % initialize as an empty struct
 options.sigmoidName = 'weibull';   
 options.expType     = '2AFC';   % choose 2-AFC as the paradigm of the experiment
@@ -314,8 +335,8 @@ options.expType     = '2AFC';   % choose 2-AFC as the paradigm of the experiment
 options.fixedPars = NaN(5,1);  
 options.poolxTol = 0.005;
 % options.fixedPars(5) = 0;       % fix eta (dispersion) to zero
-result_const = psignifit(pa.data_const,options);
-result_surr = psignifit(pa.data_surr,options);
+result_const = psignifit(data_const,options);
+result_surr = psignifit(data_surr,options);
 
 
 figure, plotPsych(result_const, options);

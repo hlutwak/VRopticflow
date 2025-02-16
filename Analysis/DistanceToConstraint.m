@@ -3,7 +3,7 @@ function  [dconstraint, dsurround] = DistanceToConstraint(ds, pa, depth_range, d
 % simulate VR flow scene to generate distance to constraint for multiple velocities
 % takes saved variables from VR experiment
 % plots center, surround velocities as well as constraint
-visualize = 1;
+visualize = 0;
 seed=2; %5 is full
 rng(seed) % to have random dots that appear in the same "random" place each time
 ns = pa.targetMotionDuration; % number of seconds
@@ -175,9 +175,6 @@ for cond = 1:size(conditions, 1)
     secs = 1/fps:1/fps:ns;
     if isempty(theta)
         theta = atan(height./(fixation-world_speed*secs)); % update theta for observer fixating at a point at the ground in front of them, fixation m away
-        ideal_eye = 1;
-    else
-        ideal_eye = 0;
     end
     
     % visualize observer trajectory within dots
@@ -233,18 +230,21 @@ for cond = 1:size(conditions, 1)
         
         % calculate velocity based on constraint eq, make sure x,y in m
 %         if ideal_eye
-            v_constraint(:,:,ii) = constraint_velocity_screen(Z(:,ii), [x(:,ii)';y(:,ii)']./100, T(ii,:), view_dist,Z(fixation_idx,ii));
-            
+%             v_constraint(:,:,ii) = constraint_velocity_screen(Z(:,ii), [x(:,ii)';y(:,ii)']./100, T(ii,:), view_dist,Z(fixation_idx,ii));
+%             v_constraint_far(:,:,ii) = constraint_velocity_screen(ones(size(Z(:,ii))).*((Z(:,ii)+depth_est)*depth_range), [x(:,ii)';y(:,ii)']./100, T(ii,:), view_dist,Z(fixation_idx,ii));
+%             v_constraint_close(:,:,ii) = constraint_velocity_screen(ones(size(Z(:,ii))).*close_depths, [x(:,ii)';y(:,ii)']./100, T(ii,:), view_dist,Z(fixation_idx,ii));
+% 
 %         else
             dtheta = diff(theta);
             dtheta = [dtheta dtheta(end)];
-            v_constraint(:,:,ii) = constraint_velocity_screen(Z(:,ii), [x(:,ii)';y(:,ii)']./100, T(ii,:), view_dist,dtheta(ii));
+            v_constraint(:,:,ii) = constraint_velocity_screen(Z(:,ii), [x(:,ii)';y(:,ii)']./100, T(ii,:), view_dist,-dtheta(ii));
 %         end
+
         v_constraint(:,:,ii) = v_constraint(:,:,ii).*100;
         
         % smaller range for far/close on constraint line
 %         v_constraint_far(:,:,ii) = constraint_velocity_screen(ones(size(Z(:,ii))).*((Z(:,ii)+depth_est)*depth_range), [x(:,ii)';y(:,ii)']./100, T(ii,:), view_dist,Z(fixation_idx,ii));
-        v_constraint_far(:,:,ii) = constraint_velocity_screen(ones(size(Z(:,ii))).*((Z(:,ii)+depth_est)*depth_range), [x(:,ii)';y(:,ii)']./100, T(ii,:), view_dist,theta(ii));
+        v_constraint_far(:,:,ii) = constraint_velocity_screen(ones(size(Z(:,ii))).*((Z(:,ii)+depth_est)*depth_range), [x(:,ii)';y(:,ii)']./100, T(ii,:), view_dist,-dtheta(ii));
 
         v_constraint_far(:,:,ii) = v_constraint_far(:,:,ii)*100;
         
@@ -254,7 +254,7 @@ for cond = 1:size(conditions, 1)
         neg_depths = close_depths<0;
         close_depths(neg_depths) = objectwidth;
 %         v_constraint_close(:,:,ii) = constraint_velocity_screen(ones(size(Z(:,ii))).*close_depths, [x(:,ii)';y(:,ii)']./100, T(ii,:), view_dist,Z(fixation_idx,ii));
-          v_constraint_close(:,:,ii) = constraint_velocity_screen(ones(size(Z(:,ii))).*close_depths, [x(:,ii)';y(:,ii)']./100, T(ii,:), view_dist,theta(ii));
+         v_constraint_close(:,:,ii) = constraint_velocity_screen(ones(size(Z(:,ii))).*close_depths, [x(:,ii)';y(:,ii)']./100, T(ii,:), view_dist,-dtheta(ii));
 
         v_constraint_close(:,:,ii) = v_constraint_close(:,:,ii)*100;
         

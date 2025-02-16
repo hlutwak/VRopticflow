@@ -18,12 +18,12 @@ S = dir(fullfile(dataFolder,'*.mat'));
 
 %
 % which subjects data to analyze
-subjects = ["DL"]; %,"DL", "PL","MG", "SM", "IK", "JO", "KZ"]; %"MP","DL", "PL","MG", "SM", "IK", "JO", "KZ","IG"
+subjects = ["MG"]; %,"DL", "PL","MG", "SM", "IK", "JO", "KZ"]; %"MP","DL", "PL","MG", "SM", "IK", "JO", "KZ","IG"
 
 % all: "PL", "MP", "SM", "JL", "IK", "JO", "KZ", "IG"
 % all with good eyetracking trials: subjects = ["MP","DL","PL", "MG", "SM", "IK", "JO", "KZ","IG"];
 
-stims =  ["full-1"]; %, "monocular-2"]; %add "copy" to have pa.good_trials, and/or dconst and dsurround based on vertical eye movements
+stims =  ["full-1", "full-2"]; %, "monocular-2"]; %add "copy" to have pa.good_trials, and/or dconst and dsurround based on vertical eye movements
 % % ["full-1", "full-2"];["dots-1", "dots-2"] ["monocular-1", "monocular-2"]
 ideal_eye = 1; % use measurements of data_const and data_surr based on ideal eye movements, otherwise use eyetracking vertical movements
 % depth_range = .05; % additive
@@ -279,7 +279,21 @@ surr.dots = [125.7537	122.5027	37.2422	38.6214	39.2498		73.7502	93.9493	100.7684
 const.mono = [4.7275	12.8345	5.1145	7.4692	4.8169		11.1978	10.7408	8.3045	10.7063];
 surr.mono = [52.7765	65.9968	30.8971	60.341	35.1009		53.887	34.6784	67.3172	16.7235];
 
-% with just good trials, seeded cubes no JL or IG
+% redoing eyetracking to update constraint calculation (no added rotation
+% before to constraint)
+subjects = ["MP","DL","PL", "MG", "SM", "IK", "JO", "KZ"]; %"IG"
+
+const.full = [22.3472	1.4375	53.8067	6.0718	3.9189		10.908	5.3659	0.84972	];
+surr.full = [209.1479	83.329	71.928	73.1586	142.0699		26.9868	114.8144	77.3615	];
+
+const.dots = [47.8804	38.1428	0.37073	30.3843	42.5853		12.5412	58.3317	94.6148	];
+surr.dots = [97.8805	215.0529	42.0954	56.2199	73.4183		98.8093	153.8852	188.0491];
+
+const.mono = [31.4526	12.8345	9.2975	25.7822	2.1776		0.69794	4.1503	17.516	];
+surr.mono = [131.869	64.6475	142.8303	58.7146	127.65		16.9672	113.381	104.641	];
+
+
+% with just good trials, no eyetracking, seeded cubes no JL or IG
 subjects = ["MP","DL","PL", "MG", "SM", "IK", "JO", "KZ"];
 
 const.full= [15.6395	28.7171	35.2079	24.8349	29.7911		37.9016	44.5579	19.4831];

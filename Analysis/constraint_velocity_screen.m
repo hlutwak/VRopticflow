@@ -1,4 +1,4 @@
-function [velocity_field] = constraint_velocity_screen(Z, xy, translate, view_dist, z0)
+function [velocity_field] = constraint_velocity_screen(Z, xy, translate, view_dist, omegax)
 % The world is a cloud of enveloped pattern motion, the observer is translating and and fixating past it.
 % The observer is always at the origin, and is looking down the Z axis.
 % This program takes a set of gabors and calculates the velocity of each
@@ -53,7 +53,7 @@ velocity_field = zeros(size(xy));                                 % number of pa
 
 %velocities in m/s
 
-% adding in eye rotations, instead of z0 put theta (omegax)
+% % adding in eye rotations, instead of z0 put theta (omegax)
 for ii=1:length(Z)
         inv_depth = 1/(Z(ii));
         
@@ -65,6 +65,7 @@ for ii=1:length(Z)
         
         A = [-f 0 x; 0 -f y];
         B = [(x*y)/f -(f+x^2/f) y; f+y^2/f -(x*y)/f -x];
-        rotate = [1/z0*translate(2), 0, 0];
+%         rotate = [1/z0*translate(2), 0, 0];
+        rotate = [omegax, 0, 0];
         velocity_field(1:2,ii) = Pxy*A*translate'+B*rotate';
 end
