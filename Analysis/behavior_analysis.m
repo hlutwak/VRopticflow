@@ -6,13 +6,19 @@
 addpath(genpath('/Users/hopelutwak/Documents/MATLAB/'))
 
 addpath(genpath('/Applications/Psychtoolbox'))
-addpath('/Users/hopelutwak/Documents/GitHub/VRopticflow/Analysis')
+% addpath('/Users/hopelutwak/Documents/GitHub/VRopticflow/Analysis')
+addpath('/Users/hlutwak/Documents/GitHub/VRopticflow/Analysis')
+
 % addpath(genpath('C:\Users\hlutw\Documents\MATLAB\psignifit-master'))
 % assign data folder
-dataFolder = '/Users/hopelutwak/Documents/GitHub/VRopticflow/Data';
-% dataFolder = 'cC:\Users\hlutw\Documents\GitHub\VRopticflow\Data';
+% dataFolder = '/Users/hopelutwak/Documents/GitHub/VRopticflow/Data';
+ dataFolder = '/Users/hlutwak/Documents/GitHub/VRopticflow/Data';
+
 figFolder = '/Users/hopelutwak/Documents/GitHub/VRopticflow/Figures';
-analysisFolder = '/Users/hopelutwak/Documents/GitHub/VRopticflow/Analysis';
+
+% analysisFolder = '/Users/hopelutwak/Documents/GitHub/VRopticflow/Analysis';
+analysisFolder = '/Users/hlutwak/Documents/GitHub/VRopticflow/Analysis';
+
 % names of files
 S = dir(fullfile(dataFolder,'*.mat'));
 

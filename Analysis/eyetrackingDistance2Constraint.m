@@ -4,14 +4,18 @@
 clear
 % close all
 
-addpath('/Users/hopelutwak/Documents/MATLAB/psignifit')
-addpath(genpath('/Users/hopelutwak/Documents/GitHub/VRopticflow/Analysis'))
-dataFolder = '/Users/hopelutwak/Documents/GitHub/VRopticflow/Data';
+% addpath('/Users/hopelutwak/Documents/MATLAB/psignifit')
+% addpath(genpath('/Users/hopelutwak/Documents/GitHub/VRopticflow/Analysis'))
+% dataFolder = '/Users/hopelutwak/Documents/GitHub/VRopticflow/Data';
+
+addpath('/Users/hlutwak/Documents/MATLAB/psignifit')
+addpath(genpath('/Users/hlutwak/Documents/GitHub/VRopticflow/Analysis'))
+dataFolder = '/Users/hlutwak/Documents/GitHub/VRopticflow/Data';
 
 % 
 % % which subjects data to analyze
-subjects = "KZ"; %"HL" "IK"
-stims = ["dots-2"]; %["full-1", "full-2"]; %"pilot"
+subjects = "SM"; %"HL" "IK"
+stims = ["dots-1"]; %["full-1", "full-2"]; %"pilot"
 
 D=dir('Data/');
 
