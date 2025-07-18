@@ -14,21 +14,22 @@ dataFolder = '/Users/hlutwak/Documents/GitHub/VRopticflow/Data';
 
 % 
 % % which subjects data to analyze
-subjects = "SM"; %"HL" "IK"
-stims = ["dots-1"]; %["full-1", "full-2"]; %"pilot"
+subjects = "KZ"; %"HL" "IK"
+stims = ["monocular-2"]; %["full-1", "full-2"]; %"pilot"
 
 D=dir('Data/');
 
 for d = 1:length(D)
     subj = contains(D(d).name, subjects);
     stim = contains(D(d).name, stims);
-    eyetrack = D(d).isdir;
-    if subj && stim && eyetrack
+    eyeExist = D(d).isdir;
+    eyetracking = contains(D(d).name, "eyetracking");
+    if subj && stim && eyeExist
         filename = D(d).name;
         disp(filename)
-    elseif subj && stim && ~eyetrack
+    elseif subj && stim && eyetracking
         load(fullfile(dataFolder,D(d).name));
-        disp(D(d).name);
+        disp("loading: " + D(d).name);
     end
 end
 
@@ -191,6 +192,13 @@ target_comparison = [];
 response_comparison = [];
 % startpos = [5.4, 15.4]; %guess MP [5,-1.45]; DL [6,14] [8,12], MG [5.4, 15.4]
 % % endpos = [5,11]; % DL [5,11], MG [5.2, 11.2]
+hdist_tolerance_deg = 0.75; % original 1.5, this one 0.75
+
+if hdist_tolerance_deg <1
+    data_set = 2;
+else
+    data_set = 1;
+end
 
 % find 
  figure, set(gcf,'renderer','Painters')
@@ -199,11 +207,11 @@ for t = 2:pa.nTrials %pa.trialNumber %full set, change to pa.nTrials
     idx = find(tf);
     xvals = [startpos(1), endpos(1)]; % get horizontal vals for start and end pos
     distX  = abs(x(tf) - xvals); % calculate distance between either
-    if sum(tf)>0 && ~sum(find(distX>1.5))
+    if sum(tf)>0 && ~sum(find(distX>hdist_tolerance_deg))
         good_trials = [good_trials, t];
 %         hold on, scatter(x(tf), y(tf))
         hold on, plot(x(tf), y(tf), '.-', 'LineWidth', 3, 'color',[0, 0, 0])
-    elseif sum(tf)>0 && sum(find(distX>1.5))
+    elseif sum(tf)>0 && sum(find(distX>hdist_tolerance_deg))
         bad_trials = [bad_trials, t];
 %         hold on, scatter(x(tf), y(tf), 50,[0.5, 0.5, 0.5])
 %         hold on, plot(x(tf), y(tf), '.-', 'LineWidth', 3)
@@ -228,11 +236,13 @@ set(gca, 'FontSize', 16)
 
 disp(['num good trials = ', num2str(length(good_trials)), ' out of ', num2str(pa.nTrials), ', ' num2str(length(good_trials)/pa.nTrials*100), '%'])
 
+
 pa.good_trials = good_trials;
 
-baseDir = pwd;
-pa.dataFile = fullfile(baseDir, 'Data', [pa.subjectName '-' num2str(pa.block) '-' pa.date '-eyetracking' '.mat']);
-save(pa.dataFile, 'pa', 'ds', 'kb','oc');
+
+% baseDir = pwd;
+% pa.dataFile = fullfile(baseDir, 'Data', [pa.subjectName '-' num2str(pa.block) '-' pa.date '-eyetracking' '.mat']);
+% save(pa.dataFile, 'pa', 'ds', 'kb','oc');
 % 
 %% try for multiple trials
 % const_dev = zeros(1,10);
@@ -280,25 +290,42 @@ for t = good_trials %pa.trialNumber %full set, change to pa.nTrials
 end
 toc
 
-
+%%
 % save trials
-pa.goodTrials = good_trials;
-pa.dconst = dconst_overTrials;
-pa.dsurr = dsurr_overTrials;
+old_goodTrials = pa.goodTrials;
+pa.goodTrials = {};
+pa.goodTrials{1} = old_goodTrials;
+pa.goodTrials{data_set} = good_trials;
+
+old_dconst = pa.data_const(:,1)';
+pa.dconst = {};
+pa.dconst{1} = old_dconst;
+pa.dconst{data_set} = dconst_overTrials;
+
+old_dsurr = pa.data_surr(:,1)';
+pa.dsurr = {};
+pa.dsurr{1} = old_dsurr;
+pa.dsurr{data_set} = dsurr_overTrials;
+
 
 % psignifit with new dconst
 % matrix of results
-pcorrect = eq(pa.LR(pa.goodTrials), pa.LRresponse(pa.goodTrials));
+pcorrect = eq(pa.LR(pa.goodTrials{data_set}), pa.LRresponse(pa.goodTrials{data_set}));
 pcorrect = +pcorrect;
 nTrials = ones(size(pcorrect));
 
 % do this for both blocks
-data_const = [pa.dconst; pcorrect; nTrials]';
-data_surr = [pa.dsurr; pcorrect; nTrials]';
+data_const = [pa.dconst{data_set}; pcorrect; nTrials]';
+data_surr = [pa.dsurr{data_set}; pcorrect; nTrials]';
 
 all = 1:pa.nTrials;
 idx = ismember(all, good_trials);
 removed_trials = all(~idx);
+
+old_removed_trials = pa.removed_trials;
+pa.removed_trials = {};
+pa.removed_trials{1} = old_removed_trials;
+pa.removed_trials{data_set} = removed_trials;
 
 pa.data_const = data_const;
 pa.data_surr = data_surr;
@@ -309,22 +336,23 @@ pa.baseDir = pwd;
 pa.dataFile = fullfile(pa.baseDir, 'Data', [pa.subjectName '-' num2str(pa.block) '-' pa.date '-eyetracking' '.mat']);
 save(pa.dataFile, 'pa', 'ds', 'kb','oc');
 
-%%
+%% after running both blocks, clear and load the first block
 % do this for first block
-pcorrect = eq(pa.LR(pa.goodTrials), pa.LRresponse(pa.goodTrials));
+data_set = 2;
+pcorrect = eq(pa.LR(pa.goodTrials{data_set}), pa.LRresponse(pa.goodTrials{data_set}));
 pcorrect = +pcorrect;
 nTrials = ones(size(pcorrect));
 
-data_const = [pa.dconst; pcorrect; nTrials]';
-data_surr = [pa.dsurr; pcorrect; nTrials]';
+data_const = [pa.dconst{data_set}; pcorrect; nTrials]';
+data_surr = [pa.dsurr{data_set}; pcorrect; nTrials]';
 
 % load second block (don't delete anything) and do this
-pcorrect = eq(pa.LR(pa.goodTrials), pa.LRresponse(pa.goodTrials));
+pcorrect = eq(pa.LR(pa.goodTrials{data_set}), pa.LRresponse(pa.goodTrials{data_set}));
 pcorrect = +pcorrect;
 nTrials = ones(size(pcorrect));
 
-data_const = [data_const; [pa.dconst; pcorrect; nTrials]'];
-data_surr = [data_surr; [pa.dsurr; pcorrect; nTrials]'];
+data_const = [data_const; [pa.dconst{data_set}; pcorrect; nTrials]'];
+data_surr = [data_surr; [pa.dsurr{data_set}; pcorrect; nTrials]'];
 
 %% then fit over both blocks
 %
