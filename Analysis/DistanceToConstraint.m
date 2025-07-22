@@ -211,8 +211,9 @@ for cond = 1:size(conditions, 1)
         else
             dots = dots - velocity; %shift dots in world coordinates
         end
-        dots(target_idx,:) = dots(target_idx:end,:)+t_vel; %add velocity to moving object
-        
+        % dots(target_idx,:) = dots(target_idx:end,:)+t_vel; %add velocity to moving object
+        dots(target_idx,:) = dots(target_idx,:)+t_vel; %add velocity to moving object
+
         % if the observer rotates, rotate the world based on 3D rotation matrix
         observerRotation = [1, 0, 0; 0, cos(theta(ii)), -sin(theta(ii)); 0, sin(theta(ii)), cos(theta(ii))];
         drawndots(:,:,ii) = (observerRotation*dots')'; %observer coordinate dots

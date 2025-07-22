@@ -12,9 +12,9 @@ addpath('/Users/hlutwak/Documents/GitHub/VRopticflow/Analysis')
 % addpath(genpath('C:\Users\hlutw\Documents\MATLAB\psignifit-master'))
 % assign data folder
 % dataFolder = '/Users/hopelutwak/Documents/GitHub/VRopticflow/Data';
- dataFolder = '/Users/hlutwak/Documents/GitHub/VRopticflow/Data';
+dataFolder = '/Users/hlutwak/Documents/GitHub/VRopticflow/Data';
 
-figFolder = '/Users/hopelutwak/Documents/GitHub/VRopticflow/Figures';
+figFolder = '/Users/hlutwak/Documents/GitHub/VRopticflow/Figures';
 
 % analysisFolder = '/Users/hopelutwak/Documents/GitHub/VRopticflow/Analysis';
 analysisFolder = '/Users/hlutwak/Documents/GitHub/VRopticflow/Analysis';
@@ -25,7 +25,7 @@ S = dir(fullfile(dataFolder,'*.mat'));
 %
 % which subjects data to analyze
 subjects = ["MG"]; %,"DL", "PL","MG", "SM", "IK", "JO", "KZ"]; %"MP","DL", "PL","MG", "SM", "IK", "JO", "KZ","IG"
-
+data_set = 1; % 1 = 1.5 deg tolerance
 % all: "PL", "MP", "SM", "JL", "IK", "JO", "KZ", "IG"
 % all with good eyetracking trials: subjects = ["MP","DL","PL", "MG", "SM", "IK", "JO", "KZ","IG"];
 
@@ -62,8 +62,8 @@ for s  = 1:length(subjects)
                     idx_speed = find(pa.fullFactorial(:,3) == pa.speed(conditions(cond,1)));
                     idx_direction = find(pa.fullFactorial(:,4) == pa.direction(conditions(cond,2)));
                     idx = intersect(idx_speed, idx_direction);
-                    if isfield(pa, 'good_trials')
-                        idx = intersect(idx, pa.good_trials);
+                    if isfield(pa, 'goodTrials')
+                        idx = intersect(idx, pa.goodTrials{data_set});
                     end
                     data_session(cond,:) = [nan(1) nan(1) pa.speed(conditions(cond,1)), rad2deg(pa.direction(conditions(cond,2))), sum(eq(pa.LR(idx), pa.LRresponse(idx))), length(idx)];
 
@@ -120,7 +120,7 @@ for s  = 1:length(subjects)
     figure, plotPsych(result_const, options);
     title([subjects(s),' distance to constraint, depth range = ', num2str(depth_range), 'depth estimate = ', num2str(depth_est)])
     
-    if isfield(pa, 'good_trials')
+    if isfield(pa, 'goodTrials')
         figname = [subjects(s)+'_const_'+stims(1)+'_multiplicative'+'.eps'];
     else
         figname = [subjects(s)+'_const_'+stims(1)+'.eps'];
@@ -321,6 +321,19 @@ surr.dots = [223.7979	234.2082	216.3863	124.0553	229.7325	143.1377	249.8042	164.
 const.mono = [27.6668	29.6249	49.3243	24.8407	44.1944	32.2815	44.8319	29.4757];
 surr.mono = [120.5473	138.4324	231.4612	79.1445	224.579	52.4371	151.5863	150.4013];
 
+% with eyetracking 0,75 thresh (no JL, IG)
+subjects = ["MP","DL","PL", "MG", "SM", "IK", "JO", "KZ"]; %"IG"
+
+const.full = [14.5646	33.0393	12.8474	31.9263	28.7374		4.0394	2.9203	22.5231];
+surr.full = [132.9029	40.0209	22.2642	26.2903	40.658		19.3174	41.2065	26.0243];
+
+const.dots = [34.5412	0.83839	0.53432	34.5412	20.8139		12.067	63.3388	2.3312];
+surr.dots = [68.5071	61.2749	9.9836	68.5071	23.7643		39.7869	100.545	5.3749];
+
+const.mono = [48.492	6.7729	67.751	1.2891	2.1174		1.3429	1.6376	17.9469];
+surr.mono = [76.9227	42.8086	39.8211	8.0531	83.7478		12.7231	7.3378	35.1828];
+
+
 % % const vs surround
 % fig = figure();
 % for d = 1:length(const)
@@ -372,6 +385,7 @@ hold on, scatter(surr.mono, const.mono, 50, 'filled')
 axis equal
 xlim([0 350])
 ylim([0 150])
+xlabel('surround')
 
 hold on
 plot([min([xlim ylim]) max([xlim ylim])], [min([xlim ylim]) max([xlim ylim])], '--k')
@@ -510,7 +524,7 @@ for s  = 1:length(subjects)
                     idx_direction = find(pa.fullFactorial(:,4) == pa.direction(conditions(cond,2)));
                     idx = intersect(idx_speed, idx_direction);
                     if isfield(pa, 'good_trials')
-                        idx = intersect(idx, pa.good_trials);
+                        idx = intersect(idx, pa.goodTrials{data_set});
                     end
                     data_session(cond,:) = [nan(1) nan(1) pa.speed(conditions(cond,1)), rad2deg(pa.direction(conditions(cond,2))), sum(eq(pa.LR(idx), pa.LRresponse(idx))), length(idx)];
 
